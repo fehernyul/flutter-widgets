@@ -195,12 +195,16 @@ class EmployeeDataSource extends DataGridSource {
   /// Creates the employee data source class with required details.
   EmployeeDataSource({required List<Employee> employeeData}) {
     _employeeData = employeeData
-        .map<DataGridRow>((Employee e) => DataGridRow(cells: <DataGridCell>[
-              DataGridCell<int>(columnName: 'ID', value: e.id),
-              DataGridCell<String>(columnName: 'Name', value: e.name),
+        .map<DataGridRow>((e) => DataGridRow(cells: [
+              DataGridCell<int>(columnName: 'id', value: e.id, dbValue: e.id),
               DataGridCell<String>(
-                  columnName: 'Designation', value: e.designation),
-              DataGridCell<int>(columnName: 'Salary', value: e.salary),
+                  columnName: 'name', value: e.name, dbValue: e.name),
+              DataGridCell<String>(
+                  columnName: 'designation',
+                  value: e.designation,
+                  dbValue: e.designation),
+              DataGridCell<int>(
+                  columnName: 'salary', value: e.salary, dbValue: e.salary),
             ]))
         .toList();
   }
@@ -220,5 +224,11 @@ class EmployeeDataSource extends DataGridSource {
         child: Text(cell.value.toString()),
       );
     }).toList());
+  }
+
+  @override
+  int getSortedColumnsStartIndex({Object? calculateWithThisDataGrid}) {
+    // TODO: implement getSortedColumnsStartIndex
+    throw UnimplementedError();
   }
 }

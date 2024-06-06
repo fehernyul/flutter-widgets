@@ -175,7 +175,7 @@ enum DataGridSortDirection {
   ascending,
 
   /// Sorts in descending order.
-  descending
+  descending,
 }
 
 /// Specifies the different tap actions available for applying sorting.
@@ -329,6 +329,9 @@ enum FilteredFrom {
   /// Specifies the advanced filter.
   advancedFilter,
 
+  /// === gabor - 2023.06.07
+  customFilter,
+
   /// Specifies the none.
   none,
 }
@@ -356,8 +359,15 @@ enum FilterMode {
   /// Specifies whether the advanced filter dropdown only should be shown along with other options.
   advancedFilter,
 
+  // === - 2023.08.12 Andras
+  /// Specifies whether the advanced filter dropdown show first
+  advancedFilterFirst,
+
   /// Specifies whether both the checked listbox and advanced filter dropdown options should be shown.
   both,
+
+  // === gabor - 2023.06.07
+  customFilter,
 }
 
 /// The position of the icon in the column headers.

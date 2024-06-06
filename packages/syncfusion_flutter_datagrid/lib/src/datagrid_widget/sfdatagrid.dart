@@ -95,9 +95,18 @@ typedef DataGridFilterChangingCallback = bool Function(
 typedef DataGridFilterChangedCallback = void Function(
     DataGridFilterChangeDetails details);
 
+typedef DataGridSortChangingCallback = bool Function(
+    SortColumnDetails details); // gabor 2023.09.22
+typedef DataGridSortChangedCallback = void Function(
+    SortColumnDetails details); // gabor 2023.09.22
+
 /// Signature for the [DataGridSourceChangeNotifier] listener.
 typedef _DataGridSourceListener = void Function(
     {RowColumnIndex? rowColumnIndex});
+
+/// Signature for the [DataGridSourceChangeNotifier] listener.
+typedef CurrentRowChangedCallback = void Function(
+    RowColumnIndex? rowColumnIndex);
 
 /// Signature for the [DataGridSourceChangeNotifier] listener.
 typedef _DataGridPropertyChangeListener = void Function(
@@ -150,7 +159,8 @@ class DataGridRow {
 @optionalTypeArgs
 class DataGridCell<T> {
   /// Creates [DataGridCell] for the [SfDataGrid].
-  const DataGridCell({required this.columnName, required this.value});
+  const DataGridCell(
+      {required this.columnName, required this.value, required this.dbValue});
 
   /// The name of a column
   final String columnName;
@@ -160,6 +170,10 @@ class DataGridCell<T> {
   /// Provide value of a cell to perform the sorting for whole data available
   /// in datagrid.
   final T? value;
+
+  // andras - 2023.08.24
+  /// original value from database (only pure value, no widget!)
+  final dynamic dbValue;
 }
 
 /// Row configuration and widget of cell for a [SfDataGrid].
@@ -421,6 +435,7 @@ class SfDataGrid extends StatefulWidget {
     this.selectionMode = SelectionMode.none,
     this.navigationMode = GridNavigationMode.row,
     this.frozenColumnsCount = 0,
+    this.dataSourceFromDB = false,
     this.footerFrozenColumnsCount = 0,
     this.frozenRowsCount = 0,
     this.footerFrozenRowsCount = 0,
@@ -477,6 +492,10 @@ class SfDataGrid extends StatefulWidget {
     this.allowFiltering = false,
     this.onFilterChanging,
     this.onFilterChanged,
+    this.onSortAdded, // gabor 2023.09.22
+    this.onSortRemoved, // gabor 2023.09.22
+    this.onSortChanged, // gabor 2023.09.22
+    this.onCurrentRowChanged, //andras 2023.10.28
     this.checkboxShape,
     this.showHorizontalScrollbar = true,
     this.showVerticalScrollbar = true,
@@ -667,6 +686,9 @@ class SfDataGrid extends StatefulWidget {
   /// * [SfDataGridThemeData.frozenPaneLineColor], which is used to customize the
   /// color of the frozen line
   final int frozenColumnsCount;
+
+  /// Defaults: false. true: not necessary filtering and shorting
+  final bool dataSourceFromDB;
 
   /// The number of non-scrolling columns at the right side of [SfDataGrid].
   ///
@@ -1612,6 +1634,11 @@ class SfDataGrid extends StatefulWidget {
   /// programmatically.
   final DataGridFilterChangedCallback? onFilterChanged;
 
+  final DataGridSortChangedCallback? onSortAdded; // gabor 2023.09.22
+  final DataGridSortChangedCallback? onSortRemoved; // gabor 2023.09.22
+  final DataGridSortChangedCallback? onSortChanged; // gabor 2023.09.22
+  final CurrentRowChangedCallback? onCurrentRowChanged; //andras 2023.10.28
+
   /// The shape of the checkbox.
   ///
   /// This is applicable for checkbox which is shown when enable the [showCheckboxColumn] property.
@@ -1760,8 +1787,29 @@ class SfDataGridState extends State<SfDataGrid>
     _updateDataGridStateDetails();
 
     // To perform sort and filter operations based on the `DataGridSource`.
+    _dataGridConfiguration.source.dataSourceFromDB =
+        _dataGridConfiguration.dataSourceFromDB;
     updateDataSource(_dataGridConfiguration.source);
+
+    updateFilterWithDefaultFilterValue();
+
     super.initState();
+  }
+
+  void updateFilterWithDefaultFilterValue() {
+    if (_columns == null) {
+      return;
+    }
+
+    for (GridColumn column in _columns!) {
+      List<FilterCondition> conditions = [];
+      if (column.filterPopupMenuOptions != null) {
+        if (conditions.length > 0) {
+          addFilterConditions(
+              _dataGridConfiguration.source, column.columnName, conditions);
+        }
+      }
+    }
   }
 
   void _onDataGridTextDirectionChanged(TextDirection? newTextDirection) {
@@ -2552,6 +2600,7 @@ class SfDataGridState extends State<SfDataGrid>
       ..onCellDoubleTap = widget.onCellDoubleTap
       ..onCellSecondaryTap = widget.onCellSecondaryTap
       ..onCellLongPress = widget.onCellLongPress
+      ..dataSourceFromDB = widget.dataSourceFromDB
       ..frozenColumnsCount = widget.frozenColumnsCount
       ..footerFrozenColumnsCount = widget.footerFrozenColumnsCount
       ..frozenRowsCount = widget.frozenRowsCount
@@ -2614,6 +2663,10 @@ class SfDataGridState extends State<SfDataGrid>
       ..allowFiltering = widget.allowFiltering
       ..onFilterChanging = widget.onFilterChanging
       ..onFilterChanged = widget.onFilterChanged
+      ..onSortAdded = widget.onSortAdded // gabor 2023.09.22
+      ..onSortRemoved = widget.onSortRemoved // gabor 2023.09.22
+      ..onSortChanged = widget.onSortChanged // gabor 2023.09.22
+      ..onCurrentRowChanged = widget.onCurrentRowChanged // andras 20023.10.28
       ..checkboxShape = widget.checkboxShape
       ..showHorizontalScrollbar = widget.showHorizontalScrollbar
       ..showVerticalScrollbar = widget.showVerticalScrollbar
@@ -3384,6 +3437,9 @@ class SfDataGridState extends State<SfDataGrid>
 
 abstract class DataGridSource extends DataGridSourceChangeNotifier
     with DataPagerDelegate {
+  int getSortedColumnsStartIndex(
+      {Object? calculateWithThisDataGrid}); // gabor - 2023.09.21
+
   /// The collection of rows to display in [SfDataGrid].
   ///
   /// This must be non-null, but may be empty.
@@ -3421,6 +3477,8 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   /// Helps to suspend the multiple update on SfDataGrid using with
   /// SfDataPager.
   bool _suspendDataPagerUpdate = false;
+
+  bool dataSourceFromDB = false;
 
   DataGridStateDetails? _dataGridStateDetails;
 
@@ -3564,6 +3622,9 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   /// cases.
   @protected
   Future<void> performSorting(List<DataGridRow> rows) async {
+    if (dataSourceFromDB) {
+      return;
+    }
     if (sortedColumns.isEmpty) {
       return;
     }
@@ -3699,7 +3760,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
       return cells
           ?.firstWhereOrNull(
               (DataGridCell element) => element.columnName == columnName)
-          ?.value;
+          ?.dbValue;
     }
 
     final Object? valueA = getCellValue(a?.getCells(), sortColumn.name);
@@ -3742,7 +3803,10 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
     }
 
     // Should refresh sorting when the data grid source is updated.
+    // andras
+    if (dataSourceFromDB == false) {
     performSorting(_effectiveRows);
+    }
 
     // Should refresh grouping when data grid source is updated
     if (_dataGridStateDetails != null) {
@@ -4214,6 +4278,8 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
         sortedColumns.add(SortColumnDetails(
           name: columnGroup.name,
           sortDirection: DataGridSortDirection.ascending,
+          // === TODO: ez biztosan nem 1, de meg kellene irni, hogy akkor mennyi. ez azert nincs megcsinalva meg, mert ez a "ColumnGrouping" meg nem letezett a 21.2.4-ben
+          sortIndex: 1,
         ));
       }
     }
@@ -4992,6 +5058,10 @@ class DataGridThemeHelper {
         effectiveDataGridThemeData.frozenPaneLineWidth;
     selectionColor =
         defaults.selectionColor ?? effectiveDataGridThemeData.selectionColor;
+    currentRowBackgoundColor = defaults.currentRowBackgoundColor ??
+        effectiveDataGridThemeData.currentRowBackgoundColor;
+//colorScheme!.onSurface.withOpacity(0.2);
+
     headerHoverColor = defaults.headerHoverColor ??
         effectiveDataGridThemeData.headerHoverColor;
     rowHoverColor =
@@ -5089,6 +5159,9 @@ class DataGridThemeHelper {
   /// To do
 
   late final Color? selectionColor;
+
+  /// To do - gabor 2024.02.28
+  late final Color? currentRowBackgoundColor;
 
   /// To do
 
@@ -5297,6 +5370,9 @@ class _SfDataGridThemeDataM3 extends SfDataGridThemeData {
   Color get selectionColor => colorScheme.primaryContainer;
 
   @override
+  Color get currentRowBackgoundColor => colorScheme.primaryContainer.withOpacity(0.2);
+
+  @override
   DataGridCurrentCellStyle get currentCellStyle => DataGridCurrentCellStyle(
       borderColor: colorScheme.primary, borderWidth: 2.0);
 
@@ -5439,6 +5515,9 @@ class _SfDataGridThemeDataM2 extends SfDataGridThemeData {
 
   @override
   Color get selectionColor => colorScheme.onSurface.withOpacity(0.08);
+
+  @override
+  Color get currentRowBackgoundColor => colorScheme.onSurface.withOpacity(0.2);
 
   @override
   DataGridCurrentCellStyle get currentCellStyle => DataGridCurrentCellStyle(

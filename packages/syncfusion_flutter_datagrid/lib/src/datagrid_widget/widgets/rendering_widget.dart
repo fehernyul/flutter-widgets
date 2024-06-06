@@ -783,6 +783,16 @@ class RenderVirtualizingCellsWidget extends RenderBox
             : dataRow.dataGridRowAdapter!.color;
       }
 
+      // tvg - begin
+      if (dataGridConfiguration.dataGridThemeHelper!.currentRowBackgoundColor !=
+          null) {
+        if (dataRow.isCurrentRow) {
+          backgroundColor = dataGridConfiguration
+              .dataGridThemeHelper!.currentRowBackgoundColor;
+        }
+      }
+      // tvg - end
+
       // Default theme color are common for both the HeaderBackgroundColor and
       // CellBackgroundColor, so we have checked commonly at outside of the
       // condition

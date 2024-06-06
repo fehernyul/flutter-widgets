@@ -81,6 +81,10 @@ class DataGridConfiguration {
   /// The number of non-scrolling columns at the left side of [SfDataGrid].
   int frozenColumnsCount = 0;
 
+  //andras
+  /// true: not necessary sort, and filter [SfDataGrid]
+  bool dataSourceFromDB = false;
+
   /// The number of non-scrolling columns at the right side of [SfDataGrid].
   int footerFrozenColumnsCount = 0;
 
@@ -202,6 +206,11 @@ class DataGridConfiguration {
   /// Called after the UI filtering is applied to [SfDataGrid].
   DataGridFilterChangedCallback? onFilterChanged;
 
+  //DataGridSortChangingCallback? onSortChanging; // gabor 2023.09.22
+  DataGridSortChangedCallback? onSortAdded; // gabor 2023.09.22
+  DataGridSortChangedCallback? onSortRemoved; // gabor 2023.09.22
+  DataGridSortChangedCallback? onSortChanged; // gabor 2023.09.22
+
   /// Contains all the properties of the checkbox column.
   DataGridCheckboxColumnSettings checkboxColumnSettings =
       const DataGridCheckboxColumnSettings();
@@ -317,6 +326,9 @@ class DataGridConfiguration {
 
   /// Invoked when the row is selected.
   SelectionChangedCallback? onSelectionChanged;
+
+  /// Invoked when the current row is changed.
+  CurrentRowChangedCallback? onCurrentRowChanged;
 
   /// Invoked when the cell is activated.
   CurrentCellActivatedCallback? onCurrentCellActivated;

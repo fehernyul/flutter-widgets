@@ -111,6 +111,7 @@ class SfDataGridThemeData with Diagnosticable {
       {this.gridLineColor,
       this.gridLineStrokeWidth,
       this.selectionColor,
+      this.currentRowBackgoundColor,
       this.currentCellStyle,
       this.frozenPaneLineColor,
       this.frozenPaneLineWidth,
@@ -143,6 +144,7 @@ class SfDataGridThemeData with Diagnosticable {
     Color? gridLineColor,
     double? gridLineStrokeWidth,
     Color? selectionColor,
+    Color? currentRowBackgoundColor,
     DataGridCurrentCellStyle? currentCellStyle,
     Color? frozenPaneLineColor,
     double? frozenPaneLineWidth,
@@ -173,6 +175,7 @@ class SfDataGridThemeData with Diagnosticable {
         gridLineColor: gridLineColor,
         gridLineStrokeWidth: gridLineStrokeWidth,
         selectionColor: selectionColor,
+        currentRowBackgoundColor: currentRowBackgoundColor,
         currentCellStyle: currentCellStyle,
         frozenPaneLineColor: frozenPaneLineColor,
         frozenPaneLineWidth: frozenPaneLineWidth,
@@ -261,6 +264,8 @@ class SfDataGridThemeData with Diagnosticable {
   /// }
   /// ```
   final Color? selectionColor;
+
+  final Color? currentRowBackgoundColor;
 
   /// Defines the default configuration of current cell in [SfDataGrid].
   ///
@@ -505,6 +510,7 @@ class SfDataGridThemeData with Diagnosticable {
     Color? gridLineColor,
     double? gridLineStrokeWidth,
     Color? selectionColor,
+    Color? currentRowBackgoundColor,
     DataGridCurrentCellStyle? currentCellStyle,
     double? frozenPaneLineWidth,
     Color? frozenPaneLineColor,
@@ -535,6 +541,8 @@ class SfDataGridThemeData with Diagnosticable {
         gridLineColor: gridLineColor ?? this.gridLineColor,
         gridLineStrokeWidth: gridLineStrokeWidth ?? this.gridLineStrokeWidth,
         selectionColor: selectionColor ?? this.selectionColor,
+        currentRowBackgoundColor:
+            currentRowBackgoundColor ?? this.currentRowBackgoundColor,
         currentCellStyle: currentCellStyle ?? this.currentCellStyle,
         frozenPaneLineColor: frozenPaneLineColor ?? this.frozenPaneLineColor,
         frozenPaneLineWidth: frozenPaneLineWidth ?? this.frozenPaneLineWidth,
@@ -578,6 +586,8 @@ class SfDataGridThemeData with Diagnosticable {
       gridLineStrokeWidth:
           lerpDouble(a.gridLineStrokeWidth, b.gridLineStrokeWidth, t),
       selectionColor: Color.lerp(a.selectionColor, b.selectionColor, t),
+      currentRowBackgoundColor:
+          Color.lerp(a.currentRowBackgoundColor, b.currentRowBackgoundColor, t),
       currentCellStyle: DataGridCurrentCellStyle.lerp(
           a.currentCellStyle, b.currentCellStyle, t),
       frozenPaneLineColor:
@@ -635,6 +645,7 @@ class SfDataGridThemeData with Diagnosticable {
         other.gridLineColor == gridLineColor &&
         other.gridLineStrokeWidth == gridLineStrokeWidth &&
         other.selectionColor == selectionColor &&
+        other.currentRowBackgoundColor == currentRowBackgoundColor &&
         other.currentCellStyle == currentCellStyle &&
         other.frozenPaneLineWidth == frozenPaneLineWidth &&
         other.frozenPaneLineColor == frozenPaneLineColor &&
@@ -670,6 +681,7 @@ class SfDataGridThemeData with Diagnosticable {
       gridLineColor,
       gridLineStrokeWidth,
       selectionColor,
+      currentRowBackgoundColor,
       currentCellStyle,
       frozenPaneLineColor,
       frozenPaneLineWidth,
@@ -708,6 +720,9 @@ class SfDataGridThemeData with Diagnosticable {
         defaultValue: defaultData.gridLineStrokeWidth));
     properties.add(ColorProperty('selectionColor', selectionColor,
         defaultValue: defaultData.selectionColor));
+    properties.add(ColorProperty(
+        'currentRowBackgoundColor', currentRowBackgoundColor,
+        defaultValue: defaultData.currentRowBackgoundColor));
     properties.add(DiagnosticsProperty<DataGridCurrentCellStyle>(
         'currentCellStyle', currentCellStyle,
         defaultValue: defaultData.currentCellStyle));

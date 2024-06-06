@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_core/localizations.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../grid_common/row_column_index.dart';
 import '../grouping/grouping.dart';
@@ -439,14 +440,31 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
   void _ensureSortIconVisibility(
       GridColumn column, DataGridConfiguration? dataGridConfiguration) {
     if (dataGridConfiguration != null) {
+      // -- a grid datasource-jaban a sortedColumns tombben benne van-e a column.columnName altal megahatarozott oszlop (azaz a a kert oszlop-ra van-e rendezes?)
       final SortColumnDetails? sortColumn = dataGridConfiguration
           .source.sortedColumns
           .firstWhereOrNull((SortColumnDetails sortColumn) =>
               sortColumn.name == column.columnName);
+
+      bool hasSubOrder2 = false;
+
+      if (column.getHasSubOrderingFunc != null) {
+        hasSubOrder2 = column.getHasSubOrderingFunc!();
+      }
+
+      if (sortColumn == null && hasSubOrder2) {
+        _sortNumber = -2;
+        return;
+      }
+      // }
+
+      // -- ha van, akkor...
       if (dataGridConfiguration.source.sortedColumns.isNotEmpty &&
           sortColumn != null) {
-        final int sortNumber =
-            dataGridConfiguration.source.sortedColumns.indexOf(sortColumn) + 1;
+        //final int sortNumber =
+        //    dataGridConfiguration.source.sortedColumns.indexOf(sortColumn) + 1;
+
+        int sortNumber = sortColumn.sortIndex; // 2023.09.22
         _sortDirection = sortColumn.sortDirection;
         _sortNumberBackgroundColor = dataGridConfiguration
                 .dataGridThemeHelper!.sortOrderNumberBackgroundColor ??
@@ -454,7 +472,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
         _sortNumberTextColor =
             dataGridConfiguration.dataGridThemeHelper!.sortOrderNumberColor ??
                 dataGridConfiguration.colorScheme!.onSurface.withOpacity(0.87);
-        if (dataGridConfiguration.source.sortedColumns.length > 1 &&
+        if (/*dataGridConfiguration.source.sortedColumns.length > 1 && -- akkor is mutassa, ha 1 van! - gabor 2024.01.24*/
             dataGridConfiguration.showSortNumbers) {
           _sortNumber = sortNumber;
         } else {
@@ -475,7 +493,12 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
         (SortColumnDetails element) => element.name == gridColumn.columnName);
     final bool isSortNumberVisible = _sortNumber != 1;
 
-    if ((isSortedColumn ||
+    bool hasSubOrder2 = false;
+    if (gridColumn.getHasSubOrderingFunc != null) {
+      hasSubOrder2 = gridColumn.getHasSubOrderingFunc!();
+    }
+
+    if (((hasSubOrder2 || isSortedColumn) ||
             (gridColumn.allowSorting && dataGridConfiguration.allowSorting)) ||
         (gridColumn.allowFiltering && dataGridConfiguration.allowFiltering)) {
       final double sortIconWidth =
@@ -495,11 +518,14 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
 
           if (_sortDirection != null) {
             if (_sortIcon == null || _sortIcon is Icon) {
-              children['sortIcon'] = _SortIcon(
-                sortDirection: _sortDirection!,
-                sortIconColor: _sortIconColor,
-                sortIcon: _sortIcon,
-              );
+              if (_sortNumber != -2) {
+                // sima, gyari order ikon
+                children['sortIcon'] = _SortIcon(
+                  sortDirection: _sortDirection!,
+                  sortIconColor: _sortIconColor,
+                  sortIcon: _sortIcon,
+                );
+              }
             } else {
               if (sortDirection == DataGridSortDirection.ascending) {
                 children['sortIcon'] =
@@ -509,7 +535,8 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
                     _BuilderSortIconDescending(sortIcon: _sortIcon);
               }
             }
-            if (_sortNumber != -1) {
+
+            if (_sortNumber != 0 && _sortNumber != -1 && _sortNumber != -2) {
               children['sortNumber'] = _getSortNumber();
             }
           } else if (gridColumn.allowSorting &&
@@ -522,6 +549,17 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
 
             children['sortIcon'] = _sortIcon ??
                 Icon(unsortIconData, color: _sortIconColor, size: 16);
+          }
+
+          // ha van az oszlop alatt subOrderezes, akkor kiteszunk egy plusz ikont IS!
+          if (hasSubOrder2) {
+            children['subFilterIcon'] =
+                Icon(Icons.swap_vert, color: Colors.green);
+            // children.add(Container(
+            //   decoration: BoxDecoration(color: Colors.yellow, border: Border.all(color: Colors.pink, width: 1, style: BorderStyle.solid)),
+            //   height: 10,
+            //   width: 10,
+            // ));
           }
         }
 
@@ -561,6 +599,8 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
                           children['sortNumber']!,
                         if (children.containsKey('filterIcon'))
                           children['filterIcon']!,
+                        if (children.containsKey('subFilterIcon'))
+                          children['subFilterIcon']!,
                       ],
                     )
                   : const SizedBox(),
@@ -674,8 +714,17 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     }
   }
 
+  int getAllPreviousSortCounter(DataGridSource source) {
+    int result = source.getSortedColumnsStartIndex();
+    // Print.red('getAllPreviousSortCounter() :: $result', name: 'getAllPreviousSortCounter');
+    return result;
+  }
+
+  // ez osszeallitja (hozzaad, torol) a datasource.sortedColumns listat
+  // plusz matol (2023.09.22) ez kezeli a TvgGrid-et
   Future<void> _makeSort(DataCellBase dataCell) async {
     final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
+    int previousSortCount = 0;
 
     //End-edit before perform sorting
     if (dataGridConfiguration.currentCell.isEditing) {
@@ -698,14 +747,23 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
 
       final List<SortColumnDetails> sortedColumns = source.sortedColumns;
       if (sortedColumns.isNotEmpty && allowMultiSort) {
+        // gabor 2024.01.29 - begin
+        previousSortCount =
+            getAllPreviousSortCounter(dataGridConfiguration.source);
+        // gabor 2024.01.29 - end
         SortColumnDetails? sortedColumn = sortedColumns.firstWhereOrNull(
             (SortColumnDetails sortColumn) =>
                 sortColumn.name == sortColumnName);
         if (sortedColumn == null) {
           final SortColumnDetails newSortColumn = SortColumnDetails(
-              name: sortColumnName,
-              sortDirection: DataGridSortDirection.ascending);
+            name: sortColumnName,
+            sortDirection: DataGridSortDirection.ascending,
+            sortIndex: previousSortCount + 1,
+          );
           sortedColumns.add(newSortColumn);
+          if (dataGridConfiguration.onSortAdded != null) {
+            dataGridConfiguration.onSortAdded!(newSortColumn);
+          }
         } else {
           if (sortedColumn.sortDirection == DataGridSortDirection.descending &&
               dataGridConfiguration.allowTriStateSorting) {
@@ -713,51 +771,96 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
                 sortedColumns.firstWhereOrNull((SortColumnDetails sortColumn) =>
                     sortColumn.name == sortColumnName);
             sortedColumns.remove(removedSortColumn);
+            if (dataGridConfiguration.onSortRemoved != null &&
+                removedSortColumn != null) {
+              dataGridConfiguration.onSortRemoved!(removedSortColumn);
+            }
           } else {
             sortedColumn = SortColumnDetails(
-                name: sortedColumn.name,
-                sortDirection: sortedColumn.sortDirection ==
-                        DataGridSortDirection.ascending
-                    ? DataGridSortDirection.descending
-                    : DataGridSortDirection.ascending);
+              name: sortedColumn.name,
+              sortDirection:
+                  sortedColumn.sortDirection == DataGridSortDirection.ascending
+                      ? DataGridSortDirection.descending
+                      : DataGridSortDirection.ascending,
+              sortIndex: sortedColumn.sortIndex,
+            );
             final SortColumnDetails? removedSortColumn =
                 sortedColumns.firstWhereOrNull((SortColumnDetails sortColumn) =>
                     sortColumn.name == sortedColumn!.name);
+
             sortedColumns
               ..remove(removedSortColumn)
               ..add(sortedColumn);
+
+            // na, mi ilyet nem csinalunk, hogy ha torlunk egy oszlopRendezest, majd beszurjuk ugyanazt az oszlopRendezest csak a masik iranyban, ez egy buzisag. Csak az iranyat kell modositani!
+            // if (dataGridConfiguration.onSortRemoved != null && removedSortColumn != null) {
+            //   dataGridConfiguration.onSortRemoved!(removedSortColumn);
+            // }
+
+            if (dataGridConfiguration.onSortChanged != null) {
+              dataGridConfiguration.onSortChanged!(sortedColumn);
+            }
           }
         }
       } else {
         SortColumnDetails? currentSortColumn = sortedColumns.firstWhereOrNull(
             (SortColumnDetails sortColumn) =>
                 sortColumn.name == sortColumnName);
+        // gabor 2024.01.29 - begin
+        previousSortCount =
+            getAllPreviousSortCounter(dataGridConfiguration.source);
+        // gabor 2024.01.29 - end
         if (sortedColumns.isNotEmpty && currentSortColumn != null) {
           if (currentSortColumn.sortDirection ==
                   DataGridSortDirection.descending &&
               dataGridConfiguration.allowTriStateSorting) {
             sortedColumns.clear();
+
+            if (dataGridConfiguration.onSortRemoved != null) {
+              dataGridConfiguration.onSortRemoved!(currentSortColumn);
+            }
           } else {
             currentSortColumn = SortColumnDetails(
-                name: currentSortColumn.name,
-                sortDirection: currentSortColumn.sortDirection ==
-                        DataGridSortDirection.ascending
-                    ? DataGridSortDirection.descending
-                    : DataGridSortDirection.ascending);
+              name: currentSortColumn.name,
+              sortDirection: currentSortColumn.sortDirection ==
+                      DataGridSortDirection.ascending
+                  ? DataGridSortDirection.descending
+                  : DataGridSortDirection.ascending,
+              sortIndex: previousSortCount,
+            );
+            if (dataGridConfiguration.onSortRemoved != null) {
+              dataGridConfiguration.onSortRemoved!(sortedColumns[
+                  0]); // ez jo bena, de mivel ugyis isNotEmpty, es csak 1 elem lehet benne, ezert remelem ez igy jo lesz
+            }
             sortedColumns
               ..clear()
               ..add(currentSortColumn);
+            if (dataGridConfiguration.onSortAdded != null) {
+              dataGridConfiguration.onSortAdded!(currentSortColumn);
+            }
           }
         } else {
           final SortColumnDetails sortColumn = SortColumnDetails(
-              name: sortColumnName,
-              sortDirection: DataGridSortDirection.ascending);
+            name: sortColumnName,
+            sortDirection: DataGridSortDirection.ascending,
+            sortIndex: previousSortCount + 1,
+          );
           if (sortedColumns.isNotEmpty) {
+            if (dataGridConfiguration.onSortRemoved != null) {
+              dataGridConfiguration.onSortRemoved!(sortedColumns[
+                  0]); // ez jo bena, de mivel ugyis isNotEmpty, es csak 1 elem lehet benne, ezert remelem ez igy jo lesz
+            }
             sortedColumns
               ..clear()
               ..add(sortColumn);
+            if (dataGridConfiguration.onSortAdded != null) {
+              dataGridConfiguration.onSortAdded!(sortColumn);
+            }
           } else {
             sortedColumns.add(sortColumn);
+            if (dataGridConfiguration.onSortAdded != null) {
+              dataGridConfiguration.onSortAdded!(sortColumn);
+            }
           }
         }
       }
@@ -835,6 +938,7 @@ class _SortIconState extends State<_SortIcon>
 
   @override
   Widget build(BuildContext context) {
+    // = gabor 2023.07.05 - change sorted icon color to red
     return AnimatedBuilder(
         animation: _animationController,
         builder: (BuildContext context, Widget? child) {
@@ -842,7 +946,8 @@ class _SortIconState extends State<_SortIcon>
               angle: _sortingAnimation.value,
               child: widget.sortIcon ??
                   Icon(Icons.arrow_upward,
-                      color: widget.sortIconColor, size: 16));
+                      color: Colors.red.shade300 /* widget.sortIconColor*/,
+                      size: 16));
         });
   }
 
@@ -912,6 +1017,12 @@ class _FilterIcon extends StatelessWidget {
     final bool isFiltered = dataGridConfiguration.source.filterConditions
         .containsKey(column.columnName);
 
+    bool isSubFiltered = false;
+
+    if (column.getHasSubFilteringFunc != null) {
+      isSubFiltered = column.getHasSubFilteringFunc!();
+    }
+
     return GestureDetector(
       onTapUp: (TapUpDetails details) => onHandleTap(details, context),
       child: Padding(
@@ -919,6 +1030,7 @@ class _FilterIcon extends StatelessWidget {
         child: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
           return MouseRegion(
+            cursor: SystemMouseCursors.click,
             onEnter: (_) {
               setState(() {
                 isHovered = true;
@@ -931,6 +1043,7 @@ class _FilterIcon extends StatelessWidget {
             },
             child: isFiltered
                 ? _FilteredIcon(
+                    isSubFiltered: isSubFiltered,
                     iconColor: isHovered
                         ? (dataGridConfiguration
                                 .dataGridThemeHelper!.filterIconHoverColor ??
@@ -945,6 +1058,7 @@ class _FilterIcon extends StatelessWidget {
                     gridColumnName: column.columnName,
                   )
                 : _UnfilteredIcon(
+                    isSubFiltered: isSubFiltered,
                     iconColor: isHovered
                         ? (dataGridConfiguration
                                 .dataGridThemeHelper!.filterIconHoverColor ??
@@ -970,15 +1084,41 @@ class _UnfilteredIcon extends StatelessWidget {
       {Key? key,
       required this.iconColor,
       required this.filterIcon,
-      required this.gridColumnName})
+      required this.gridColumnName,
+      required this.isSubFiltered})
       : super(key: key);
 
   final Color iconColor;
   final Widget? filterIcon;
   final String? gridColumnName;
+  final bool isSubFiltered;
 
   @override
   Widget build(BuildContext context) {
+    // = gabor 2023.07.05 - change font package name
+    return filterIcon ??
+        Container(
+          padding: EdgeInsets.all(3),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(
+                color: Colors.red,
+                width: 1,
+                style: (isSubFiltered ? BorderStyle.solid : BorderStyle.none),
+              )),
+          child: Icon(
+            // const IconData(0xe702, fontFamily: 'FilterIcon', fontPackage: 'trendi_view_generator'),
+            const IconData(0xe702,
+                fontFamily: 'FilterIcon',
+                fontPackage: 'syncfusion_flutter_datagrid'),
+            size: 18.0,
+            color: iconColor,
+            key: ValueKey<String>(
+                'datagrid_filtering_${gridColumnName}_filterIcon'),
+          ),
+        );
+
+/*
     return filterIcon ??
         Icon(
           const IconData(0xe702,
@@ -988,7 +1128,7 @@ class _UnfilteredIcon extends StatelessWidget {
           color: iconColor,
           key: ValueKey<String>(
               'datagrid_filtering_${gridColumnName}_filterIcon'),
-        );
+        );*/
   }
 }
 
@@ -997,15 +1137,43 @@ class _FilteredIcon extends StatelessWidget {
       {Key? key,
       required this.iconColor,
       required this.filterIcon,
-      required this.gridColumnName})
+      required this.gridColumnName,
+      required this.isSubFiltered})
       : super(key: key);
 
   final Color iconColor;
   final Widget? filterIcon;
   final String? gridColumnName;
+  final bool isSubFiltered;
 
   @override
   Widget build(BuildContext context) {
+    // = gabor 2023.07.05 - change font package name and filtered icon color to red
+    return MouseRegion(
+      child: filterIcon ??
+          Container(
+            padding: EdgeInsets.all(3),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(
+                  color: Colors.red,
+                  width: 1,
+                  style: (isSubFiltered ? BorderStyle.solid : BorderStyle.none),
+                )),
+            child: Icon(
+              // const IconData(0xe704, fontFamily: 'FilterIcon', fontPackage: 'trendi_view_generator'),
+              const IconData(0xe704,
+                  fontFamily: 'FilterIcon',
+                  fontPackage: 'syncfusion_flutter_datagrid'),
+              size: 18.0,
+              // color: iconColor,
+              color: Colors.red.shade300,
+              key: ValueKey<String>(
+                  'datagrid_filtering_${gridColumnName}_filterIcon'),
+            ),
+          ),
+    );
+/*
     return filterIcon ??
         Icon(
           const IconData(0xe704,
@@ -1015,7 +1183,7 @@ class _FilteredIcon extends StatelessWidget {
           color: iconColor,
           key: ValueKey<String>(
               'datagrid_filtering_${gridColumnName}_filterIcon'),
-        );
+        );*/
   }
 }
 
@@ -1058,6 +1226,9 @@ class _FilterPopupState extends State<_FilterPopup> {
   late bool isMobile;
 
   late bool isAdvancedFilter;
+
+  // === gabor - 2023.06.07
+  late bool isCustomFilter;
 
   late DataGridFilterHelper filterHelper;
 
@@ -1113,7 +1284,16 @@ class _FilterPopupState extends State<_FilterPopup> {
     filterHelper = widget.dataGridConfiguration.dataGridFilterHelper!;
     dataGridThemeHelper = widget.dataGridConfiguration.dataGridThemeHelper!;
     filterHelper.filterFrom = filterHelper.getFilterForm(widget.column);
-    isAdvancedFilter = filterHelper.filterFrom == FilteredFrom.advancedFilter;
+    isAdvancedFilter = filterHelper.filterFrom == FilteredFrom.advancedFilter ||
+        widget.column.filterPopupMenuOptions?.filterMode ==
+            FilterMode.advancedFilterFirst ||
+        widget.column.filterPopupMenuOptions?.filterMode ==
+            FilterMode.advancedFilter;
+
+    // === gabor - 2023.06.07
+    isCustomFilter = widget.column.filterPopupMenuOptions?.filterMode ==
+        FilterMode.customFilter;
+
     filterHelper.checkboxFilterHelper.textController.clear();
 
     // Need to end edit the current cell to commit the cell value before showing
@@ -1128,6 +1308,10 @@ class _FilterPopupState extends State<_FilterPopup> {
     if (filterConditions == null) {
       filterHelper.setFilterFrom(widget.column, FilteredFrom.none);
     }
+
+    //andras - 2023.8.13
+    advancedFilterHelper.neverUseDropDownFilterValues =
+        widget.column.filterPopupMenuOptions!.neverUseDropDownFilterValues;
 
     /// Initializes the data grid source for filtering.
     filterHelper.setDataGridSource(widget.column);
@@ -1198,12 +1382,22 @@ class _FilterPopupState extends State<_FilterPopup> {
     final bool isClearFilterEnabled = hasFilterConditions();
     const FilterPopupMenuOptions filterPopupMenuOptions =
         FilterPopupMenuOptions();
+
+    // === gabor - 2023.06.07
+    bool isCustomFilterMenuEnabled =
+        filterPopupMenuOptions.filterMode == FilterMode.customFilter;
+    CustomGridFilterBaseWidget customFilterWidget =
+        filterPopupMenuOptions.customFilterWidget ??
+            CustomGridFilterBaseWidget(
+                doFilterRecords: () {}, doClearFilter: () {});
+
     bool isCheckboxFilterEnabled =
         filterPopupMenuOptions.filterMode == FilterMode.checkboxFilter;
     bool isAdvancedFilterEnabled =
         filterPopupMenuOptions.filterMode == FilterMode.advancedFilter;
     bool isBothFilterEnabled =
-        filterPopupMenuOptions.filterMode == FilterMode.both;
+        filterPopupMenuOptions.filterMode == FilterMode.both ||
+            filterPopupMenuOptions.filterMode == FilterMode.advancedFilterFirst;
     bool canShowSortingOptions = filterPopupMenuOptions.canShowSortingOptions;
     bool canShowClearFilterOption =
         filterPopupMenuOptions.canShowClearFilterOption;
@@ -1218,12 +1412,23 @@ class _FilterPopupState extends State<_FilterPopup> {
           widget.column.filterPopupMenuOptions!.filterMode ==
               FilterMode.advancedFilter;
       isBothFilterEnabled =
-          widget.column.filterPopupMenuOptions!.filterMode == FilterMode.both;
+          widget.column.filterPopupMenuOptions!.filterMode == FilterMode.both ||
+              widget.column.filterPopupMenuOptions!.filterMode ==
+                  FilterMode.advancedFilterFirst;
       canShowSortingOptions =
           widget.column.filterPopupMenuOptions!.canShowSortingOptions;
       canShowClearFilterOption =
           widget.column.filterPopupMenuOptions!.canShowClearFilterOption;
       showColumnName = widget.column.filterPopupMenuOptions!.showColumnName;
+
+      // === gabor - 2023.06.07
+      isCustomFilterMenuEnabled =
+          widget.column.filterPopupMenuOptions!.filterMode ==
+              FilterMode.customFilter;
+      customFilterWidget =
+          widget.column.filterPopupMenuOptions!.customFilterWidget ??
+              CustomGridFilterBaseWidget(
+                  doFilterRecords: () {}, doClearFilter: () {});
     }
     Widget buildPopup({Size? viewSize}) {
       return SingleChildScrollView(
@@ -1243,6 +1448,7 @@ class _FilterPopupState extends State<_FilterPopup> {
                       const IconData(0xe700,
                           fontFamily: 'FilterIcon',
                           fontPackage: 'syncfusion_flutter_datagrid'),
+                      // fontPackage: 'trendi_view_generator'),
                       color: isSortAscendingEnabled
                           ? iconColor
                           : dataGridThemeHelper.filterPopupDisableIconColor,
@@ -1271,6 +1477,7 @@ class _FilterPopupState extends State<_FilterPopup> {
                     const IconData(0xe701,
                         fontFamily: 'FilterIcon',
                         fontPackage: 'syncfusion_flutter_datagrid'),
+                    // fontPackage: 'trendi_view_generator'),
                     color: isSortDescendingEnabled
                         ? iconColor
                         : dataGridThemeHelper.filterPopupDisableIconColor,
@@ -1306,6 +1513,7 @@ class _FilterPopupState extends State<_FilterPopup> {
                       const IconData(0xe703,
                           fontFamily: 'FilterIcon',
                           fontPackage: 'syncfusion_flutter_datagrid'),
+                      // fontPackage: 'trendi_view_generator'),
                       size: filterHelper.textStyle.fontSize! + 8,
                       color: isClearFilterEnabled
                           ? iconColor
@@ -1337,6 +1545,7 @@ class _FilterPopupState extends State<_FilterPopup> {
                           ? const IconData(0xe704,
                               fontFamily: 'FilterIcon',
                               fontPackage: 'syncfusion_flutter_datagrid')
+                          // fontPackage: 'trendi_view_generator'),
                           : const IconData(0xe702,
                               fontFamily: 'FilterIcon',
                               fontPackage: 'syncfusion_flutter_datagrid'),
@@ -1359,6 +1568,28 @@ class _FilterPopupState extends State<_FilterPopup> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+
+              // === gabor - 2023.06.07
+              if (isCustomFilterMenuEnabled)
+                _FilterPopupMenuTile(
+                  //style: isClearFilterEnabled ? filterHelper.textStyle : filterHelper.disableTextStyle,
+                  style: filterHelper.textStyle,
+                  // height: filterHelper.tileHeight,
+                  prefix: Icon(Icons.filter_alt,
+                      size: filterHelper.textStyle.fontSize! + 8,
+                      color: isClearFilterEnabled
+                          ? iconColor
+                          : dataGridThemeHelper.filterPopupDisableIconColor),
+                  prefixPadding: EdgeInsets.only(
+                      left: 4.0,
+                      right: filterHelper.textStyle.fontSize!,
+                      bottom: filterHelper.textStyle.fontSize! > 14
+                          ? filterHelper.textStyle.fontSize! - 14
+                          : 0),
+                  onTap: null,
+                  child: customFilterWidget,
+                ),
+
               if (isCheckboxFilterEnabled || isBothFilterEnabled)
                 Visibility(
                   visible: isAdvancedFilter,
@@ -1474,7 +1705,11 @@ class _FilterPopupState extends State<_FilterPopup> {
   }
 
   void onHandleClearFilterTap() {
-    filterHelper.onClearFilterButtonClick(widget.column);
+    if (isCustomFilter) {
+      widget.column.filterPopupMenuOptions?.customFilterWidget?.doClearFilter();
+    } else {
+      filterHelper.onClearFilterButtonClick(widget.column);
+    }
     Navigator.pop(context);
   }
 
@@ -1485,7 +1720,14 @@ class _FilterPopupState extends State<_FilterPopup> {
   }
 
   void onHandleOkButtonTap() {
-    filterHelper.createFilterConditions(!isAdvancedFilter, widget.column);
+    // === gabor - 2023.06.07 - begin
+    if (isCustomFilter) {
+      widget.column.filterPopupMenuOptions?.customFilterWidget
+          ?.doFilterRecords();
+    } else {
+      // === gabor - 2023.06.07 - end
+      filterHelper.createFilterConditions(!isAdvancedFilter, widget.column);
+    }
     Navigator.pop(context);
   }
 
@@ -1499,6 +1741,12 @@ class _FilterPopupState extends State<_FilterPopup> {
   }
 
   bool canDisableOkButton() {
+    // === gabor - 2023.06.07 - begin
+    if (isCustomFilter) {
+      return false;
+    }
+    // === gabor - 2023.06.07 - end
+
     if (isAdvancedFilter) {
       final DataGridAdvancedFilterHelper helper =
           filterHelper.advancedFilterHelper;
@@ -2091,7 +2339,8 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
       );
     }
 
-    return canBuildTextField(isTopButton)
+    return (filterHelper.neverUseDropDownFilterValues ||
+            canBuildTextField(isTopButton))
         ? buildTextField()
         : buildDropdownFormField();
   }
@@ -2193,8 +2442,10 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
 
     Future<void> handleDatePickerTap() async {
       final DateTime currentDate = DateTime.now();
-      final DateTime firstDate = filterHelper.items.first.value as DateTime;
-      final DateTime lastDate = filterHelper.items.last.value as DateTime;
+      final DateTime firstDate = filterHelper.items.first.value
+          as DateTime; // TODO: ezt majd be kell allitani pl 1900.01.01-re
+      final DateTime lastDate = filterHelper.items.last.value
+          as DateTime; // TODO: ezt majd be kell allitani pl 1900.01.01-re
       DateTime initialDate = firstDate;
 
       if ((currentDate.isAfter(firstDate) && currentDate.isBefore(lastDate)) ||
@@ -2216,13 +2467,17 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
         return;
       }
 
-      final bool isVaildDate = filterHelper.items
-          .any((FilterElement element) => element.value == selectedDate);
-      final String? filterType =
-          isFirstButton ? filterHelper.filterType1 : filterHelper.filterType2;
-      final bool isValidType = filterType != null &&
-          filterHelper.textFieldFilterTypes.contains(filterType);
-      selectedDate = isVaildDate || isValidType ? selectedDate : null;
+      if (filterHelper.neverUseDropDownFilterValues) {
+        //
+      } else {
+        final bool isVaildDate = filterHelper.items
+            .any((FilterElement element) => element.value == selectedDate);
+        final String? filterType =
+            isFirstButton ? filterHelper.filterType1 : filterHelper.filterType2;
+        final bool isValidType = filterType != null &&
+            filterHelper.textFieldFilterTypes.contains(filterType);
+        selectedDate = isVaildDate || isValidType ? selectedDate : null;
+      }
 
       setState(() {
         final String newValue = helper.getDisplayValue(selectedDate);
@@ -2264,6 +2519,8 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
     if (filterHelper.advancedFilterType == AdvancedFilterType.text) {
       const IconData caseSensitiveIcon = IconData(0xe705,
           fontFamily: 'FilterIcon', fontPackage: 'syncfusion_flutter_datagrid');
+      // const IconData caseSensitiveIcon = IconData(0xe705, fontFamily: 'FilterIcon', fontPackage: 'trendi_view_generator');
+
       return IconButton(
           key: isFirstButton
               ? const ValueKey<String>(

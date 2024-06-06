@@ -40,8 +40,7 @@ export './src/datapager/sfdatapager.dart'
 export './src/grid_common/row_column_index.dart';
 export 'src/datagrid_widget/helper/callbackargs.dart'
     hide setColumnSizerInRowHeightDetailsArgs;
-export 'src/datagrid_widget/helper/enums.dart'
-    hide FilteredFrom, AdvancedFilterType;
+export 'src/datagrid_widget/helper/enums.dart' hide FilteredFrom;
 export 'src/datagrid_widget/runtime/column.dart'
     hide
         ColumnResizeController,
@@ -64,3 +63,5 @@ export 'src/datagrid_widget/selection/selection_manager.dart'
     show RowSelectionManager, SelectionManagerBase;
 export 'src/datagrid_widget/widgets/cell_widget.dart'
     show GridHeaderCellElement;
+export 'src/datagrid_widget/widgets/customer_grid_filter_base_widget.dart'
+    show CustomGridFilterBaseWidget;

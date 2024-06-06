@@ -557,6 +557,26 @@ class RowSelectionManager extends SelectionManagerBase {
     final int recordIndex = grid_helper.resolveToRecordIndex(
         dataGridConfiguration, rowColumnIndex.rowIndex);
 
+    // TODO: ez TVG-e??? - 2024.06.06 12:57 - begin - nem biztos, de a r�giben benne volt ez a blokk �s gan�gy volt, hogy igen, ez�rt most ide ker�lt
+    // // fix cell selection when allowSelectingWhenClickOnTheRow is false
+    // if ((rowColumnIndex.columnIndex > 0) &&
+    //     (!dataGridConfiguration.allowSelectingWhenClickOnTheRow)) {
+    //   final RowColumnIndex recordRowColIndex = grid_helper
+    //       .resolveToRowColumnIndex(dataGridConfiguration, rowColumnIndex);
+
+    //   _processSelectionAndCurrentCell(
+    //       dataGridConfiguration,
+    //       RowColumnIndex(
+    //           recordRowColIndex.rowIndex - 1, recordRowColIndex.columnIndex),
+    //       isShiftKeyPressed: false);
+    //   // _processSelectionAndCurrentCell(
+    //   //     dataGridConfiguration, RowColumnIndex(recordIndex + 1, 0),
+    //   //     isShiftKeyPressed: false);
+    //   _pressedRowIndex = recordIndex;
+    //   return;
+    // }
+    // TODO: ez TVG-e??? - 2024.06.06 12:57 - end
+
     final RowColumnIndex previousRowColumnIndex = RowColumnIndex(
         dataGridConfiguration.currentCell.rowIndex,
         dataGridConfiguration.currentCell.columnIndex);
@@ -1401,6 +1421,12 @@ class RowSelectionManager extends SelectionManagerBase {
         notifyListeners();
       }
     }
+
+    // tvg - andras - 2023.10.28
+    if (dataGridConfiguration.onCurrentRowChanged != null) {
+      dataGridConfiguration.onCurrentRowChanged!(rowColumnIndex);
+    }
+    _pressedRowIndex = _pressedRowColumnIndex.rowIndex;
 
     _pressedRowColumnIndex = rowColumnIndex;
   }

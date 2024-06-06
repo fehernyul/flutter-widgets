@@ -16,30 +16,44 @@ import '../helper/datagrid_helper.dart' as grid_helper;
 import '../helper/datagrid_helper.dart';
 import '../helper/enums.dart';
 import '../sfdatagrid.dart';
+import '../widgets/customer_grid_filter_base_widget.dart';
 import 'generator.dart';
+import 'package:intl/intl.dart' as intl; // TVG
+
+/// return a bool value
+typedef BoolFunction = bool Function();
 
 /// Provides the base functionalities for all the column types in [SfDataGrid].
 class GridColumn {
   /// Creates the [GridColumn] for [SfDataGrid] widget.
-  GridColumn(
-      {required this.columnName,
-      required this.label,
-      this.columnWidthMode = ColumnWidthMode.none,
-      this.visible = true,
-      this.allowSorting = true,
-      this.sortIconPosition = ColumnHeaderIconPosition.end,
-      this.filterIconPosition = ColumnHeaderIconPosition.end,
-      this.autoFitPadding = const EdgeInsets.all(16.0),
-      this.minimumWidth = double.nan,
-      this.maximumWidth = double.nan,
-      this.width = double.nan,
-      this.allowEditing = true,
-      this.allowFiltering = true,
-      this.filterPopupMenuOptions,
-      this.filterIconPadding = const EdgeInsets.symmetric(horizontal: 8.0)}) {
+  GridColumn({
+    required this.columnName,
+    required this.label,
+    this.columnWidthMode = ColumnWidthMode.none,
+    this.visible = true,
+    this.allowSorting = true,
+    this.sortIconPosition = ColumnHeaderIconPosition.end,
+    this.filterIconPosition = ColumnHeaderIconPosition.end,
+    this.autoFitPadding = const EdgeInsets.all(16.0),
+    this.minimumWidth = double.nan,
+    this.maximumWidth = double.nan,
+    this.width = double.nan,
+    this.allowEditing = true,
+    this.allowFiltering = true,
+    this.filterPopupMenuOptions,
+    this.filterIconPadding = const EdgeInsets.symmetric(horizontal: 8.0),
+    this.getHasSubOrderingFunc,
+    this.getHasSubFilteringFunc,
+  }) {
     _actualWidth = double.nan;
     _autoWidth = double.nan;
   }
+
+  /// add a function what can calculate has the column "subOrdering" or not
+  BoolFunction? getHasSubOrderingFunc;
+
+  /// add a function what can calculate has the column "subFiltering" or not
+  BoolFunction? getHasSubFilteringFunc;
 
   late double _autoWidth;
 
@@ -1656,12 +1670,17 @@ class ColumnResizeController {
       DataGridConfiguration dataGridConfiguration, double localPosition) {
     final ScrollController scrollController =
         dataGridConfiguration.horizontalScrollController!;
-    if (dataGridConfiguration.textDirection == TextDirection.ltr) {
-      return localPosition - scrollController.offset;
-    } else {
-      return localPosition -
-          (scrollController.position.maxScrollExtent - scrollController.offset);
+    if (scrollController.hasClients) {
+      // TVG - andras ORIAS BUGFIX!!!
+      if (dataGridConfiguration.textDirection == TextDirection.ltr) {
+        return localPosition - scrollController.offset;
+      } else {
+        return localPosition -
+            (scrollController.position.maxScrollExtent -
+                scrollController.offset);
+      }
     }
+    return localPosition;
   }
 
   /// Sets the current tapped data cell to the column resizing cell.
@@ -2021,17 +2040,24 @@ class DataGridFilterHelper {
 
   /// Creates filter conditions based on the UI filtering.
   void createFilterConditions(bool isCheckboxFilter, GridColumn column) {
-    // Creates filter conditions if it's a checkbox filter.
-    if (isCheckboxFilter) {
-      _checkedItemsCount = checkboxFilterHelper.items
-          .where((FilterElement element) => element.isSelected)
-          .length;
-      _unCheckedItemsCount =
-          checkboxFilterHelper.items.length - _checkedItemsCount;
-
-      _createCheckboxFilterConditions(column);
+    // === gabor - 2023.06.07 - begin
+    if (column.filterPopupMenuOptions!.filterMode == FilterMode.customFilter) {
+      setFilterFrom(column, FilteredFrom.customFilter);
     } else {
-      _createAdvancedFilterConditions(column);
+      // === gabor - 2023.06.07 - end
+
+      // Creates filter conditions if it's a checkbox filter.
+      if (isCheckboxFilter) {
+        _checkedItemsCount = checkboxFilterHelper.items
+            .where((FilterElement element) => element.isSelected)
+            .length;
+        _unCheckedItemsCount =
+            checkboxFilterHelper.items.length - _checkedItemsCount;
+
+        _createCheckboxFilterConditions(column);
+      } else {
+        _createAdvancedFilterConditions(column);
+      }
     }
   }
 
@@ -2059,8 +2085,8 @@ class DataGridFilterHelper {
               useSelected ? FilterType.equals : FilterType.notEqual;
           FilterOperator filterOperator =
               useSelected ? FilterOperator.or : FilterOperator.and;
-          final String? filterValue =
-              value.value == '(Blanks)' ? null : value.value.toString();
+          final Object? filterValue =
+              value.value == '(Blanks)' ? null : value.value;
 
           // Sets the first filter condition's filter operator as 'AND' to
           // perform multi-column filtering.
@@ -2072,7 +2098,7 @@ class DataGridFilterHelper {
               type: filterType,
               isCaseSensitive: true,
               value: filterValue,
-              filterBehavior: FilterBehavior.stringDataType,
+              filterBehavior: FilterBehavior.strongDataType,
               filterOperator: filterOperator));
         }
       }
@@ -2124,8 +2150,15 @@ class DataGridFilterHelper {
         case AdvancedFilterType.numeric:
           return value is! String ? value.toString() : value;
         case AdvancedFilterType.date:
-          final DateTime date = value as DateTime;
-          return date.toString().split(' ').first;
+          if (value is int) {
+            //TODO Date vs DateTime
+            return intl.DateFormat('yyyy.MM.dd  kk:mm:ss')
+                .format(DateTime.fromMillisecondsSinceEpoch(value)); // TVG
+          } else {
+            //TODO ez miert van igy??? miert kell a split(' ').first; ???
+            final DateTime date = value as DateTime;
+            return date.toString().split(' ').first;
+          }
       }
     }
     return '';
@@ -2188,6 +2221,13 @@ class DataGridFilterHelper {
               "The $columnName doesn't exist in the SfDataGrid.columns collection");
           continue;
         }
+        // TVG - begin
+        AdvancedFilterType? advancedFilterType;
+        if (column.filterPopupMenuOptions != null) {
+          advancedFilterType =
+              column.filterPopupMenuOptions!.advancedFilterType;
+        }
+        // TVG - end
 
         final Object? cellValue =
             getFirstCellValue(source.effectiveRows, columnName);
@@ -2195,40 +2235,48 @@ class DataGridFilterHelper {
             in source.filterConditions[columnName]!) {
           assert(() {
             if (condition.filterBehavior == FilterBehavior.strongDataType) {
-              // Issue:
-              // FLUT-7286 - Type mismatch error has been thrown when giving an integer value for double type column.
-              //
-              // Fix:
-              // The issue arose because we didn't check the cellValue and condition type is num or not.
-              // Now, we checked the condition of whether both types are num, and we allow when it's num.
-              if ((cellValue is num && condition.value is num) &&
-                  (condition.type == FilterType.greaterThan ||
-                      condition.type == FilterType.greaterThanOrEqual ||
-                      condition.type == FilterType.lessThan ||
-                      condition.type == FilterType.lessThanOrEqual)) {
+              // TVG - begin
+              if (advancedFilterType != null) {
+                //TODO: itt majd kellene valami nagyon okos dolgot csinĂˇlni
                 return true;
               } else {
-                if (cellValue?.runtimeType != condition.value?.runtimeType &&
-                    (cellValue is! num && condition.value is! num)) {
-                  throwAssertFailure(
-                      '${condition.value?.runtimeType} and ${cellValue.runtimeType} are not the same data type');
-                } else if (condition.type == FilterType.contains ||
-                    condition.type == FilterType.doesNotContain ||
-                    condition.type == FilterType.beginsWith ||
-                    condition.type == FilterType.doesNotBeginWith ||
-                    condition.type == FilterType.endsWith ||
-                    condition.type == FilterType.doesNotEndsWith) {
-                  throwAssertFailure(
-                      'FilterBehaviour and FilterType are not correct');
-                } else if (condition.type == FilterType.greaterThan ||
-                    condition.type == FilterType.greaterThanOrEqual ||
-                    condition.type == FilterType.lessThan ||
-                    condition.type == FilterType.lessThanOrEqual) {
-                  if (cellValue is String) {
-                    final String filterType =
-                        condition.type.toString().split('.').last;
+                // TVG - begin
+
+                // Issue:
+                // FLUT-7286 - Type mismatch error has been thrown when giving an integer value for double type column.
+                //
+                // Fix:
+                // The issue arose because we didn't check the cellValue and condition type is num or not.
+                // Now, we checked the condition of whether both types are num, and we allow when it's num.
+                if ((cellValue is num && condition.value is num) &&
+                    (condition.type == FilterType.greaterThan ||
+                        condition.type == FilterType.greaterThanOrEqual ||
+                        condition.type == FilterType.lessThan ||
+                        condition.type == FilterType.lessThanOrEqual)) {
+                  return true;
+                } else {
+                  if (cellValue?.runtimeType != condition.value?.runtimeType &&
+                      (cellValue is! num && condition.value is! num)) {
                     throwAssertFailure(
-                        "The filter type $filterType can't check with the String type");
+                        '${condition.value?.runtimeType} and ${cellValue.runtimeType} are not the same data type');
+                  } else if (condition.type == FilterType.contains ||
+                      condition.type == FilterType.doesNotContain ||
+                      condition.type == FilterType.beginsWith ||
+                      condition.type == FilterType.doesNotBeginWith ||
+                      condition.type == FilterType.endsWith ||
+                      condition.type == FilterType.doesNotEndsWith) {
+                    throwAssertFailure(
+                        'FilterBehaviour and FilterType are not correct');
+                  } else if (condition.type == FilterType.greaterThan ||
+                      condition.type == FilterType.greaterThanOrEqual ||
+                      condition.type == FilterType.lessThan ||
+                      condition.type == FilterType.lessThanOrEqual) {
+                    if (cellValue is String) {
+                      final String filterType =
+                          condition.type.toString().split('.').last;
+                      throwAssertFailure(
+                          "The filter type $filterType can't check with the String type");
+                    }
                   }
                 }
               }
@@ -2404,8 +2452,13 @@ class DataGridFilterHelper {
   /// Sets all the cell values to the check box filter.
   void setDataGridSource(GridColumn column) {
     final List<DataGridRow> items = _getPreviousFilteredRows(column.columnName);
-    final List<FilterElement> distinctCollection =
-        _getCellValues(column, items);
+
+    List<FilterElement> distinctCollection = <FilterElement>[];
+
+    if (advancedFilterHelper.neverUseDropDownFilterValues == false) {
+      // TVG ?
+      distinctCollection = _getCellValues(column, items);
+    }
 
     checkboxFilterHelper._previousDataGridSource = <FilterElement>[];
 
@@ -2433,9 +2486,16 @@ class DataGridFilterHelper {
 
   List<DataGridRow> _getFilterRows(
       List<DataGridRow> rows, Map<String, List<FilterCondition>> conditions) {
-    return rows
-        .where((DataGridRow row) => _filterRow(row, conditions))
-        .toList();
+    // TVG - begin
+    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
+    if (dataGridConfiguration.dataSourceFromDB) {
+      return rows;
+    } else {
+      // TVG - end
+      return rows
+          .where((DataGridRow row) => _filterRow(row, conditions))
+          .toList();
+    }
   }
 
   void _setPreviousDataGridSource() {
@@ -2455,8 +2515,17 @@ class DataGridFilterHelper {
       dataGridConfiguration.source.sortedColumns.clear();
     }
 
-    dataGridConfiguration.source.sortedColumns.add(
-        SortColumnDetails(name: column.columnName, sortDirection: direction));
+    // dataGridConfiguration.source.sortedColumns.add(SortColumnDetails(name: column.columnName, sortDirection: direction));
+    // TODO: mi ez a sortIndex: 100-as sor ??
+    dataGridConfiguration.source.sortedColumns.add(SortColumnDetails(
+        name: column.columnName,
+        sortDirection: direction,
+        sortIndex:
+            100 /*dataGridConfiguration.source.getSortedColumnsStartIndex()*/));
+    dataGridConfiguration.source.sortedColumns.add(SortColumnDetails(
+        name: column.columnName,
+        sortDirection: direction,
+        sortIndex: dataGridConfiguration.source.getSortedColumnsStartIndex()));
     dataGridConfiguration.source.sort();
   }
 
@@ -2610,7 +2679,7 @@ class DataGridFilterHelper {
 
     bool canCreateFilterCondition(
         Object? filterValue, String? filterType, bool isFirstCondition) {
-      void setFilterValue(String? value) {
+      void setFilterValue(Object? value) {
         if (isFirstCondition) {
           advancedFilterHelper.filterValue1 = value;
         } else {
@@ -2838,6 +2907,10 @@ class DataGridAdvancedFilterHelper {
   /// Checkes whether the `OR` radio button is enabled or not.
   bool isOrPredicate = true;
 
+  // === andras - 2023.8.12
+  /// Never use values from drop down list
+  bool neverUseDropDownFilterValues = false;
+
   /// Holds the list of filter types that used to disable filter value's drop
   /// down button. If a filterType contains any of these item, need to disable
   /// the filter value dropdown button.
@@ -2853,10 +2926,45 @@ class DataGridAdvancedFilterHelper {
   /// A [TextEditingController] for the second text field in the Advanced filter.
   TextEditingController secondValueTextController = TextEditingController();
 
+  // === andras - 2023.8.12
+  dynamic getLocaliseFilterTypeByFilterType(FilterType filterType) {
+    final SfLocalizations localizations = _dataGridStateDetails().localizations;
+
+    switch (filterType) {
+      case FilterType.contains:
+        return localizations.containsDataGridFilteringLabel;
+      case FilterType.endsWith:
+        return localizations.endsWithDataGridFilteringLabel;
+      case FilterType.equals:
+        return localizations.equalsDataGridFilteringLabel;
+      case FilterType.greaterThan:
+        return localizations.greaterThanDataGridFilteringLabel;
+      case FilterType.greaterThanOrEqual:
+        return localizations.greaterThanOrEqualDataGridFilteringLabel;
+      case FilterType.lessThan:
+        return localizations.lessThanDataGridFilteringLabel;
+      case FilterType.lessThanOrEqual:
+        return localizations.lessThanOrEqualDataGridFilteringLabel;
+      case FilterType.doesNotContain:
+        return localizations.doesNotContainDataGridFilteringLabel;
+      case FilterType.doesNotEndsWith:
+        return localizations.doesNotEndWithDataGridFilteringLabel;
+      case FilterType.notEqual:
+        return localizations.doesNotEqualDataGridFilteringLabel;
+      case FilterType.doesNotBeginWith:
+        return localizations.doesNotBeginWithDataGridFilteringLabel;
+      case FilterType.beginsWith:
+        return localizations.beginsWithDataGridFilteringLabel;
+      default:
+        return null;
+    }
+  }
+
   /// Initializes the localized resource values to the localization required
   /// internal properties.
   void initProperties() {
     final SfLocalizations localizations = _dataGridStateDetails().localizations;
+
     filterType1 = localizations.equalsDataGridFilteringLabel;
     filterType2 = localizations.equalsDataGridFilteringLabel;
 
@@ -2936,6 +3044,14 @@ class DataGridAdvancedFilterHelper {
   /// Sets the advanced filter type based on the column type.
   void setAdvancedFilterType(
       DataGridConfiguration dataGridConfiguration, GridColumn column) {
+    //--andras 2023.8.18
+    if (column.filterPopupMenuOptions != null) {
+      if (column.filterPopupMenuOptions!.advancedFilterType != null) {
+        advancedFilterType = column.filterPopupMenuOptions!.advancedFilterType!;
+        return;
+      }
+    }
+
     Object? value;
     for (final DataGridRow row in dataGridConfiguration.source.rows) {
       final DataGridCell? cellValue = row.getCells().firstWhereOrNull(
@@ -2959,6 +3075,10 @@ class DataGridAdvancedFilterHelper {
   void setAdvancedFilterValues(DataGridConfiguration dataGridConfiguration,
       List<FilterCondition> filterConditions, DataGridFilterHelper helper) {
     Object? getValue(Object? value, String? filterType) {
+      //--andras 2023.8.18
+      if (neverUseDropDownFilterValues == true) {
+        return value;
+      }
       if (items.any((FilterElement element) => element.value == value) ||
           (filterType != null && textFieldFilterTypes.contains(filterType))) {
         return value;
@@ -3024,11 +3144,17 @@ class FilterElement {
 @immutable
 class FilterPopupMenuOptions {
   ///
-  const FilterPopupMenuOptions(
-      {this.filterMode = FilterMode.both,
-      this.canShowClearFilterOption = true,
-      this.canShowSortingOptions = true,
-      this.showColumnName = true});
+  const FilterPopupMenuOptions({
+    this.filterMode = FilterMode.both,
+    this.canShowClearFilterOption = true,
+    this.canShowSortingOptions = true,
+    this.showColumnName = true,
+    this.neverUseDropDownFilterValues = false,
+    // === gabor - 2023.06.07
+    this.customFilterWidget,
+    // === andras - 2023.8.27
+    this.advancedFilterType,
+  });
 
   /// Decides how the checked listbox and advanced filter options should be shown in filter popup.
   final FilterMode filterMode;
@@ -3041,6 +3167,16 @@ class FilterPopupMenuOptions {
 
   /// Decides whether the column name should be displayed along with the content of `Clear Filter` option .
   final bool showColumnName;
+
+  /// Never user drop down values on filter
+  // === andras - 2023.8.12
+  final bool neverUseDropDownFilterValues;
+
+  /// Default filter type
+  final AdvancedFilterType? advancedFilterType;
+
+  // === gabor - 2023.06.07
+  final CustomGridFilterBaseWidget? customFilterWidget;
 }
 
 /// Process column resizing operation in [SfDataGrid].

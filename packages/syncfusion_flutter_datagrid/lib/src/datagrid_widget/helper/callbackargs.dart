@@ -148,16 +148,29 @@ class DataGridCellLongPressDetails extends DataGridCellDetails {
 ///
 /// * [DataGridSource.sortedColumns] – which is the collection of
 /// [SortColumnDetails] objects to sort the columns in [SfDataGrid].
-@immutable
+
+// @immutable -- comment by gabor - 2023.09.20
 class SortColumnDetails {
   /// Creates the [SortColumnDetails] for [SfDataGrid] widget.
-  const SortColumnDetails({required this.name, required this.sortDirection});
+  /*const - gabor - 2023.09.20*/ SortColumnDetails({
+    required this.name,
+    required this.sortDirection,
+    required this.sortIndex,
+  });
 
   /// The name of the column.
   final String name;
 
   /// The direction of sort operation.
   final DataGridSortDirection sortDirection;
+
+  /// The index of sort operation.
+  int sortIndex; // gabor - 2023.09.20
+
+  @override
+  String toString() {
+    return 'name: $name; sortDirection: ${sortDirection.name}; sortIndex: $sortIndex';
+  }
 }
 
 /// Holds the arguments for the [SfDataGrid.onSwipeStart] callback.
