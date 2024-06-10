@@ -217,7 +217,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     }
 
     dataGridConfiguration.dataGridFocusNode?.requestFocus();
-    if (dataGridConfiguration.sortingGestureType == SortingGestureType.tap) {
+    if (dataGridConfiguration.sortingGestureType == SortingGestureType.tap || dataGridConfiguration.sortingGestureType == SortingGestureType.tvgStyle) {
       _sort(dataCell);
     }
   }
@@ -266,7 +266,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
   Widget _wrapInsideGestureDetector() {
     final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
     return GestureDetector(
-      onTapUp: dataGridConfiguration.onCellTap != null || dataGridConfiguration.sortingGestureType == SortingGestureType.tap ? _handleOnTapUp : null,
+      onTapUp: dataGridConfiguration.isTvgGrid ? null : (dataGridConfiguration.onCellTap != null || dataGridConfiguration.sortingGestureType == SortingGestureType.tap ? _handleOnTapUp : null),
       onTapDown: _handleOnTapDown,
       onDoubleTap: dataGridConfiguration.onCellDoubleTap != null || dataGridConfiguration.sortingGestureType == SortingGestureType.doubleTap ? _handleOnDoubleTap : null,
       onSecondaryTapUp: dataGridConfiguration.onCellSecondaryTap != null ? _handleOnSecondaryTapUp : null,
@@ -368,7 +368,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
         //final int sortNumber =
         //    dataGridConfiguration.source.sortedColumns.indexOf(sortColumn) + 1;
 
-        int sortNumber = sortColumn.sortIndex; // 2023.09.22
+        final int sortNumber = sortColumn.sortIndex; // 2023.09.22
         _sortDirection = sortColumn.sortDirection;
         _sortNumberBackgroundColor = dataGridConfiguration.dataGridThemeHelper!.sortOrderNumberBackgroundColor ?? dataGridConfiguration.colorScheme!.onSurface.withOpacity(0.12);
         _sortNumberTextColor = dataGridConfiguration.dataGridThemeHelper!.sortOrderNumberColor ?? dataGridConfiguration.colorScheme!.onSurface.withOpacity(0.87);
@@ -415,6 +415,8 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
                   sortDirection: _sortDirection!,
                   sortIconColor: _sortIconColor,
                   sortIcon: _sortIcon,
+                  onSortedIconTapDown: _handleOnTapDown,
+                  onSortedIconTapUp: _handleOnTapUp,
                 );
               }
             } else {
@@ -429,13 +431,21 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
               children['sortNumber'] = _getSortNumber();
             }
           } else if (gridColumn.allowSorting && dataGridConfiguration.allowSorting) {
-            const IconData unsortIconData = IconData(
+            children['sortIcon'] = _SortIconCore(
+              sortDirection: DataGridSortDirection.unsorted,
+              color: _sortIconColor,
+              hoveredColor: Colors.red,
+              onTapDown: _handleOnTapDown,
+              onTapUp: _handleOnTapUp,
+            );
+            /*const IconData unsortIconData = IconData(
               0xe700,
               fontFamily: 'UnsortIcon',
               fontPackage: 'syncfusion_flutter_datagrid',
             );
 
             children['sortIcon'] = _sortIcon ?? Icon(unsortIconData, color: _sortIconColor, size: 16);
+            */
           }
 
           // ha van az oszlop alatt subOrderezes, akkor kiteszunk egy plusz ikont IS!
@@ -597,11 +607,12 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
 
     if (column.allowSorting && dataGridConfiguration.allowSorting) {
       final String sortColumnName = column.columnName;
-      final bool allowMultiSort = dataGridConfiguration.isMacPlatform
-          ? (dataGridConfiguration.isCommandKeyPressed && dataGridConfiguration.allowMultiColumnSorting)
-          : dataGridConfiguration.isDesktop
-              ? (dataGridConfiguration.isControlKeyPressed && dataGridConfiguration.allowMultiColumnSorting)
-              : dataGridConfiguration.allowMultiColumnSorting;
+      final bool allowMultiSort = true; // ezt ideiglenesen true-ra állítom
+      // final bool allowMultiSort = dataGridConfiguration.isMacPlatform
+      //     ? (dataGridConfiguration.isCommandKeyPressed && dataGridConfiguration.allowMultiColumnSorting)
+      //     : dataGridConfiguration.isDesktop
+      //         ? (dataGridConfiguration.isControlKeyPressed && dataGridConfiguration.allowMultiColumnSorting)
+      //         : dataGridConfiguration.allowMultiColumnSorting;
       final DataGridSource source = dataGridConfiguration.source;
 
       final List<SortColumnDetails> sortedColumns = source.sortedColumns;
@@ -650,60 +661,75 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
           }
         }
       } else {
+        // ha NEM allowMultiSort
+
+        // kikeressük, ha az az oszlop, amire éppen rákattintottunk, az benne van-e a "sortedColumns"-ban
         SortColumnDetails? currentSortColumn = sortedColumns.firstWhereOrNull((SortColumnDetails sortColumn) => sortColumn.name == sortColumnName);
         // gabor 2024.01.29 - begin
-        previousSortCount = getAllPreviousSortCounter(dataGridConfiguration.source);
+        previousSortCount = 1; // ha nem allowMultiSort van, akkor tulajdonképpen mindig csak 1 sorrendezés lesz, és az legyen a 1-es számú! // = getAllPreviousSortCounter(dataGridConfiguration.source);
         // gabor 2024.01.29 - end
+
+        // ha benne van, akkor ...
         if (sortedColumns.isNotEmpty && currentSortColumn != null) {
           if (currentSortColumn.sortDirection == DataGridSortDirection.descending && dataGridConfiguration.allowTriStateSorting) {
+            // ez az, amikor DESC-rről semmire váltunk (azaz töröljük az erre az oszlopra való rendezést)
             sortedColumns.clear();
 
             if (dataGridConfiguration.onSortRemoved != null) {
               dataGridConfiguration.onSortRemoved!(currentSortColumn);
             }
           } else {
+            // ez az, amikor ASC-ról DESC-re váltunk
             currentSortColumn = SortColumnDetails(
               name: currentSortColumn.name,
               sortDirection: currentSortColumn.sortDirection == DataGridSortDirection.ascending ? DataGridSortDirection.descending : DataGridSortDirection.ascending,
               sortIndex: previousSortCount,
             );
-            if (dataGridConfiguration.onSortRemoved != null) {
-              dataGridConfiguration.onSortRemoved!(sortedColumns[0]); // ez jo bena, de mivel ugyis isNotEmpty, es csak 1 elem lehet benne, ezert remelem ez igy jo lesz
-            }
+
             sortedColumns
               ..clear()
               ..add(currentSortColumn);
-            if (dataGridConfiguration.onSortAdded != null) {
-              dataGridConfiguration.onSortAdded!(currentSortColumn);
+
+            // na, mi ilyet nem csinalunk, hogy ha torlunk egy oszlopRendezest, majd beszurjuk ugyanazt az oszlopRendezest csak a masik iranyban, ez egy buzisag. Csak az iranyat kell modositani!
+            // if (dataGridConfiguration.onSortRemoved != null) {
+            //   dataGridConfiguration.onSortRemoved!(currentSortColumn);
+            // }
+
+            if (dataGridConfiguration.onSortChanged != null) {
+              dataGridConfiguration.onSortChanged!(currentSortColumn);
             }
           }
         } else {
+          // ez az, amikor a semmiről (még nem volt rendezés erre az oszlopra) ASC-ra váltunk (azaz hozzáadjuk a rendezett oszlopok listájához)
           final SortColumnDetails sortColumn = SortColumnDetails(
             name: sortColumnName,
             sortDirection: DataGridSortDirection.ascending,
-            sortIndex: previousSortCount + 1,
+            sortIndex: 1, // previousSortCount + 1, // ha nem allowMultiSort van, akkor tulajdonképpen mindig csak 1 sorrendezés lesz, és az legyen a 1-es számú!
           );
+          // ha volt már előzőleg rendezés egy másik oszlopra
           if (sortedColumns.isNotEmpty) {
-            if (dataGridConfiguration.onSortRemoved != null) {
-              dataGridConfiguration.onSortRemoved!(sortedColumns[0]); // ez jo bena, de mivel ugyis isNotEmpty, es csak 1 elem lehet benne, ezert remelem ez igy jo lesz
+            if (dataGridConfiguration.onSortChanged != null) {
+              dataGridConfiguration.onSortChanged!(sortedColumns[0]); // ez jo bena, de mivel ugyis isNotEmpty, es csak 1 elem lehet benne, ezert remelem ez igy jo lesz
             }
             sortedColumns
               ..clear()
               ..add(sortColumn);
-            if (dataGridConfiguration.onSortAdded != null) {
-              dataGridConfiguration.onSortAdded!(sortColumn);
-            }
           } else {
             sortedColumns.add(sortColumn);
+
             if (dataGridConfiguration.onSortAdded != null) {
               dataGridConfiguration.onSortAdded!(sortColumn);
             }
           }
         }
       }
-      // Refreshes the datagrid source and performs sorting based on
-      // `DataGridSource.sortedColumns`.
-      source.sort();
+
+      // ha dataGridConfiguration.dataSourceFromDB, akkor azt biztosan a TVG kezeli mégpedig az "onSortAdded", "onSortChanged", "onSortRemoved" fgv-en belül
+      if (!dataGridConfiguration.dataSourceFromDB) {
+        // Refreshes the datagrid source and performs sorting based on
+        // `DataGridSource.sortedColumns`.
+        source.sort();
+      }
     }
   }
 }
@@ -731,10 +757,19 @@ class _BuilderSortIconDescending extends StatelessWidget {
 }
 
 class _SortIcon extends StatefulWidget {
-  const _SortIcon({required this.sortDirection, required this.sortIconColor, required this.sortIcon});
+  const _SortIcon({
+    required this.sortDirection,
+    required this.sortIconColor,
+    required this.sortIcon,
+    required this.onSortedIconTapUp,
+    required this.onSortedIconTapDown,
+  });
   final DataGridSortDirection sortDirection;
   final Color sortIconColor;
   final Widget? sortIcon;
+  final GestureTapDownCallback onSortedIconTapDown;
+  final GestureTapUpCallback onSortedIconTapUp;
+
   @override
   _SortIconState createState() => _SortIconState();
 }
@@ -772,7 +807,18 @@ class _SortIconState extends State<_SortIcon> with SingleTickerProviderStateMixi
     return AnimatedBuilder(
         animation: _animationController,
         builder: (BuildContext context, Widget? child) {
-          return Transform.rotate(angle: _sortingAnimation.value, child: widget.sortIcon ?? Icon(Icons.arrow_upward, color: Colors.red.shade300 /* widget.sortIconColor*/, size: 16));
+          return Transform.rotate(
+              angle: _sortingAnimation.value,
+              child: widget.sortIcon ??
+                  _SortIconCore(
+                    sortDirection: widget.sortDirection,
+                    color: widget.sortIconColor,
+                    hoveredColor: Colors.red,
+                    size: 16,
+                    onTapDown: widget.onSortedIconTapDown,
+                    onTapUp: widget.onSortedIconTapUp,
+                  ) //Icon(Icons.arrow_upward, color: Colors.red.shade300 /* widget.sortIconColor*/, size: 16), // === TODO, még a color-t át kell adni
+              );
         });
   }
 
@@ -780,6 +826,79 @@ class _SortIconState extends State<_SortIcon> with SingleTickerProviderStateMixi
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+}
+
+class _SortIconCore extends StatefulWidget {
+  const _SortIconCore({
+    required this.sortDirection,
+    required this.color,
+    required this.hoveredColor,
+    this.size = 16,
+    required this.onTapDown,
+    required this.onTapUp,
+  });
+
+  final Color color;
+  final Color hoveredColor;
+  final double? size;
+  final DataGridSortDirection sortDirection;
+  final GestureTapDownCallback onTapDown;
+  final GestureTapUpCallback onTapUp;
+
+  @override
+  State<_SortIconCore> createState() => _SortIconCoreState();
+}
+
+class _SortIconCoreState extends State<_SortIconCore> {
+  Widget _getSortIcon(bool isHoveredSortIconCore) {
+    if (widget.sortDirection == DataGridSortDirection.ascending) {
+      return Icon(Icons.arrow_upward, color: isHoveredSortIconCore ? widget.hoveredColor : widget.color /* widget.sortIconColor*/, size: 16);
+    } else if (widget.sortDirection == DataGridSortDirection.descending) {
+      return Icon(Icons.arrow_upward, color: isHoveredSortIconCore ? widget.hoveredColor : widget.color /* widget.sortIconColor*/, size: 16);
+      // } else if (widget.sortDirection == DataGridSortDirection.unsorted) {
+      // _sortIconColor = dataGridConfiguration.dataGridThemeHelper!.sortIconColor!;
+      // _sortIcon = dataGridConfiguration.dataGridThemeHelper!.sortIcon;
+    } else {
+      const IconData unsortIconData = IconData(
+        0xe700,
+        fontFamily: 'UnsortIcon',
+        fontPackage: 'syncfusion_flutter_datagrid',
+      );
+      return Icon(unsortIconData, color: isHoveredSortIconCore ? widget.hoveredColor : widget.color, size: widget.size);
+    }
+    // return const Icon(Icons.abc);
+  }
+
+  bool isHovered = false;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (TapDownDetails details) {
+        widget.onTapDown.call(details);
+        //
+      },
+      onTapUp: (TapUpDetails details) {
+        widget.onTapUp.call(details);
+        //
+      },
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: _getSortIcon(isHovered),
+        onEnter: (_) {
+          setState(() {
+            // print('isHovered = true');
+            isHovered = true;
+          });
+        },
+        onExit: (_) {
+          setState(() {
+            // print('isHovered = false');
+            isHovered = false;
+          });
+        },
+      ),
+    );
   }
 }
 

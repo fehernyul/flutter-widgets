@@ -176,6 +176,9 @@ enum DataGridSortDirection {
 
   /// Sorts in descending order.
   descending,
+
+  /// amikor nincsen rajta rendezes - 2024.06.10
+  unsorted,
 }
 
 /// Specifies the different tap actions available for applying sorting.
@@ -185,6 +188,9 @@ enum SortingGestureType {
 
   /// Sorting is applied on double tap the header.
   doubleTap,
+
+  /// ne tortenjen semmi hivatalos/eredeti funkcio a header-klikkre; majd a tvg kezeli azt (a rendezest)
+  tvgStyle,
 }
 
 /// The direction in which a row in [SfDataGrid] is swiped.
