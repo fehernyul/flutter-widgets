@@ -193,21 +193,21 @@ packages:
       path: "../../syncfusion_flutter_core"
       relative: true
     source: path
-    version: "24.2.7"
+    version: "25.2.7"
   syncfusion_flutter_xlsio:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "24.2.9"
+    version: "25.2.6"
   syncfusion_officecore:
     dependency: transitive
     description:
       path: "../../syncfusion_officecore"
       relative: true
     source: path
-    version: "24.2.9"
+    version: "25.2.6"
   typed_data:
     dependency: transitive
     description:

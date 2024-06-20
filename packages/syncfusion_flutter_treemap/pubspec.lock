@@ -158,7 +158,7 @@ packages:
       path: "../syncfusion_flutter_core"
       relative: true
     source: path
-    version: "24.2.7"
+    version: "25.2.7"
   term_glyph:
     dependency: transitive
     description:

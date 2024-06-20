@@ -174,14 +174,14 @@ packages:
       path: "../../syncfusion_flutter_core"
       relative: true
     source: path
-    version: "24.2.7"
+    version: "25.2.7"
   syncfusion_flutter_datepicker:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "24.2.9"
+    version: "25.2.6"
   term_glyph:
     dependency: transitive
     description:

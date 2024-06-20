@@ -216,7 +216,8 @@ class DataGridConfiguration {
   DataGridSortChangedCallback? onSortChanged; // gabor 2023.09.22
 
   /// Contains all the properties of the checkbox column.
-  DataGridCheckboxColumnSettings checkboxColumnSettings = const DataGridCheckboxColumnSettings();
+  DataGridCheckboxColumnSettings checkboxColumnSettings =
+      const DataGridCheckboxColumnSettings();
 
   /// Decides whether the sorting should be applied on tap or double tap the
   /// column header.
@@ -236,7 +237,8 @@ class DataGridConfiguration {
   GridLinesVisibility gridLinesVisibility = GridLinesVisibility.horizontal;
 
   /// How the header cell border should be visible.
-  GridLinesVisibility headerGridLinesVisibility = GridLinesVisibility.horizontal;
+  GridLinesVisibility headerGridLinesVisibility =
+      GridLinesVisibility.horizontal;
 
   /// How the rows should be selected.
   SelectionMode selectionMode = SelectionMode.none;
@@ -370,9 +372,9 @@ class DataGridConfiguration {
   /// The widget to show over the bottom of the [SfDataGrid].
   Widget? footer;
 
-  /// An instance of a [ThemeData.colorScheme] that can be used to configure the
+  /// An instance of a [SfColorScheme.colorScheme] that can be used to configure the
   /// color properties in the [SfDataGrid].
-  ColorScheme? colorScheme;
+  SfColorScheme? colorScheme;
 
   /// Decides whether the Vertical ScrollController can be disposed of in the source itself.
   /// Default to true.

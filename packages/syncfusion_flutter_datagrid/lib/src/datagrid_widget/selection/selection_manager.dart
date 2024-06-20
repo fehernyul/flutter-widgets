@@ -558,23 +558,24 @@ class RowSelectionManager extends SelectionManagerBase {
         dataGridConfiguration, rowColumnIndex.rowIndex);
 
     // TODO: ez TVG-e??? - 2024.06.06 12:57 - begin - nem biztos, de a r�giben benne volt ez a blokk �s gan�gy volt, hogy igen, ez�rt most ide ker�lt
-    // // fix cell selection when allowSelectingWhenClickOnTheRow is false
-    // if ((rowColumnIndex.columnIndex > 0) &&
-    //     (!dataGridConfiguration.allowSelectingWhenClickOnTheRow)) {
-    //   final RowColumnIndex recordRowColIndex = grid_helper
-    //       .resolveToRowColumnIndex(dataGridConfiguration, rowColumnIndex);
+/*    // fix cell selection when allowSelectingWhenClickOnTheRow is false
+    if ((rowColumnIndex.columnIndex > 0) &&
+        (!dataGridConfiguration.allowSelectingWhenClickOnTheRow)) {
+      final RowColumnIndex recordRowColIndex = grid_helper
+          .resolveToRowColumnIndex(dataGridConfiguration, rowColumnIndex);
 
-    //   _processSelectionAndCurrentCell(
-    //       dataGridConfiguration,
-    //       RowColumnIndex(
-    //           recordRowColIndex.rowIndex - 1, recordRowColIndex.columnIndex),
-    //       isShiftKeyPressed: false);
-    //   // _processSelectionAndCurrentCell(
-    //   //     dataGridConfiguration, RowColumnIndex(recordIndex + 1, 0),
-    //   //     isShiftKeyPressed: false);
-    //   _pressedRowIndex = recordIndex;
-    //   return;
-    // }
+      _processSelectionAndCurrentCell(
+          dataGridConfiguration,
+          RowColumnIndex(
+              recordRowColIndex.rowIndex - 1, recordRowColIndex.columnIndex),
+          isShiftKeyPressed: false);
+      // _processSelectionAndCurrentCell(
+      //     dataGridConfiguration, RowColumnIndex(recordIndex + 1, 0),
+      //     isShiftKeyPressed: false);
+      _pressedRowIndex = recordIndex;
+      return;
+    }
+    */
     // TODO: ez TVG-e??? - 2024.06.06 12:57 - end
 
     final RowColumnIndex previousRowColumnIndex = RowColumnIndex(
