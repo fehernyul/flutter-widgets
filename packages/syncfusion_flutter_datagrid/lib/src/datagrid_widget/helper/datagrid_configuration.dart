@@ -89,6 +89,9 @@ class DataGridConfiguration {
   /// a TVG hasznalja-e (ahhoz kellett, hogy a gridHeaderCell-ről leszedjük az onTapUp hivatkozást)
   bool isTvgGrid = false;
 
+  /// Regebben sajat syncfusion property volt, de eltuntettek. En meg visszatettem.
+  bool allowSelectingWhenClickOnTheRow = false;
+
   /// The number of non-scrolling columns at the right side of [SfDataGrid].
   int footerFrozenColumnsCount = 0;
 

@@ -557,8 +557,8 @@ class RowSelectionManager extends SelectionManagerBase {
     final int recordIndex = grid_helper.resolveToRecordIndex(
         dataGridConfiguration, rowColumnIndex.rowIndex);
 
-    // TODO: ez TVG-e??? - 2024.06.06 12:57 - begin - nem biztos, de a r�giben benne volt ez a blokk �s gan�gy volt, hogy igen, ez�rt most ide ker�lt
-/*    // fix cell selection when allowSelectingWhenClickOnTheRow is false
+    // TVG - begin - Regebben ez "allowSelectingWhenClickOnTheRow" sajat syncfusion property volt, de eltuntettek. En meg visszatettem. - 2024.06.20
+    // fix cell selection when allowSelectingWhenClickOnTheRow is false
     if ((rowColumnIndex.columnIndex > 0) &&
         (!dataGridConfiguration.allowSelectingWhenClickOnTheRow)) {
       final RowColumnIndex recordRowColIndex = grid_helper
@@ -567,16 +567,14 @@ class RowSelectionManager extends SelectionManagerBase {
       _processSelectionAndCurrentCell(
           dataGridConfiguration,
           RowColumnIndex(
-              recordRowColIndex.rowIndex - 1, recordRowColIndex.columnIndex),
-          isShiftKeyPressed: false);
+              recordRowColIndex.rowIndex - 1, recordRowColIndex.columnIndex));
       // _processSelectionAndCurrentCell(
       //     dataGridConfiguration, RowColumnIndex(recordIndex + 1, 0),
       //     isShiftKeyPressed: false);
       _pressedRowIndex = recordIndex;
       return;
     }
-    */
-    // TODO: ez TVG-e??? - 2024.06.06 12:57 - end
+    // TVG - end - Regebben ez "allowSelectingWhenClickOnTheRow" sajat syncfusion property volt, de eltuntettek. En meg visszatettem. - 2024.06.20
 
     final RowColumnIndex previousRowColumnIndex = RowColumnIndex(
         dataGridConfiguration.currentCell.rowIndex,

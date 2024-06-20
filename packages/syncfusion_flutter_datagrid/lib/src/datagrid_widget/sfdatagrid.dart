@@ -437,6 +437,7 @@ class SfDataGrid extends StatefulWidget {
     this.frozenColumnsCount = 0,
     this.dataSourceFromDB = false,
     this.isTvgGrid = false,
+    this.allowSelectingWhenClickOnTheRow = false,
     this.footerFrozenColumnsCount = 0,
     this.frozenRowsCount = 0,
     this.footerFrozenRowsCount = 0,
@@ -688,13 +689,17 @@ class SfDataGrid extends StatefulWidget {
   /// color of the frozen line
   final int frozenColumnsCount;
 
-  //andras
+  // andras
   /// Defaults: false. true: not necessary filtering and shorting
   final bool dataSourceFromDB;
 
   // gabor - 2024.06.10
   /// a TVG hasznalja-e (ahhoz kellett, hogy a gridHeaderCell-ről leszedjük az onTapUp hivatkozást)
   final bool isTvgGrid;
+
+  // gabor - 2024.06.10
+  /// Regebben sajat syncfusion property volt, de eltuntettek. En meg visszatettem.
+  final bool allowSelectingWhenClickOnTheRow;
 
   /// The number of non-scrolling columns at the right side of [SfDataGrid].
   ///
@@ -2624,6 +2629,7 @@ class SfDataGridState extends State<SfDataGrid>
       ..onCellLongPress = widget.onCellLongPress
       ..dataSourceFromDB = widget.dataSourceFromDB
       ..isTvgGrid = widget.isTvgGrid
+      ..allowSelectingWhenClickOnTheRow = widget.allowSelectingWhenClickOnTheRow
       ..frozenColumnsCount = widget.frozenColumnsCount
       ..footerFrozenColumnsCount = widget.footerFrozenColumnsCount
       ..frozenRowsCount = widget.frozenRowsCount
