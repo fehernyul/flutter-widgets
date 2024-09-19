@@ -11,7 +11,7 @@ import '../grid_common/scroll_axis.dart';
 import 'grouping/grouping.dart';
 import 'helper/datagrid_configuration.dart';
 import 'helper/datagrid_helper.dart' as grid_helper;
-import 'runtime/cell_renderers.dart';
+//import 'runtime/cell_renderers.dart';
 import 'runtime/column.dart';
 import 'runtime/generator.dart';
 import 'selection/selection_manager.dart';
@@ -1767,7 +1767,7 @@ class SfDataGridState extends State<SfDataGrid>
   late DataGridConfiguration _dataGridConfiguration;
   AnimationController? _swipingAnimationController;
 
-  late Map<String, GridCellRendererBase> _cellRenderers;
+  late Map<String, GridCellRendererBase> cellRenderers;
   TextDirection _textDirection = TextDirection.ltr;
   SfDataGridThemeData? _dataGridThemeData;
   DataGridThemeHelper? _dataGridThemeHelper;
@@ -1777,7 +1777,7 @@ class SfDataGridState extends State<SfDataGrid>
   SelectionManagerBase? _rowSelectionManager;
   DataGridController? _controller;
   Animation<double>? _swipingAnimation;
-  DataGridStateDetails? _dataGridStateDetails;
+  DataGridStateDetails? dataGridStateDetails;
 
   /// It maintains the actual columns collection without a check box column to verify the column collection changes in the didUpdateWidget.
   List<GridColumn>? _actualColumns;
@@ -1789,13 +1789,13 @@ class SfDataGridState extends State<SfDataGrid>
     _columns = <GridColumn>[];
     _actualColumns = <GridColumn>[];
     _dataGridConfiguration = DataGridConfiguration();
-    _dataGridStateDetails = _onDataGridStateDetailsChanged;
+    dataGridStateDetails = _onDataGridStateDetailsChanged;
     _dataGridConfiguration.gridPaint = Paint();
 
-    _rowGenerator = RowGenerator(dataGridStateDetails: _dataGridStateDetails!);
+    _rowGenerator = RowGenerator(dataGridStateDetails: dataGridStateDetails!);
     _container = VisualContainerHelper(
         rowGenerator: _rowGenerator,
-        dataGridStateDetails: _dataGridStateDetails!);
+        dataGridStateDetails: dataGridStateDetails!);
     _swipingAnimationController = AnimationController(
         duration: const Duration(milliseconds: 200), vsync: this);
     _setUp();
@@ -1931,7 +1931,7 @@ class SfDataGridState extends State<SfDataGrid>
 
   void _setUp() {
     // Initializes the source
-    _source = widget.source.._dataGridStateDetails = _dataGridStateDetails;
+    _source = widget.source.._dataGridStateDetails = dataGridStateDetails;
     _addDataGridSourceListeners();
 
     _initializeCellRendererCollection();
@@ -1939,7 +1939,7 @@ class SfDataGridState extends State<SfDataGrid>
     //DataGrid Controller
     _controller = _dataGridConfiguration.controller =
         widget.controller ?? DataGridController()
-          .._dataGridStateDetails = _dataGridStateDetails;
+          .._dataGridStateDetails = dataGridStateDetails;
 
     _controller!._addDataGridPropertyChangeListener(
         _handleDataGridPropertyChangeListeners);
@@ -1958,28 +1958,28 @@ class SfDataGridState extends State<SfDataGrid>
     //AutoFit controller initializing
     _dataGridConfiguration.columnSizer = widget.columnSizer ?? ColumnSizer();
     setStateDetailsInColumnSizer(
-        _dataGridConfiguration.columnSizer, _dataGridStateDetails!);
+        _dataGridConfiguration.columnSizer, dataGridStateDetails!);
 
     //CurrentCell Manager initializing
     _dataGridConfiguration.currentCell =
-        CurrentCellManager(_dataGridStateDetails!);
+        CurrentCellManager(dataGridStateDetails!);
     _dataGridConfiguration.dataGridFilterHelper =
-        DataGridFilterHelper(_dataGridStateDetails!);
+        DataGridFilterHelper(dataGridStateDetails!);
 
     //Selection Manager initializing
     _rowSelectionManager = _dataGridConfiguration.rowSelectionManager =
         widget.selectionManager ?? RowSelectionManager();
     selection_manager.setStateDetailsInSelectionManagerBase(
-        _rowSelectionManager!, _dataGridStateDetails!);
+        _rowSelectionManager!, dataGridStateDetails!);
 
     _controller!
         ._addDataGridPropertyChangeListener(_handleSelectionPropertyChanged);
 
     _dataGridConfiguration.columnResizeController =
-        ColumnResizeController(dataGridStateDetails: _dataGridStateDetails!);
+        ColumnResizeController(dataGridStateDetails: dataGridStateDetails!);
     _dataGridConfiguration.columnDragAndDropController =
         ColumnDragAndDropController(
-            dataGridStateDetails: _dataGridStateDetails!);
+            dataGridStateDetails: dataGridStateDetails!);
 
     // Grouping initializing
     _dataGridConfiguration.group = Group();
@@ -2034,7 +2034,7 @@ class SfDataGridState extends State<SfDataGrid>
   void _initializeDataGridDataSource() {
     if (_source != widget.source) {
       _removeDataGridSourceListeners();
-      _source = widget.source.._dataGridStateDetails = _dataGridStateDetails;
+      _source = widget.source.._dataGridStateDetails = dataGridStateDetails;
       _addDataGridSourceListeners();
     }
 
@@ -2084,28 +2084,29 @@ class SfDataGridState extends State<SfDataGrid>
   }
 
   void _initializeCellRendererCollection() {
-    _cellRenderers = <String, GridCellRendererBase>{};
-    _cellRenderers['TextField'] = GridCellTextFieldRenderer();
+    cellRenderers = <String, GridCellRendererBase>{};
+
+    cellRenderers['TextField'] = GridCellTextFieldRenderer();
     setStateDetailsInCellRendererBase(
-        _cellRenderers['TextField']!, _dataGridStateDetails!);
-    _cellRenderers['ColumnHeader'] = GridHeaderCellRenderer();
+        cellRenderers['TextField']!, dataGridStateDetails!);
+    cellRenderers['ColumnHeader'] = GridHeaderCellRenderer();
     setStateDetailsInCellRendererBase(
-        _cellRenderers['ColumnHeader']!, _dataGridStateDetails!);
-    _cellRenderers['StackedHeader'] = GridStackedHeaderCellRenderer();
+        cellRenderers['ColumnHeader']!, dataGridStateDetails!);
+    cellRenderers['StackedHeader'] = GridStackedHeaderCellRenderer();
     setStateDetailsInCellRendererBase(
-        _cellRenderers['StackedHeader']!, _dataGridStateDetails!);
-    _cellRenderers['Checkbox'] = GridCheckboxRenderer();
+        cellRenderers['StackedHeader']!, dataGridStateDetails!);
+    cellRenderers['Checkbox'] = GridCheckboxRenderer();
     setStateDetailsInCellRendererBase(
-        _cellRenderers['Checkbox']!, _dataGridStateDetails!);
-    _cellRenderers['TableSummary'] = GridTableSummaryCellRenderer();
+        cellRenderers['Checkbox']!, dataGridStateDetails!);
+    cellRenderers['TableSummary'] = GridTableSummaryCellRenderer();
     setStateDetailsInCellRendererBase(
-        _cellRenderers['TableSummary']!, _dataGridStateDetails!);
-    _cellRenderers['CaptionSummary'] = GridCaptionSummaryCellRenderer();
+        cellRenderers['TableSummary']!, dataGridStateDetails!);
+    cellRenderers['CaptionSummary'] = GridCaptionSummaryCellRenderer();
     setStateDetailsInCellRendererBase(
-        _cellRenderers['CaptionSummary']!, _dataGridStateDetails!);
-    _cellRenderers['IndentCell'] = GridIndentCellRenderer();
+        cellRenderers['CaptionSummary']!, dataGridStateDetails!);
+    cellRenderers['IndentCell'] = GridIndentCellRenderer();
     setStateDetailsInCellRendererBase(
-        _cellRenderers['IndentCell']!, _dataGridStateDetails!);
+        cellRenderers['IndentCell']!, dataGridStateDetails!);
   }
 
   void _processCellUpdate(RowColumnIndex rowColumnIndex,
@@ -2190,7 +2191,7 @@ class SfDataGridState extends State<SfDataGrid>
         _dataGridConfiguration.group!
             .clearDisplayElements(_dataGridConfiguration);
         updateDataSource(_dataGridConfiguration.source);
-        notifyDataGridPropertyChangeListeners(_dataGridStateDetails!().source,
+        notifyDataGridPropertyChangeListeners(dataGridStateDetails!().source,
             propertyName: 'grouping');
       }
     }
@@ -2607,7 +2608,7 @@ class SfDataGridState extends State<SfDataGrid>
       ..source = _source!
       ..columns = _columns!
       ..textDirection = _textDirection
-      ..cellRenderers = _cellRenderers
+      ..cellRenderers = cellRenderers
       ..container = _container
       ..rowGenerator = _rowGenerator
       ..visualDensity = _dataGridConfiguration.visualDensity
@@ -2944,7 +2945,7 @@ class SfDataGridState extends State<SfDataGrid>
 
         _controller = _dataGridConfiguration.controller =
             widget.controller ?? _controller!;
-        _controller!._dataGridStateDetails = _dataGridStateDetails;
+        _controller!._dataGridStateDetails = dataGridStateDetails;
 
         _controller?._addDataGridPropertyChangeListener(
             _handleDataGridPropertyChangeListeners);
@@ -2954,7 +2955,7 @@ class SfDataGridState extends State<SfDataGrid>
         _dataGridConfiguration.columnSizer =
             widget.columnSizer ?? ColumnSizer();
         setStateDetailsInColumnSizer(
-            _dataGridConfiguration.columnSizer, _dataGridStateDetails!);
+            _dataGridConfiguration.columnSizer, dataGridStateDetails!);
       }
 
       _initializeProperties();
@@ -3120,7 +3121,7 @@ class SfDataGridState extends State<SfDataGrid>
       String? propertyName,
       bool recalculateRowHeight = false}) {
     selection_manager.handleSelectionPropertyChanged(
-        dataGridConfiguration: _dataGridStateDetails!(),
+        dataGridConfiguration: dataGridStateDetails!(),
         propertyName: propertyName,
         rowColumnIndex: rowColumnIndex,
         recalculateRowHeight: recalculateRowHeight);
@@ -3142,7 +3143,7 @@ class SfDataGridState extends State<SfDataGrid>
       _rowSelectionManager = _dataGridConfiguration.rowSelectionManager =
           widget.selectionManager ?? _rowSelectionManager!;
       selection_manager.setStateDetailsInSelectionManagerBase(
-          _rowSelectionManager!, _dataGridStateDetails!);
+          _rowSelectionManager!, dataGridStateDetails!);
     }
 
     if (isSourceChanged) {
@@ -3373,7 +3374,7 @@ class SfDataGridState extends State<SfDataGrid>
       return ScrollViewWidget(
         width: measuredWidth,
         height: measuredHeight,
-        dataGridStateDetails: _dataGridStateDetails!,
+        dataGridStateDetails: dataGridStateDetails!,
       );
     });
   }

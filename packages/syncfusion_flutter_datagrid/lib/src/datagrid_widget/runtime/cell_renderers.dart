@@ -14,7 +14,7 @@ abstract class GridCellRendererBase {
   /// Decide to enable the editing in the renderer.
   bool isEditable = true;
 
-  late DataGridStateDetails _dataGridStateDetails;
+  late DataGridStateDetails dataGridStateDetails;
 
   /// Called when the child widgets for the GridCell are prepared.
   Widget? onPrepareWidgets(DataCellBase dataCell) {
@@ -31,7 +31,7 @@ class GridStackedHeaderCellRenderer
     extends GridVirtualizingCellRendererBase<Widget, Widget> {
   @override
   void onInitializeDisplayWidget(DataCellBase dataCell) {
-    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
+    final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
 
     Widget? label = DefaultTextStyle(
         style: TextStyle(
@@ -48,7 +48,7 @@ class GridStackedHeaderCellRenderer
       backgroundColor:
           dataGridConfiguration.colorScheme!.surface.withOpacity(0.0001),
       isDirty: dataGridConfiguration.container.isDirty || dataCell.isDirty,
-      dataGridStateDetails: _dataGridStateDetails,
+      dataGridStateDetails: dataGridStateDetails,
       child: label,
     );
 
@@ -65,7 +65,7 @@ class GridCellTextFieldRenderer
   void setCellStyle(DataCellBase? dataCell) {
     if (dataCell != null) {
       final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails();
+          dataGridStateDetails();
       dataCell.textStyle = _getCellTextStyle(dataGridConfiguration, dataCell);
       super.setCellStyle(dataCell);
     }
@@ -106,7 +106,7 @@ class GridHeaderCellRenderer
 
   @override
   void onInitializeDisplayWidget(DataCellBase dataCell) {
-    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
+    final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
     final Widget child = DefaultTextStyle(
         key: dataCell.key,
         style: dataCell.textStyle!,
@@ -121,7 +121,7 @@ class GridHeaderCellRenderer
           isDirty: dataGridConfiguration.container.isDirty ||
               dataCell.isDirty ||
               dataCell.dataRow!.isDirty,
-          dataGridStateDetails: _dataGridStateDetails,
+          dataGridStateDetails: dataGridStateDetails,
           child:
               _getCheckboxHeaderWidget(dataGridConfiguration, dataCell, child));
     } else {
@@ -132,7 +132,7 @@ class GridHeaderCellRenderer
           isDirty: dataGridConfiguration.container.isDirty ||
               dataCell.isDirty ||
               dataCell.dataRow!.isDirty,
-          dataGridStateDetails: _dataGridStateDetails,
+          dataGridStateDetails: dataGridStateDetails,
           child: child);
     }
   }
@@ -145,7 +145,7 @@ class GridHeaderCellRenderer
           fontWeight: FontWeight.w500,
           fontSize: 14,
           color:
-              _dataGridStateDetails().colorScheme!.onSurface.withOpacity(0.87));
+              dataGridStateDetails().colorScheme!.onSurface.withOpacity(0.87));
     }
 
     dataCell.textStyle = getDefaultHeaderTextStyle();
@@ -199,7 +199,7 @@ abstract class GridVirtualizingCellRendererBase<T1 extends Widget,
   ///
   /// object with the given widget and required values.
   void onInitializeDisplayWidget(DataCellBase dataCell) {
-    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
+    final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
 
     // Need to restrict invisible rows (rowIndex == -1) from the item collection.
     // Because we generate the `ensureColumns` for all the data rows in the
@@ -237,7 +237,7 @@ abstract class GridVirtualizingCellRendererBase<T1 extends Widget,
       isDirty: dataGridConfiguration.container.isDirty ||
           dataCell.isDirty ||
           dataCell.dataRow!.isDirty,
-      dataGridStateDetails: _dataGridStateDetails,
+      dataGridStateDetails: dataGridStateDetails,
       child: DefaultTextStyle(
           key: dataCell.key, style: dataCell.textStyle!, child: getChild()),
     );
@@ -255,7 +255,7 @@ class GridCheckboxRenderer
     extends GridVirtualizingCellRendererBase<Widget, Widget> {
   @override
   void onInitializeDisplayWidget(DataCellBase dataCell) {
-    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
+    final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
     if (dataCell.columnIndex < 0 || dataCell.rowIndex < 0) {
       return;
     }
@@ -271,7 +271,7 @@ class GridCheckboxRenderer
         isDirty: dataGridConfiguration.container.isDirty ||
             dataCell.isDirty ||
             dataCell.dataRow!.isDirty,
-        dataGridStateDetails: _dataGridStateDetails,
+        dataGridStateDetails: dataGridStateDetails,
         child: Checkbox(
             shape: dataGridConfiguration.checkboxShape,
             value: selectionState,
@@ -287,7 +287,7 @@ class GridTableSummaryCellRenderer
     extends GridVirtualizingCellRendererBase<Widget, Widget> {
   @override
   void onInitializeDisplayWidget(DataCellBase dataCell) {
-    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
+    final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
     Widget getSummaryCell() {
       Widget? cell;
       final GridTableSummaryRow? tableSummaryRow =
@@ -329,7 +329,7 @@ class GridTableSummaryCellRenderer
       key: dataCell.key!,
       dataCell: dataCell,
       backgroundColor: Colors.transparent,
-      dataGridStateDetails: _dataGridStateDetails,
+      dataGridStateDetails: dataGridStateDetails,
       isDirty: dataGridConfiguration.container.isDirty || dataCell.isDirty,
       child: label,
     );
@@ -343,7 +343,7 @@ class GridCaptionSummaryCellRenderer
     extends GridVirtualizingCellRendererBase<Widget, Widget> {
   @override
   void onInitializeDisplayWidget(DataCellBase dataCell) {
-    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
+    final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
 
     Widget getCaptionSummaryCell() {
       Widget? result;
@@ -400,7 +400,7 @@ class GridCaptionSummaryCellRenderer
       dataCell: dataCell,
       backgroundColor:
           dataGridConfiguration.dataGridThemeHelper!.captionSummaryRowColor,
-      dataGridStateDetails: _dataGridStateDetails,
+      dataGridStateDetails: dataGridStateDetails,
       isDirty: dataGridConfiguration.container.isDirty || dataCell.isDirty,
       child: label,
     );
@@ -412,7 +412,7 @@ class GridIndentCellRenderer
     extends GridVirtualizingCellRendererBase<Widget, Widget> {
   @override
   void onInitializeDisplayWidget(DataCellBase dataCell) {
-    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
+    final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
     Widget newIcon = const SizedBox();
     if (dataGridConfiguration.source.groupedColumns.isNotEmpty &&
         dataCell.dataRow!.rowType == RowType.captionSummaryCoveredRow &&
@@ -447,7 +447,7 @@ class GridIndentCellRenderer
                   .resolveStartIndexBasedOnPosition(dataGridConfiguration)
           ? dataGridConfiguration.dataGridThemeHelper!.indentColumnColor!
           : Colors.transparent,
-      dataGridStateDetails: _dataGridStateDetails,
+      dataGridStateDetails: dataGridStateDetails,
       isDirty: dataGridConfiguration.container.isDirty || dataCell.isDirty,
       child: newIcon,
     );
@@ -538,5 +538,5 @@ class GroupExpanderIconState extends State<GroupExpanderIcon>
 /// Sets the `dataGridConfiguration` to the cell renderers.
 void setStateDetailsInCellRendererBase(GridCellRendererBase cellRendererBase,
     DataGridStateDetails dataGridStateDetails) {
-  cellRendererBase._dataGridStateDetails = dataGridStateDetails;
+  cellRendererBase.dataGridStateDetails = dataGridStateDetails;
 }

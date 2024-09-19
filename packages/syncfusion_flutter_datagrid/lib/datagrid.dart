@@ -59,9 +59,12 @@ export 'src/datagrid_widget/runtime/column.dart'
         DataGridCheckboxFilterHelper,
         DataGridAdvancedFilterHelper,
         ColumnDragAndDropController;
-export 'src/datagrid_widget/selection/selection_manager.dart'
-    show RowSelectionManager, SelectionManagerBase;
-export 'src/datagrid_widget/widgets/cell_widget.dart'
-    show GridHeaderCellElement;
+export 'src/datagrid_widget/selection/selection_manager.dart'; //show RowSelectionManager, SelectionManagerBase;
+export 'src/datagrid_widget/widgets/cell_widget.dart'; // show GridHeaderCellElement;
 export 'src/datagrid_widget/widgets/customer_grid_filter_base_widget.dart'
     show CustomGridFilterBaseWidget;
+export 'src/datagrid_widget/runtime/cell_renderers.dart';
+export 'src/datagrid_widget/helper/datagrid_configuration.dart';
+export 'src/datagrid_widget/runtime/generator.dart';
+export 'src/datagrid_widget/helper/datagrid_helper.dart';
+export 'src/datagrid_widget/grouping/grouping.dart';
