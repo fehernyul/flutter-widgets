@@ -7,7 +7,7 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';
 
 import 'enum.dart';
-import 'helper.dart';
+import 'helper.dart' as helper;
 
 /// Signature for `cellExport` callback which is passed as an argument in
 /// `exportToExcelWorkbook` and `exportToExcelWorksheet` methods.
@@ -123,7 +123,7 @@ class DataGridToExcelConverter {
     int rowSpan = 0;
 
     if (exportStackedHeaders && dataGrid.stackedHeaderRows.isNotEmpty) {
-      rowSpan = getRowSpan(
+      rowSpan = helper.getRowSpan(
           dataGrid: dataGrid,
           isStackedHeader: false,
           columnName: column.columnName,
@@ -202,11 +202,11 @@ class DataGridToExcelConverter {
 
     for (final StackedHeaderCell column in stackedHeaderRow.cells) {
       final List<int> columnSequences =
-          getColumnSequences(dataGrid.columns, column);
+          helper.getColumnSequences(dataGrid.columns, column);
       for (final List<int> indexes in getConsecutiveRanges(columnSequences)) {
         final int columnIndex = indexes.reduce(min);
         final int columnSpan = indexes.length - 1;
-        final int rowSpan = getRowSpan(
+        final int rowSpan = helper.getRowSpan(
             dataGrid: dataGrid,
             isStackedHeader: true,
             columnIndex: columnIndex,
@@ -260,8 +260,8 @@ class DataGridToExcelConverter {
       int titleColumnCount = summaryRow.titleColumnSpan;
       if (titleColumnCount > 0) {
         // To consider the exclude columns in the `titleColumnCount`.
-        titleColumnCount =
-            getTitleColumnCount(summaryRow, dataGrid.columns, excludeColumns);
+        titleColumnCount = helper.getTitleColumnCount(
+            summaryRow, dataGrid.columns, excludeColumns);
 
         if (titleColumnCount > 0) {
           _exportTableSummaryCell(
@@ -276,7 +276,7 @@ class DataGridToExcelConverter {
         final GridColumn? column = dataGrid.columns.firstWhereOrNull(
             (GridColumn element) =>
                 element.columnName == summaryColumn.columnName);
-        final int columnIndex = getSummaryColumnIndex(
+        final int columnIndex = helper.getSummaryColumnIndex(
             dataGrid.columns, summaryColumn.columnName, excludeColumns);
 
         // Restricts if the column doesn't exist or its column index is less
@@ -374,7 +374,7 @@ class DataGridToExcelConverter {
     int lastColumnIndex = firstColumnIndex + columnSpan;
 
     if (excludeColumns.isNotEmpty) {
-      final List<int> startAndEndIndex = getSpannedCellStartAndEndIndex(
+      final List<int> startAndEndIndex = helper.getSpannedCellStartAndEndIndex(
           columnSpan: columnSpan,
           columnIndex: columnIndex,
           columns: dataGrid.columns,

@@ -156,7 +156,9 @@ class _GridCellState extends State<GridCell> {
     );
   }
 
-  Widget _wrapInsideContainer() => Container(
+  // ez (csak) az adatcellákat rajzolja ki - gabor 2024.09.23 - tvg
+  Widget _wrapInsideContainer() {
+    return Container(
       key: widget.key,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
@@ -168,7 +170,9 @@ class _GridCellState extends State<GridCell> {
         dataCell: widget.dataCell,
         key: widget.key!,
         backgroundColor: widget.backgroundColor,
-      ));
+      ), // TODO: TVG current cell backgound color beállítása - gabor 2024.09.23
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -371,12 +375,15 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
 
     _ensureSortIconVisibility(column!, dataGridConfiguration);
 
+    // ez csak a header-t rajzolja ki - tvg
     Widget child = _wrapInsideCellContainer(
-        dataGridConfiguration: dataGridConfiguration,
-        child: checkHeaderCellConstraints(widget.child),
-        dataCell: widget.dataCell,
-        key: widget.key!,
-        backgroundColor: widget.backgroundColor);
+      dataGridConfiguration: dataGridConfiguration,
+      child: checkHeaderCellConstraints(widget.child),
+      dataCell: widget.dataCell,
+      key: widget.key!,
+      // backgroundColor: Colors.red,
+      backgroundColor: widget.backgroundColor,
+    );
 
     Widget getFeedbackWidget(DataGridConfiguration configuration) {
       return dataGridConfiguration.columnDragFeedbackBuilder != null
@@ -3119,6 +3126,7 @@ BorderDirectional _getCellBorder(
   );
 }
 
+// ez a header-t is és a data cellát is rajzolja! - tvg
 Widget _wrapInsideCellContainer(
     {required DataGridConfiguration dataGridConfiguration,
     required DataCellBase dataCell,
@@ -3195,10 +3203,16 @@ Widget _wrapInsideCellContainer(
       return Stack(
         children: <Widget>[
           Container(
-              width: width,
-              height: height,
-              color: backgroundColor,
-              child: child),
+            // padding: EdgeInsets.all(0),
+            width: width,
+            height: height,
+
+            // TVG, ez az aktuális adatcella háttere, ez működik (de persze ki kell vezetni paraméterbe)
+            color: Colors.green,
+            // color: backgroundColor,
+
+            child: child,
+          ),
           Positioned(
               left: 0,
               top: 0,
@@ -3206,15 +3220,32 @@ Widget _wrapInsideCellContainer(
               height: height,
               child: IgnorePointer(
                 child: Container(
-                    key: key,
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(border: getBorder())),
+                  key: key,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    color: backgroundColor,
+                    border: getBorder(),
+                  ),
+                ),
               )),
         ],
       );
     } else {
+      // ez itt minden cellát kirajzol (header és érték is!) - gabor 2024.09.23 - tvg
+      // de a cella hátterét valahogy mégsem - gabor 2024.09.23
       return Container(
-          width: width, height: height, color: backgroundColor, child: child);
+        margin: EdgeInsets.all(0), // TVG - ez működik amúgy - gabor 2024.09.23
+        // padding: EdgeInsets.all(10),
+        // decoration: BoxDecoration(
+        // color: dataCell.isCurrentCell ? Colors.brown.shade200 : Colors.red /* (Colors.brown)*/, // TVG - ez a "dataCell.isCurrentCell" sajnos nem működik  - gabor 2024.09.23
+        //   border: Border.all(color: Colors.pink, width: 0, style: BorderStyle.none),
+        // ),
+        color: backgroundColor,
+        // color: Colors.yellow,
+        width: width,
+        height: height,
+        child: child,
+      );
     }
   }
 

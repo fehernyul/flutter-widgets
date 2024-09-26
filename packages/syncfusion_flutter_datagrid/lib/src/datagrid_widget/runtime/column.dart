@@ -23,6 +23,9 @@ import 'package:intl/intl.dart' as intl; // TVG
 /// return a bool value
 typedef BoolFunction = bool Function();
 
+/// return a custom Color value, or return "orignalColor"
+typedef ColorFunction = Color Function(Color orignalColor);
+
 /// Provides the base functionalities for all the column types in [SfDataGrid].
 class GridColumn {
   /// Creates the [GridColumn] for [SfDataGrid] widget.
@@ -44,6 +47,8 @@ class GridColumn {
     this.filterIconPadding = const EdgeInsets.symmetric(horizontal: 8.0),
     this.getHasSubOrderingFunc,
     this.getHasSubFilteringFunc,
+    this.getColumnHeaderBackgroundColor,
+    this.getColumnHeaderHoveredBackgroundColor,
   }) {
     _actualWidth = double.nan;
     _autoWidth = double.nan;
@@ -54,6 +59,12 @@ class GridColumn {
 
   /// add a function what can calculate has the column "subFiltering" or not
   BoolFunction? getHasSubFilteringFunc;
+
+  /// add a function that can returned a specified column header's background color
+  ColorFunction? getColumnHeaderBackgroundColor; // TVG - 2024.09.23
+
+  /// add a function that can returned a specified column header's background color when its hovered
+  ColorFunction? getColumnHeaderHoveredBackgroundColor; // TVG - 2024.09.23
 
   late double _autoWidth;
 

@@ -8,7 +8,7 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import 'enum.dart';
-import 'helper.dart';
+import 'helper.dart' as helper;
 
 /// Exports the [SfDataGrid] to Pdf with the given rows and columns
 
@@ -355,7 +355,7 @@ class DataGridToPdfConverter {
     PdfGridCell pdfCell = columnHeader.cells[_columnIndex];
 
     if (dataGrid.stackedHeaderRows.isNotEmpty && exportStackedHeaders) {
-      rowSpan = getRowSpan(
+      rowSpan = helper.getRowSpan(
           dataGrid: dataGrid,
           isStackedHeader: false,
           columnName: column.columnName,
@@ -524,11 +524,11 @@ class DataGridToPdfConverter {
     for (final StackedHeaderCell column in stackedHeaderRow.cells) {
       int columnSpanValue = 0;
       final List<int> columnSequences =
-          getColumnSequences(dataGrid.columns, column);
+          helper.getColumnSequences(dataGrid.columns, column);
       for (final List<int> indexes in getConsecutiveRanges(columnSequences)) {
         _columnIndex = indexes.reduce(min);
         columnSpanValue = indexes.length;
-        final int rowSpan = getRowSpan(
+        final int rowSpan = helper.getRowSpan(
             dataGrid: dataGrid,
             isStackedHeader: true,
             columnIndex: _columnIndex,
@@ -550,7 +550,7 @@ class DataGridToPdfConverter {
     int lastColumnIndex = firstColumnIndex + columnSpan;
 
     if (excludeColumns.isNotEmpty) {
-      final List<int> startAndEndIndex = getSpannedCellStartAndEndIndex(
+      final List<int> startAndEndIndex = helper.getSpannedCellStartAndEndIndex(
           columnSpan: columnSpan - 1,
           columnIndex: columnIndex,
           columns: dataGrid.columns,
@@ -651,8 +651,8 @@ class DataGridToPdfConverter {
       int titleColumnCount = summaryRow.titleColumnSpan;
       if (titleColumnCount > 0) {
         // To consider the exclude columns in the `titleColumnCount`.
-        titleColumnCount =
-            getTitleColumnCount(summaryRow, dataGrid.columns, excludeColumns);
+        titleColumnCount = helper.getTitleColumnCount(
+            summaryRow, dataGrid.columns, excludeColumns);
 
         if (titleColumnCount > 0) {
           _exportTableSummaryCell(
@@ -668,7 +668,7 @@ class DataGridToPdfConverter {
         final GridColumn? column = dataGrid.columns.firstWhereOrNull(
             (GridColumn element) =>
                 element.columnName == summaryColumn.columnName);
-        final int summaryColumnIndex = getSummaryColumnIndex(
+        final int summaryColumnIndex = helper.getSummaryColumnIndex(
             dataGrid.columns, summaryColumn.columnName, excludeColumns);
 
         // Restricts if the column doesn't exist or its column index is less

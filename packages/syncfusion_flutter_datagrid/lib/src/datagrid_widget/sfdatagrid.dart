@@ -511,6 +511,7 @@ class SfDataGrid extends StatefulWidget {
     this.groupExpanded,
     this.groupCollapsing,
     this.groupCollapsed,
+    this.onGetCellRenderers,
     this.groupCaptionTitleFormat = '{ColumnName} : {Key} - {ItemsCount} Items',
   })  : assert(frozenColumnsCount >= 0),
         assert(footerFrozenColumnsCount >= 0),
@@ -1750,6 +1751,9 @@ class SfDataGrid extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => SfDataGridState();
+
+  /// override the default cellRenderers (TVG)
+  final Function? onGetCellRenderers;
 }
 
 /// Contains the state for a [SfDataGrid]. This class can be used to
@@ -2085,28 +2089,46 @@ class SfDataGridState extends State<SfDataGrid>
 
   void _initializeCellRendererCollection() {
     cellRenderers = <String, GridCellRendererBase>{};
-
-    cellRenderers['TextField'] = GridCellTextFieldRenderer();
-    setStateDetailsInCellRendererBase(
-        cellRenderers['TextField']!, dataGridStateDetails!);
-    cellRenderers['ColumnHeader'] = GridHeaderCellRenderer();
-    setStateDetailsInCellRendererBase(
-        cellRenderers['ColumnHeader']!, dataGridStateDetails!);
-    cellRenderers['StackedHeader'] = GridStackedHeaderCellRenderer();
-    setStateDetailsInCellRendererBase(
-        cellRenderers['StackedHeader']!, dataGridStateDetails!);
-    cellRenderers['Checkbox'] = GridCheckboxRenderer();
-    setStateDetailsInCellRendererBase(
-        cellRenderers['Checkbox']!, dataGridStateDetails!);
-    cellRenderers['TableSummary'] = GridTableSummaryCellRenderer();
-    setStateDetailsInCellRendererBase(
-        cellRenderers['TableSummary']!, dataGridStateDetails!);
-    cellRenderers['CaptionSummary'] = GridCaptionSummaryCellRenderer();
-    setStateDetailsInCellRendererBase(
-        cellRenderers['CaptionSummary']!, dataGridStateDetails!);
-    cellRenderers['IndentCell'] = GridIndentCellRenderer();
-    setStateDetailsInCellRendererBase(
-        cellRenderers['IndentCell']!, dataGridStateDetails!);
+    if (widget.onGetCellRenderers != null) {
+      cellRenderers =
+          widget.onGetCellRenderers!() as Map<String, GridCellRendererBase>;
+      setStateDetailsInCellRendererBase(
+          cellRenderers['TextField']!, dataGridStateDetails!);
+      setStateDetailsInCellRendererBase(
+          cellRenderers['ColumnHeader']!, dataGridStateDetails!);
+      setStateDetailsInCellRendererBase(
+          cellRenderers['StackedHeader']!, dataGridStateDetails!);
+      setStateDetailsInCellRendererBase(
+          cellRenderers['Checkbox']!, dataGridStateDetails!);
+      setStateDetailsInCellRendererBase(
+          cellRenderers['TableSummary']!, dataGridStateDetails!);
+      setStateDetailsInCellRendererBase(
+          cellRenderers['CaptionSummary']!, dataGridStateDetails!);
+      setStateDetailsInCellRendererBase(
+          cellRenderers['IndentCell']!, dataGridStateDetails!);
+    } else {
+      cellRenderers['TextField'] = GridCellTextFieldRenderer();
+      setStateDetailsInCellRendererBase(
+          cellRenderers['TextField']!, dataGridStateDetails!);
+      cellRenderers['ColumnHeader'] = GridHeaderCellRenderer();
+      setStateDetailsInCellRendererBase(
+          cellRenderers['ColumnHeader']!, dataGridStateDetails!);
+      cellRenderers['StackedHeader'] = GridStackedHeaderCellRenderer();
+      setStateDetailsInCellRendererBase(
+          cellRenderers['StackedHeader']!, dataGridStateDetails!);
+      cellRenderers['Checkbox'] = GridCheckboxRenderer();
+      setStateDetailsInCellRendererBase(
+          cellRenderers['Checkbox']!, dataGridStateDetails!);
+      cellRenderers['TableSummary'] = GridTableSummaryCellRenderer();
+      setStateDetailsInCellRendererBase(
+          cellRenderers['TableSummary']!, dataGridStateDetails!);
+      cellRenderers['CaptionSummary'] = GridCaptionSummaryCellRenderer();
+      setStateDetailsInCellRendererBase(
+          cellRenderers['CaptionSummary']!, dataGridStateDetails!);
+      cellRenderers['IndentCell'] = GridIndentCellRenderer();
+      setStateDetailsInCellRendererBase(
+          cellRenderers['IndentCell']!, dataGridStateDetails!);
+    }
   }
 
   void _processCellUpdate(RowColumnIndex rowColumnIndex,

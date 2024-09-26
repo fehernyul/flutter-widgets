@@ -2148,17 +2148,47 @@ class RenderGridCell extends RenderBox
   }
 
   void _paintHoverColor(PaintingContext context) {
-    if (dataCell.cellType == CellType.headerCell &&
-        _isHovered &&
-        !_dataGridStateDetails().columnDragAndDropController.isHoverDisabled) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails();
-      dataGridConfiguration.gridPaint!.color =
-          dataGridConfiguration.dataGridThemeHelper!.headerHoverColor!;
-      final Rect cellRect =
-          Rect.fromLTRB(0, 0, constraints.maxWidth, constraints.maxHeight);
+    if (dataCell.cellType == CellType.headerCell) {
+      if (_isHovered &&
+          !_dataGridStateDetails()
+              .columnDragAndDropController
+              .isHoverDisabled) {
+        final DataGridConfiguration dataGridConfiguration =
+            _dataGridStateDetails();
+        final GridColumn? column =
+            grid_helper.getGridColumn(dataGridConfiguration, _dataCell); //TVG
 
-      context.canvas.drawRect(cellRect, dataGridConfiguration.gridPaint!);
+        dataGridConfiguration.gridPaint!
+            .color = column?.getColumnHeaderHoveredBackgroundColor?.call(
+                dataGridConfiguration.dataGridThemeHelper!.headerHoverColor!) ??
+            dataGridConfiguration.dataGridThemeHelper!.headerHoverColor!;
+
+        // dataGridConfiguration.gridPaint!.color = dataGridConfiguration.dataGridThemeHelper!.headerHoverColor!;
+        //dataGridConfiguration.gridPaint!.color = Colors.yellow; //  column?.getColumnHeaderHoveredBackgroundColor?.call() ?? Colors.purple; //TVG
+        final Rect cellRect =
+            Rect.fromLTRB(0, 0, constraints.maxWidth, constraints.maxHeight);
+        // Paint myPaint = Paint();
+        // myPaint.color = Colors.orange;
+        // context.canvas.drawRect(cellRect, myPaint);
+
+        context.canvas.drawRect(cellRect, dataGridConfiguration.gridPaint!);
+      } else {
+        // tvg - begin - ez oszloponként meghhívja a getColumnHeaderBackgroundColor-t, de akkor is, amikor nem "_isHovered". Az eredeti kódban itt csak a "_isHovered==true" ág volt megírva
+        final DataGridConfiguration dataGridConfiguration =
+            _dataGridStateDetails();
+        final GridColumn? column =
+            grid_helper.getGridColumn(dataGridConfiguration, _dataCell); //TVG
+
+        dataGridConfiguration.gridPaint!.color =
+            column?.getColumnHeaderBackgroundColor?.call(
+                    dataGridConfiguration.dataGridThemeHelper!.headerColor!) ??
+                dataGridConfiguration.dataGridThemeHelper!.headerColor!;
+        final Rect cellRect =
+            Rect.fromLTRB(0, 0, constraints.maxWidth, constraints.maxHeight);
+
+        context.canvas.drawRect(cellRect, dataGridConfiguration.gridPaint!);
+        // tvg - end
+      }
     }
   }
 
