@@ -741,8 +741,9 @@ FilterType getFilterType(
 
 /// Gets the name of the given `FilterType`.
 String getFilterName(DataGridConfiguration dataGridConfiguration,
-    FilterType type, Object? value) {
+    FilterType type, Object? value, DataGridFilterHelper helper) {
   final SfLocalizations localizations = dataGridConfiguration.localizations;
+
   switch (type) {
     case FilterType.equals:
       if (value == null) {
@@ -773,22 +774,22 @@ String getFilterName(DataGridConfiguration dataGridConfiguration,
     case FilterType.doesNotContain:
       return localizations.doesNotContainDataGridFilteringLabel;
     case FilterType.lessThan:
-      if (value is DateTime) {
+      if (helper.advancedFilterHelper.advancedFilterType == AdvancedFilterType.date){
         return localizations.beforeDataGridFilteringLabel;
       }
       return localizations.lessThanDataGridFilteringLabel;
     case FilterType.lessThanOrEqual:
-      if (value is DateTime) {
+      if (helper.advancedFilterHelper.advancedFilterType == AdvancedFilterType.date) {
         return localizations.beforeOrEqualDataGridFilteringLabel;
       }
       return localizations.lessThanOrEqualDataGridFilteringLabel;
     case FilterType.greaterThan:
-      if (value is DateTime) {
+      if (helper.advancedFilterHelper.advancedFilterType == AdvancedFilterType.date) {
         return localizations.afterDataGridFilteringLabel;
       }
       return localizations.greaterThanDataGridFilteringLabel;
     case FilterType.greaterThanOrEqual:
-      if (value is DateTime) {
+      if (helper.advancedFilterHelper.advancedFilterType == AdvancedFilterType.date) {
         return localizations.afterOrEqualDataGridFilteringLabel;
       }
       return localizations.greaterThanOrEqualDataGridFilteringLabel;

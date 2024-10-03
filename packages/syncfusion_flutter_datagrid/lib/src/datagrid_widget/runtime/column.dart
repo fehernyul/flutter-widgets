@@ -3085,6 +3085,7 @@ class DataGridAdvancedFilterHelper {
   /// Sets the advanced filter values.
   void setAdvancedFilterValues(DataGridConfiguration dataGridConfiguration,
       List<FilterCondition> filterConditions, DataGridFilterHelper helper) {
+
     Object? getValue(Object? value, String? filterType) {
       //--andras 2023.8.18
       if (neverUseDropDownFilterValues == true) {
@@ -3100,7 +3101,7 @@ class DataGridAdvancedFilterHelper {
     if (filterConditions.isNotEmpty) {
       final FilterCondition condition = filterConditions.first;
       filterType1 = grid_helper.getFilterName(
-          dataGridConfiguration, condition.type, condition.value);
+          dataGridConfiguration, condition.type, condition.value, helper);
       filterValue1 = getValue(condition.value, filterType1);
       isCaseSensitive1 = condition.isCaseSensitive;
       isOrPredicate = condition.filterOperator == FilterOperator.or;
@@ -3114,7 +3115,7 @@ class DataGridAdvancedFilterHelper {
     if (filterConditions.length == 2) {
       final FilterCondition condition = filterConditions.last;
       filterType2 = grid_helper.getFilterName(
-          dataGridConfiguration, condition.type, condition.value);
+          dataGridConfiguration, condition.type, condition.value, helper);
       filterValue2 = getValue(condition.value, filterType2);
       isCaseSensitive2 = condition.isCaseSensitive;
       isOrPredicate = condition.filterOperator == FilterOperator.or;
