@@ -25,6 +25,7 @@ typedef BoolFunction = bool Function();
 
 /// return a custom Color value, or return "orignalColor"
 typedef ColorFunction = Color Function(Color orignalColor);
+typedef TextStyleFunction = TextStyle Function(TextStyle orignalTextStyle);
 
 /// Provides the base functionalities for all the column types in [SfDataGrid].
 class GridColumn {
@@ -49,6 +50,7 @@ class GridColumn {
     this.getHasSubFilteringFunc,
     this.getColumnHeaderBackgroundColor,
     this.getColumnHeaderHoveredBackgroundColor,
+    this.getHeaderTextStyle
   }) {
     _actualWidth = double.nan;
     _autoWidth = double.nan;
@@ -65,6 +67,9 @@ class GridColumn {
 
   /// add a function that can returned a specified column header's background color when its hovered
   ColorFunction? getColumnHeaderHoveredBackgroundColor; // TVG - 2024.09.23
+
+  /// Set header Text style
+  TextStyleFunction? getHeaderTextStyle; // TVG - 2024.10.07 - 2024.10.08
 
   late double _autoWidth;
 

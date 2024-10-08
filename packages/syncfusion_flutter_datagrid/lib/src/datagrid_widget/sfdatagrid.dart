@@ -5411,7 +5411,7 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
 
   @override
   DataGridCurrentCellStyle get currentCellStyle => DataGridCurrentCellStyle(
-      borderColor: colorScheme.onSurface[66]!, borderWidth: 1.0);
+      borderColor: colorScheme.onSurface[66]!, borderWidth: 1.0, backgroundColor: Colors.transparent);
 
   @override
   double get frozenPaneLineWidth => 2;
