@@ -717,7 +717,11 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
         );
       }
     }
-    return child;
+    return  Row(
+      children: <Widget>[
+        Flexible(child: Container(child: child)),
+      ]);
+
   }
 
   Widget _getSortNumber() {
@@ -3199,18 +3203,14 @@ Widget _wrapInsideCellContainer(
 
     if (dataCell.isCurrentCell &&
         dataCell.cellType != CellType.indentCell &&
+        dataCell.cellType != CellType.checkboxCell &&
         dataCell.dataRow!.dataGridRow != null) {
       return Stack(
         children: <Widget>[
           Container(
-            // padding: EdgeInsets.all(0),
             width: width,
             height: height,
-
-            // TVG, ez az aktuális adatcella háttere, ez működik (de persze ki kell vezetni paraméterbe)
-            color: Colors.green,
-            // color: backgroundColor,
-
+            color: dataGridConfiguration.dataGridThemeHelper!.currentCellStyle!.backgroundColor,
             child: child,
           ),
           Positioned(
@@ -3234,8 +3234,8 @@ Widget _wrapInsideCellContainer(
       // ez itt minden cellát kirajzol (header és érték is!) - gabor 2024.09.23 - tvg
       // de a cella hátterét valahogy mégsem - gabor 2024.09.23
       return Container(
-        margin: EdgeInsets.all(0), // TVG - ez működik amúgy - gabor 2024.09.23
-        // padding: EdgeInsets.all(10),
+        //margin: EdgeInsets.all(0), // TVG - ez működik amúgy - gabor 2024.09.23
+
         // decoration: BoxDecoration(
         // color: dataCell.isCurrentCell ? Colors.brown.shade200 : Colors.red /* (Colors.brown)*/, // TVG - ez a "dataCell.isCurrentCell" sajnos nem működik  - gabor 2024.09.23
         //   border: Border.all(color: Colors.pink, width: 0, style: BorderStyle.none),

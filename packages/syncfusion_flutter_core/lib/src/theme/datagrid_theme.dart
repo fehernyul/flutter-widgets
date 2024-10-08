@@ -790,13 +790,16 @@ class DataGridCurrentCellStyle {
   /// Create a [DataGridCurrentCellStyle] that's used to configure
   /// a style for the current cell in [SfDataGrid].
   const DataGridCurrentCellStyle(
-      {required this.borderColor, required this.borderWidth});
+      {required this.borderColor, required this.borderWidth, required this.backgroundColor});
 
   /// The color of the border in current cell.
   final Color borderColor;
 
   //// The width of the border in current cell.
   final double borderWidth;
+
+  //// The backgroundColor in current cell.
+  final Color backgroundColor;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
@@ -818,6 +821,7 @@ class DataGridCurrentCellStyle {
     final List<Object> values = <Object>[
       borderColor,
       borderWidth,
+      backgroundColor
     ];
     return Object.hashAll(values);
   }
@@ -830,6 +834,8 @@ class DataGridCurrentCellStyle {
     }
     return DataGridCurrentCellStyle(
         borderColor: Color.lerp(a!.borderColor, b!.borderColor, t)!,
-        borderWidth: lerpDouble(a.borderWidth, b.borderWidth, t)!);
+        borderWidth: lerpDouble(a.borderWidth, b.borderWidth, t)!,
+        backgroundColor: Colors.transparent
+    );
   }
 }
