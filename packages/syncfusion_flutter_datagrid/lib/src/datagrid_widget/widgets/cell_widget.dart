@@ -440,8 +440,8 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
             border: _getCellBorder(
-          dataGridConfiguration,
-          widget.dataCell,
+              dataGridConfiguration,
+              widget.dataCell,
         )),
         child: child);
   }
