@@ -10,7 +10,11 @@ import 'package:syncfusion_flutter_core/theme.dart';
 import '../datagrid_widget/sfdatagrid.dart';
 
 /// Signature for the [SfDataPager.pageItemBuilder] callback.
-typedef DataPagerItemBuilderCallback<Widget> = Widget? Function(String text);
+// typedef DataPagerItemBuilderCallback<Widget> = Widget? Function(String text); // original code
+typedef DataPagerItemBuilderCallback<Widget> = Widget? Function(
+    String text,
+    bool
+        selectedItem); // extended with a bool param (selectedItem) - TVG -  gabor 2024.10.09
 
 /// Signature for the `_DataPagerChangeNotifier` listener.
 typedef _DataPagerControlListener = void Function({String property});
@@ -1111,7 +1115,13 @@ class SfDataPagerState extends State<SfDataPager> {
 
     // DataPageItemBuilder callback
     if (widget.pageItemBuilder != null) {
-      pagerItem = widget.pageItemBuilder!(type ?? element!.index.toString());
+      // pagerItem = widget.pageItemBuilder!(type ?? element!.index.toString()); // original code (comment written by gabor)
+      pagerItem = widget.pageItemBuilder!(
+          type ?? element!.index.toString(),
+          type != null
+              ? false
+              : _checkIsSelectedIndex(element!
+                  .index)); // extended with a bool param (selectedItem) - TVG -  gabor 2024.10.09
     }
 
     void setBorder() {
@@ -1203,14 +1213,20 @@ class SfDataPagerState extends State<SfDataPager> {
             child: InkWell(
               key: pagerItemKey,
               mouseCursor: visible
-                  ? MaterialStateMouseCursor.clickable
+                  ? WidgetStateMouseCursor.clickable
                   : SystemMouseCursors.basic,
-              splashColor:
-                  visible ? flutterTheme.splashColor : Colors.transparent,
-              hoverColor:
-                  visible ? flutterTheme.hoverColor : Colors.transparent,
-              highlightColor:
-                  visible ? flutterTheme.highlightColor : Colors.transparent,
+              splashColor: visible
+                  ? (_dataPagerThemeHelper!.itemSplashColor ??
+                      flutterTheme.splashColor)
+                  : Colors.transparent,
+              hoverColor: visible
+                  ? (_dataPagerThemeHelper!.itemHoverColor ??
+                      flutterTheme.hoverColor)
+                  : Colors.transparent,
+              highlightColor: visible
+                  ? (_dataPagerThemeHelper!.itemHighlightColor ??
+                      flutterTheme.highlightColor)
+                  : Colors.transparent,
               onTap: () {
                 if (element != null) {
                   if (element.index == _currentPageIndex) {
@@ -1494,12 +1510,12 @@ class SfDataPagerState extends State<SfDataPager> {
   Widget _buildDataPager(BoxConstraints constraint) {
     final List<Widget> children = <Widget>[];
 
-    final Widget? header = _buildHeader();
+    final Widget? header = _buildHeader(); // First + Previuos button
     if (header != null) {
       children.add(header);
     }
 
-    final Widget? footer = _buildFooter();
+    final Widget? footer = _buildFooter(); // Next + Last button
     if (footer != null) {
       children.add(footer);
     }
@@ -1513,7 +1529,9 @@ class SfDataPagerState extends State<SfDataPager> {
 
     if ((!_isDesktop && widget.direction != Axis.vertical) &&
         widget.onRowsPerPageChanged != null) {
-      children.add(Row(children: _buildRowsPerPageLabel()!));
+      children.add(Row(
+          children:
+              _buildRowsPerPageLabel()!)); // lapszám buttonok, szépen egyesével növekedve
     }
     return _getChildrenBasedOnDirection(children);
   }
@@ -2103,6 +2121,12 @@ class DataPagerThemeHelper {
     backgroundColor =
         defaults.backgroundColor ?? effectiveDataPagerThemeData.backgroundColor;
     itemColor = defaults.itemColor ?? effectiveDataPagerThemeData.itemColor;
+    itemHoverColor =
+        defaults.itemHoverColor ?? effectiveDataPagerThemeData.itemHoverColor;
+    itemSplashColor =
+        defaults.itemSplashColor ?? effectiveDataPagerThemeData.itemSplashColor;
+    itemHighlightColor = defaults.itemHighlightColor ??
+        effectiveDataPagerThemeData.itemHighlightColor;
     itemTextStyle =
         defaults.itemTextStyle ?? effectiveDataPagerThemeData.itemTextStyle;
     selectedItemColor = defaults.selectedItemColor ??
@@ -2125,6 +2149,15 @@ class DataPagerThemeHelper {
 
   /// The color of the page Items
   late final Color? itemColor;
+
+  /// TVG property - ne a flutterTheme-bol vegye ki ezt a színt, ha en magadom, csak akkor, ha en nem adom meg
+  late final Color? itemHoverColor;
+
+  /// TVG property - ne a flutterTheme-bol vegye ki ezt a színt, ha en magadom, csak akkor, ha en nem adom meg
+  late final Color? itemSplashColor;
+
+  /// TVG property - ne a flutterTheme-bol vegye ki ezt a színt, ha en magadom, csak akkor, ha en nem adom meg
+  late final Color? itemHighlightColor;
 
   /// The color of the data pager background
   late final Color? backgroundColor;

@@ -54,6 +54,9 @@ class SfDataPagerThemeData with Diagnosticable {
   const SfDataPagerThemeData(
       {this.backgroundColor,
       this.itemColor,
+      this.itemHoverColor,
+      this.itemSplashColor,
+      this.itemHighlightColor,
       this.itemTextStyle,
       this.selectedItemColor,
       this.selectedItemTextStyle,
@@ -70,6 +73,9 @@ class SfDataPagerThemeData with Diagnosticable {
       {Brightness? brightness,
       Color? backgroundColor,
       Color? itemColor,
+      Color? itemHoverColor,
+      Color? itemSplashColor,
+      Color? itemHighlightColor,
       TextStyle? itemTextStyle,
       Color? selectedItemColor,
       TextStyle? selectedItemTextStyle,
@@ -83,6 +89,9 @@ class SfDataPagerThemeData with Diagnosticable {
     return SfDataPagerThemeData(
         backgroundColor: backgroundColor,
         itemColor: itemColor,
+        itemHoverColor: itemHoverColor, // TVG
+        itemSplashColor: itemSplashColor, // TVG
+        itemHighlightColor: itemHighlightColor, // TVG
         itemTextStyle: itemTextStyle,
         selectedItemColor: selectedItemColor,
         selectedItemTextStyle: selectedItemTextStyle,
@@ -96,6 +105,15 @@ class SfDataPagerThemeData with Diagnosticable {
 
   /// The color of the page Items
   final Color? itemColor;
+
+  /// TVG property - ne a flutterTheme-bol vegye ki ezt a színt, ha en magadom, csak akkor, ha en nem adom meg
+  final Color? itemHoverColor;
+
+  /// TVG property - ne a flutterTheme-bol vegye ki ezt a színt, ha en magadom, csak akkor, ha en nem adom meg
+  final Color? itemSplashColor;
+
+  /// TVG property - ne a flutterTheme-bol vegye ki ezt a színt, ha en magadom, csak akkor, ha en nem adom meg
+  final Color? itemHighlightColor;
 
   /// The color of the data pager background
   final Color? backgroundColor;
@@ -219,6 +237,9 @@ class SfDataPagerThemeData with Diagnosticable {
   int get hashCode {
     final List<Object?> values = <Object?>[
       itemColor,
+      itemHoverColor, // TVG
+      itemSplashColor, // TVG
+      itemHighlightColor, // TVG
       backgroundColor,
       itemTextStyle,
       selectedItemColor,
@@ -228,7 +249,7 @@ class SfDataPagerThemeData with Diagnosticable {
       itemBorderColor,
       itemBorderWidth,
       itemBorderRadius,
-      dropdownButtonBorderColor
+      dropdownButtonBorderColor,
     ];
     return Object.hashAll(values);
   }
@@ -241,6 +262,14 @@ class SfDataPagerThemeData with Diagnosticable {
         defaultValue: defaultData.backgroundColor));
     properties.add(ColorProperty('itemColor', itemColor,
         defaultValue: defaultData.itemColor));
+    // TVG - begin
+    properties.add(ColorProperty('itemHoverColor', itemHoverColor,
+        defaultValue: defaultData.itemHoverColor));
+    properties.add(ColorProperty('itemSplashColor', itemSplashColor,
+        defaultValue: defaultData.itemSplashColor));
+    properties.add(ColorProperty('itemHighlightColor', itemHighlightColor,
+        defaultValue: defaultData.itemHighlightColor));
+    // TVG - end
     properties.add(ColorProperty('selectedItemColor', selectedItemColor,
         defaultValue: defaultData.selectedItemColor));
     properties.add(ColorProperty('disabledItemColor', disabledItemColor,
