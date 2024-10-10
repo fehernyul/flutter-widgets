@@ -126,6 +126,7 @@ class SfDataGridThemeData with Diagnosticable {
       this.rowHoverTextStyle,
       this.sortIcon,
       this.sortIconData,
+      this.getSortIconData,
       this.sortIconDataUnsorted,
       this.sortIconDataIconSize,
       this.filterIcon,
@@ -163,6 +164,7 @@ class SfDataGridThemeData with Diagnosticable {
     TextStyle? rowHoverTextStyle,
     Widget? sortIcon,
     IconData? sortIconData,
+    Function? getSortIconData,
     IconData? sortIconDataUnsorted,
     double? sortIconDataIconSize,
     Widget? filterIcon,
@@ -198,6 +200,7 @@ class SfDataGridThemeData with Diagnosticable {
         rowHoverTextStyle: rowHoverTextStyle,
         sortIcon: sortIcon,
         sortIconData: sortIconData,
+        getSortIconData: getSortIconData,
         sortIconDataUnsorted: sortIconDataUnsorted,
         sortIconDataIconSize: sortIconDataIconSize,
         filterIcon: filterIcon,
@@ -414,6 +417,7 @@ class SfDataGridThemeData with Diagnosticable {
   final IconData? sortIconData;
   final IconData? sortIconDataUnsorted;
   final double? sortIconDataIconSize;
+  final Function? getSortIconData;
 
   /// The icon to indicate the filtering applied in column.
   ///
@@ -543,6 +547,7 @@ class SfDataGridThemeData with Diagnosticable {
     TextStyle? rowHoverTextStyle,
     Widget? sortIcon,
     IconData? sortIconData,
+    Function? getSortIconData,
     IconData? sortIconDataUnsorted,
     double? sortIconDataIconSize,
     Widget? filterIcon,
@@ -581,6 +586,7 @@ class SfDataGridThemeData with Diagnosticable {
         rowHoverTextStyle: rowHoverTextStyle ?? this.rowHoverTextStyle,
         sortIcon: sortIcon ?? this.sortIcon,
         sortIconData: sortIconData ?? this.sortIconData,
+        getSortIconData: getSortIconData ?? this.getSortIconData,
         sortIconDataUnsorted: sortIconDataUnsorted ?? this.sortIconDataUnsorted,
         sortIconDataIconSize: sortIconDataIconSize ?? this.sortIconDataIconSize,
         filterIcon: filterIcon ?? this.filterIcon,

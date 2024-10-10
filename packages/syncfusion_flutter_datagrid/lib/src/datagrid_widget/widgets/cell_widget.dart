@@ -261,6 +261,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
   late IconData? _sortIconData;
   late IconData? _sortIconDataUnsorted;
   late double? _sortIconDataIconSize;
+  late Function? _getSortIconData;
   bool isHovered = false;
 
   DataGridStateDetails get dataGridStateDetails => widget.dataGridStateDetails;
@@ -536,12 +537,13 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
 
         if (sortIconWidth > 0 &&
             availableWidth > sortIconWidth + filterIconWidth) {
-          _sortIconColor = dataGridConfiguration.dataGridThemeHelper!.sortIconColor!;
-          _sortIconHoverColor = dataGridConfiguration.dataGridThemeHelper!.sortIconHoverColor!;
+          _sortIconColor = dataGridConfiguration.dataGridThemeHelper!.sortIconColor ?? Colors.transparent;
+          _sortIconHoverColor = dataGridConfiguration.dataGridThemeHelper!.sortIconHoverColor ?? Colors.transparent;
           _sortIcon = dataGridConfiguration.dataGridThemeHelper!.sortIcon;
           _sortIconData = dataGridConfiguration.dataGridThemeHelper!.sortIconData;
           _sortIconDataUnsorted = dataGridConfiguration.dataGridThemeHelper!.sortIconDataUnsorted;
           _sortIconDataIconSize = dataGridConfiguration.dataGridThemeHelper!.sortIconDataIconSize;
+          _getSortIconData = dataGridConfiguration.dataGridThemeHelper!.getSortIconData;
 
           if (_sortDirection != null) {
             if (_sortIcon == null || _sortIcon is Icon || _sortIcon is Builder || _sortIcon is StatefulBuilder) {
@@ -555,6 +557,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
                   sortIconDataUnsorted: _sortIconDataUnsorted,
                   sortIcon: _sortIcon,
                   sortIconSize: _sortIconDataIconSize,
+                  getSortIconData: _getSortIconData,
                   onSortedIconTapDown: _handleOnTapDown,
                   onSortedIconTapUp: _handleOnTapUp,
                 );
@@ -577,6 +580,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
               //Ez fut le első alkalommal utána a _SortIcon fut le
               children['sortIcon'] = _SortIconCore(
                 sortDirection: DataGridSortDirection.unsorted,
+                getSortIconData: _getSortIconData,
                 sortIcon: _sortIcon,
                 sortIconData: _sortIconData,
                 sortIconDataUnsorted: _sortIconDataUnsorted,
@@ -951,6 +955,7 @@ class _SortIcon extends StatefulWidget {
     required this.sortIconData,
     required this.sortIconDataUnsorted,
     required this.sortIconSize,
+    required this.getSortIconData,
     required this.onSortedIconTapUp,
     required this.onSortedIconTapDown,
   });
@@ -961,6 +966,7 @@ class _SortIcon extends StatefulWidget {
   final IconData? sortIconData;
   final IconData? sortIconDataUnsorted;
   final double? sortIconSize;
+  final Function? getSortIconData;
   final GestureTapDownCallback onSortedIconTapDown;
   final GestureTapUpCallback onSortedIconTapUp;
 
@@ -1009,6 +1015,7 @@ class _SortIconState extends State<_SortIcon>
               angle: _sortingAnimation.value,
               child:
                   _SortIconCore(
+                    getSortIconData: widget.getSortIconData,
                     sortDirection: widget.sortDirection,
                     sortIcon: widget.sortIcon,
                     sortIconData: widget.sortIconData,
@@ -1039,6 +1046,7 @@ class _SortIconCore extends StatefulWidget {
     required this.sortIconData,
     required this.sortIconDataUnsorted,
     required this.sortIconSize,
+    required this.getSortIconData,
     required this.onTapDown,
     required this.onTapUp,
   });
@@ -1049,6 +1057,7 @@ class _SortIconCore extends StatefulWidget {
   final Color sortIconColor;
   final Color sortIconHoverColor;
   final double? sortIconSize;
+  final Function? getSortIconData;
   final DataGridSortDirection sortDirection;
   final GestureTapDownCallback onTapDown;
   final GestureTapUpCallback onTapUp;
@@ -1062,6 +1071,11 @@ class _SortIconCoreState extends State<_SortIconCore> {
     if (widget.sortIcon!=null) {
       return widget.sortIcon!;
     }
+
+    if (widget.getSortIconData!=null){
+      return widget.getSortIconData!.call(widget.sortDirection, isHoveredSortIconCore);
+    }
+
     //mivel úgy is forgatja nem kell megkülönbözetetni
     if ((widget.sortDirection == DataGridSortDirection.ascending) ||  (widget.sortDirection == DataGridSortDirection.descending)) {
       return Icon(widget.sortIconData ?? Icons.arrow_upward,

@@ -5145,6 +5145,7 @@ class DataGridThemeHelper {
     sortIconHoverColor = defaults.sortIconHoverColor ?? sfDataGridThemeData.sortIconHoverColor;
     sortIconDataUnsorted = defaults.sortIconDataUnsorted ?? sfDataGridThemeData.sortIconDataUnsorted;
     sortIconDataIconSize = defaults.sortIconDataIconSize ?? sfDataGridThemeData.sortIconDataIconSize;
+    getSortIconData = defaults.getSortIconData ?? sfDataGridThemeData.getSortIconData;
 
     filterIcon = defaults.filterIcon ?? sfDataGridThemeData.filterIcon;
     filterIconColor =
@@ -5222,6 +5223,8 @@ class DataGridThemeHelper {
   /// To do
 
   late final Color? sortIconColor;
+
+  late final Function? getSortIconData;
 
   /// To do
 
@@ -5473,6 +5476,9 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
 
   @override
   IconData? get sortIconDataUnsorted => dataGridThemeData.sortIconDataUnsorted;
+
+  @override
+  Function? get getSortIconData => dataGridThemeData.getSortIconData;
 
   @override
   double? get sortIconDataIconSize => dataGridThemeData.sortIconDataIconSize;
