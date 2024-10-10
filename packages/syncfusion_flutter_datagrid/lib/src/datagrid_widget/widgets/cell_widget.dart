@@ -1185,14 +1185,48 @@ class _FilterIconState extends State<_FilterIcon> {
   bool isHovered = false;
   @override
   Widget build(BuildContext context) {
-    final bool isFiltered = widget.dataGridConfiguration.source.filterConditions
-        .containsKey(widget.column.columnName);
+    final bool isFiltered = widget.dataGridConfiguration.source.filterConditions.containsKey(widget.column.columnName);
 
     bool isSubFiltered = false;
 
     if (widget.column.getHasSubFilteringFunc != null) {
       isSubFiltered = widget.column.getHasSubFilteringFunc!();
     }
+
+    final Widget filterIcon = isFiltered ?
+      _FilteredIcon(
+          getFilterIcon: widget.dataGridConfiguration.dataGridThemeHelper!.getFilterIcon,
+          isHovered: isHovered,
+          isSubFiltered: isSubFiltered,
+          iconColor: isHovered
+              ? (widget.dataGridConfiguration.dataGridThemeHelper!
+              .filterIconHoverColor ??
+              widget.dataGridConfiguration.colorScheme!
+                  .onSurface[222]!)
+              : (widget.dataGridConfiguration.dataGridThemeHelper!
+              .filterIconColor ??
+              widget.dataGridConfiguration.dataGridThemeHelper!
+                  .filterPopupIconColor!),
+          filterIcon: widget
+              .dataGridConfiguration.dataGridThemeHelper!.filterIcon,
+          gridColumnName: widget.column.columnName) :
+      _UnfilteredIcon(
+          getFilterIcon: widget.dataGridConfiguration.dataGridThemeHelper!.getFilterIcon,
+          isHovered: isHovered,
+          isSubFiltered: isSubFiltered,
+          iconColor: isHovered
+              ? (widget.dataGridConfiguration.dataGridThemeHelper!
+              .filterIconHoverColor ??
+              widget.dataGridConfiguration.colorScheme!
+                  .onSurface[222]!)
+              : (widget.dataGridConfiguration.dataGridThemeHelper!
+              .filterIconColor ??
+              widget.dataGridConfiguration.dataGridThemeHelper!
+                  .filterPopupIconColor!),
+          filterIcon: widget
+              .dataGridConfiguration.dataGridThemeHelper!.filterIcon,
+          gridColumnName: widget.column.columnName
+        );
 
     return GestureDetector(
       onTapUp: (TapUpDetails details) => onHandleTap(details, context),
@@ -1212,38 +1246,7 @@ class _FilterIconState extends State<_FilterIcon> {
               isHovered = false;
             });
           },
-          child: isFiltered
-              ? _FilteredIcon(
-                  isSubFiltered: isSubFiltered,
-                  iconColor: isHovered
-                      ? (widget.dataGridConfiguration.dataGridThemeHelper!
-                              .filterIconHoverColor ??
-                          widget.dataGridConfiguration.colorScheme!
-                              .onSurface[222]!)
-                      : (widget.dataGridConfiguration.dataGridThemeHelper!
-                              .filterIconColor ??
-                          widget.dataGridConfiguration.dataGridThemeHelper!
-                              .filterPopupIconColor!),
-                  filterIcon: widget
-                      .dataGridConfiguration.dataGridThemeHelper!.filterIcon,
-                  gridColumnName: widget.column.columnName,
-                )
-              : _UnfilteredIcon(
-                  isSubFiltered: isSubFiltered,
-                  iconColor: isHovered
-                      ? (widget.dataGridConfiguration.dataGridThemeHelper!
-                              .filterIconHoverColor ??
-                          widget.dataGridConfiguration.colorScheme!
-                              .onSurface[222]!)
-                      : (widget.dataGridConfiguration.dataGridThemeHelper!
-                              .filterIconColor ??
-                          widget.dataGridConfiguration.dataGridThemeHelper!
-                              .filterPopupIconColor!),
-                  filterIcon: widget
-                      .dataGridConfiguration.dataGridThemeHelper!.filterIcon,
-                  gridColumnName: widget.column.columnName,
-                  // onTap: onHandleTap(details, context),
-                ),
+          child: filterIcon
         ),
       ),
     );
@@ -1257,17 +1260,23 @@ class _UnfilteredIcon extends StatelessWidget {
     required this.filterIcon,
     required this.gridColumnName,
     required this.isSubFiltered,
-    // required void onTap,
+    required this.isHovered,
+    required this.getFilterIcon
   }) : super(key: key);
 
   final Color iconColor;
   final Widget? filterIcon;
   final String? gridColumnName;
   final bool isSubFiltered;
+  final bool isHovered;
+  final Function? getFilterIcon;
 
   @override
   Widget build(BuildContext context) {
-    // = gabor 2023.07.05 - change font package name
+    if (getFilterIcon!=null) {
+      return getFilterIcon!.call(false, isSubFiltered, isHovered, gridColumnName);
+    }
+
     return filterIcon ??
         Container(
           padding: const EdgeInsets.all(3),
@@ -1278,36 +1287,11 @@ class _UnfilteredIcon extends StatelessWidget {
                 width: isSubFiltered ? 1 : 0,
                 style: (isSubFiltered ? BorderStyle.solid : BorderStyle.none),
               )),
-          // child: OutlinedButton(
-          //   onPressed: onTap,
-          //   // const IconData(0xe702, fontFamily: 'FilterIcon', fontPackage: 'trendi_view_generator'),
-          //   child: Icon(
-          //     // const IconData(0xe702, fontFamily: 'FilterIcon', fontPackage: 'trendi_view_generator'),
-          //     const IconData(0xe702,
-          //         fontFamily: 'FilterIcon',
-          //         fontPackage: 'syncfusion_flutter_datagrid'),
-          //     size: 18.0,
-          //     color: iconColor,
-          //     key: ValueKey<String>(
-          //         'datagrid_filtering_${gridColumnName}_filterIcon'),
-          //   ),
-          // ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // OutlinedButton(
-              //   onPressed: () {},
-              //   // const IconData(0xe702, fontFamily: 'FilterIcon', fontPackage: 'trendi_view_generator'),
-              //   child: Icon(
-              //     // const IconData(0xe702, fontFamily: 'FilterIcon', fontPackage: 'trendi_view_generator'),
-              //     const IconData(0xe702, fontFamily: 'FilterIcon', fontPackage: 'syncfusion_flutter_datagrid'),
-              //     size: 18.0,
-              //     color: iconColor,
-              //     key: ValueKey<String>('datagrid_filtering_${gridColumnName}_filterIcon'),
-              //   ),
-              // ),
               Icon(
-                // const IconData(0xe702, fontFamily: 'FilterIcon', fontPackage: 'trendi_view_generator'),
+
                 const IconData(0xe702,
                     fontFamily: 'FilterIcon',
                     fontPackage: 'syncfusion_flutter_datagrid'),
@@ -1319,27 +1303,17 @@ class _UnfilteredIcon extends StatelessWidget {
             ],
           ),
         );
-
-/*
-    return filterIcon ??
-        Icon(
-          const IconData(0xe702,
-              fontFamily: 'FilterIcon',
-              fontPackage: 'syncfusion_flutter_datagrid'),
-          size: 18.0,
-          color: iconColor,
-          key: ValueKey<String>(
-              'datagrid_filtering_${gridColumnName}_filterIcon'),
-        );*/
   }
 }
 
 class _FilteredIcon extends StatelessWidget {
   const _FilteredIcon(
       {Key? key,
+      required this.getFilterIcon,
       required this.iconColor,
       required this.filterIcon,
       required this.gridColumnName,
+      required this.isHovered,
       required this.isSubFiltered})
       : super(key: key);
 
@@ -1347,50 +1321,41 @@ class _FilteredIcon extends StatelessWidget {
   final Widget? filterIcon;
   final String? gridColumnName;
   final bool isSubFiltered;
+  final bool isHovered;
+  final Function? getFilterIcon;
 
   @override
   Widget build(BuildContext context) {
-    // = gabor 2023.07.05 - change font package name and filtered icon color to red
-    return MouseRegion(
-      child: filterIcon ??
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(
-                  color: Colors.red,
-                  width: isSubFiltered ? 1 : 0,
-                  style: (isSubFiltered ? BorderStyle.solid : BorderStyle.none),
-                )),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(
-                  // const IconData(0xe704, fontFamily: 'FilterIcon', fontPackage: 'trendi_view_generator'),
-                  const IconData(0xe704,
-                      fontFamily: 'FilterIcon',
-                      fontPackage: 'syncfusion_flutter_datagrid'),
-                  size: 18.0,
-                  color: iconColor,
+    if (getFilterIcon!=null) {
+      return getFilterIcon!.call(true, isSubFiltered, isHovered, gridColumnName);
+    }
 
-                  key: ValueKey<String>(
-                      'datagrid_filtering_${gridColumnName}_filterIcon'),
-                ),
-              ],
+   return filterIcon ??
+      Container(
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(
+              color: Colors.red,
+              width: isSubFiltered ? 1 : 0,
+              style: (isSubFiltered ? BorderStyle.solid : BorderStyle.none),
+            )),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              const IconData(0xe704,
+                  fontFamily: 'FilterIcon',
+                  fontPackage: 'syncfusion_flutter_datagrid'),
+              size: 18.0,
+              color: iconColor,
+
+              key: ValueKey<String>(
+                  'datagrid_filtering_${gridColumnName}_filterIcon'),
             ),
-          ),
-    );
-/*
-    return filterIcon ??
-        Icon(
-          const IconData(0xe704,
-              fontFamily: 'FilterIcon',
-              fontPackage: 'syncfusion_flutter_datagrid'),
-          size: 18.0,
-          color: iconColor,
-          key: ValueKey<String>(
-              'datagrid_filtering_${gridColumnName}_filterIcon'),
-        );*/
+          ],
+        ),
+      );
   }
 }
 

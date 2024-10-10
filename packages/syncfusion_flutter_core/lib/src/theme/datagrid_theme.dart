@@ -130,6 +130,7 @@ class SfDataGridThemeData with Diagnosticable {
       this.sortIconDataUnsorted,
       this.sortIconDataIconSize,
       this.filterIcon,
+      this.getFilterIcon,
       this.filterIconColor,
       this.filterIconHoverColor,
       this.sortOrderNumberColor,
@@ -168,6 +169,7 @@ class SfDataGridThemeData with Diagnosticable {
     IconData? sortIconDataUnsorted,
     double? sortIconDataIconSize,
     Widget? filterIcon,
+    Function? getFilterIcon,
     Color? filterIconColor,
     Color? filterIconHoverColor,
     Color? sortOrderNumberColor,
@@ -204,6 +206,7 @@ class SfDataGridThemeData with Diagnosticable {
         sortIconDataUnsorted: sortIconDataUnsorted,
         sortIconDataIconSize: sortIconDataIconSize,
         filterIcon: filterIcon,
+        getFilterIcon: getFilterIcon,
         filterIconColor: filterIconColor,
         filterIconHoverColor: filterIconHoverColor,
         sortOrderNumberColor: sortOrderNumberColor,
@@ -476,6 +479,7 @@ class SfDataGridThemeData with Diagnosticable {
   /// }
   /// ```
   final Widget? filterIcon;
+  final Function? getFilterIcon;
 
   /// The color of the filter icon which indicates whether
   /// the column is filtered or not.
@@ -590,6 +594,7 @@ class SfDataGridThemeData with Diagnosticable {
         sortIconDataUnsorted: sortIconDataUnsorted ?? this.sortIconDataUnsorted,
         sortIconDataIconSize: sortIconDataIconSize ?? this.sortIconDataIconSize,
         filterIcon: filterIcon ?? this.filterIcon,
+        getFilterIcon: getFilterIcon ?? this.getFilterIcon,
         filterIconColor: filterIconColor ?? this.filterIconColor,
         filterIconHoverColor: filterIconHoverColor ?? this.filterIconHoverColor,
         sortOrderNumberColor: sortOrderNumberColor ?? this.sortOrderNumberColor,

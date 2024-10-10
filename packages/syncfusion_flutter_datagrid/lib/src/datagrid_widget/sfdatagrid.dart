@@ -5148,6 +5148,7 @@ class DataGridThemeHelper {
     getSortIconData = defaults.getSortIconData ?? sfDataGridThemeData.getSortIconData;
 
     filterIcon = defaults.filterIcon ?? sfDataGridThemeData.filterIcon;
+    getFilterIcon = defaults.getFilterIcon ?? sfDataGridThemeData.getFilterIcon;
     filterIconColor =
         defaults.filterIconColor ?? sfDataGridThemeData.filterIconColor;
     filterIconHoverColor = defaults.filterIconHoverColor ??
@@ -5320,6 +5321,7 @@ class DataGridThemeHelper {
   /// }
   /// ```
   late final Widget? filterIcon;
+  late final Function? getFilterIcon;
 
   /// The color of the filter icon which indicates whether the column is filtered or not.
   ///
@@ -5485,6 +5487,9 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
 
   @override
   Widget? get filterIcon => dataGridThemeData.filterIcon;
+
+  @override
+  Function? get getFilterIcon => dataGridThemeData.getFilterIcon;
 
   @override
   Color? get filterIconColor => dataGridThemeData.filterIconColor;
