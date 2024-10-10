@@ -125,6 +125,9 @@ class SfDataGridThemeData with Diagnosticable {
       this.rowHoverColor,
       this.rowHoverTextStyle,
       this.sortIcon,
+      this.sortIconData,
+      this.sortIconDataUnsorted,
+      this.sortIconDataIconSize,
       this.filterIcon,
       this.filterIconColor,
       this.filterIconHoverColor,
@@ -159,6 +162,9 @@ class SfDataGridThemeData with Diagnosticable {
     double? columnResizeIndicatorStrokeWidth,
     TextStyle? rowHoverTextStyle,
     Widget? sortIcon,
+    IconData? sortIconData,
+    IconData? sortIconDataUnsorted,
+    double? sortIconDataIconSize,
     Widget? filterIcon,
     Color? filterIconColor,
     Color? filterIconHoverColor,
@@ -191,6 +197,9 @@ class SfDataGridThemeData with Diagnosticable {
         columnResizeIndicatorStrokeWidth: columnResizeIndicatorStrokeWidth,
         rowHoverTextStyle: rowHoverTextStyle,
         sortIcon: sortIcon,
+        sortIconData: sortIconData,
+        sortIconDataUnsorted: sortIconDataUnsorted,
+        sortIconDataIconSize: sortIconDataIconSize,
         filterIcon: filterIcon,
         filterIconColor: filterIconColor,
         filterIconHoverColor: filterIconHoverColor,
@@ -402,6 +411,10 @@ class SfDataGridThemeData with Diagnosticable {
   /// ```
   final Widget? sortIcon;
 
+  final IconData? sortIconData;
+  final IconData? sortIconDataUnsorted;
+  final double? sortIconDataIconSize;
+
   /// The icon to indicate the filtering applied in column.
   ///
   /// If you want to change the icon filter or filtered state, you can use the
@@ -529,6 +542,9 @@ class SfDataGridThemeData with Diagnosticable {
     Color? rowHoverColor,
     TextStyle? rowHoverTextStyle,
     Widget? sortIcon,
+    IconData? sortIconData,
+    IconData? sortIconDataUnsorted,
+    double? sortIconDataIconSize,
     Widget? filterIcon,
     Color? filterIconColor,
     Color? filterIconHoverColor,
@@ -564,6 +580,9 @@ class SfDataGridThemeData with Diagnosticable {
         rowHoverColor: rowHoverColor ?? this.rowHoverColor,
         rowHoverTextStyle: rowHoverTextStyle ?? this.rowHoverTextStyle,
         sortIcon: sortIcon ?? this.sortIcon,
+        sortIconData: sortIconData ?? this.sortIconData,
+        sortIconDataUnsorted: sortIconDataUnsorted ?? this.sortIconDataUnsorted,
+        sortIconDataIconSize: sortIconDataIconSize ?? this.sortIconDataIconSize,
         filterIcon: filterIcon ?? this.filterIcon,
         filterIconColor: filterIconColor ?? this.filterIconColor,
         filterIconHoverColor: filterIconHoverColor ?? this.filterIconHoverColor,

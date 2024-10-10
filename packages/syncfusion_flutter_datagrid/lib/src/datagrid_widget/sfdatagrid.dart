@@ -5140,8 +5140,11 @@ class DataGridThemeHelper {
         defaults.rowHoverTextStyle ?? sfDataGridThemeData.rowHoverTextStyle;
     sortIcon = defaults.sortIcon ?? sfDataGridThemeData.sortIcon;
 
+    sortIconData = defaults.sortIconData ?? sfDataGridThemeData.sortIconData;
     sortIconColor = defaults.sortIconColor ?? sfDataGridThemeData.sortIconColor;
     sortIconHoverColor = defaults.sortIconHoverColor ?? sfDataGridThemeData.sortIconHoverColor;
+    sortIconDataUnsorted = defaults.sortIconDataUnsorted ?? sfDataGridThemeData.sortIconDataUnsorted;
+    sortIconDataIconSize = defaults.sortIconDataIconSize ?? sfDataGridThemeData.sortIconDataIconSize;
 
     filterIcon = defaults.filterIcon ?? sfDataGridThemeData.filterIcon;
     filterIconColor =
@@ -5251,6 +5254,12 @@ class DataGridThemeHelper {
   /// To do
 
   late final Widget? sortIcon;
+
+  late final IconData? sortIconData;
+
+  late final IconData? sortIconDataUnsorted;
+
+  late final double? sortIconDataIconSize;
 
   /// The icon to indicate the filtering applied in column.
   ///
@@ -5458,6 +5467,15 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
 
   @override
   Widget? get sortIcon => dataGridThemeData.sortIcon;
+
+  @override
+  IconData? get sortIconData => dataGridThemeData.sortIconData;
+
+  @override
+  IconData? get sortIconDataUnsorted => dataGridThemeData.sortIconDataUnsorted;
+
+  @override
+  double? get sortIconDataIconSize => dataGridThemeData.sortIconDataIconSize;
 
   @override
   Widget? get filterIcon => dataGridThemeData.filterIcon;
