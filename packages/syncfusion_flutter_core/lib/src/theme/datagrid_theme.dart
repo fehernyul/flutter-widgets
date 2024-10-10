@@ -116,6 +116,7 @@ class SfDataGridThemeData with Diagnosticable {
       this.frozenPaneLineColor,
       this.frozenPaneLineWidth,
       this.sortIconColor,
+      this.sortIconHoverColor,
       this.headerColor,
       this.headerHoverColor,
       this.frozenPaneElevation,
@@ -149,6 +150,7 @@ class SfDataGridThemeData with Diagnosticable {
     Color? frozenPaneLineColor,
     double? frozenPaneLineWidth,
     Color? sortIconColor,
+    Color? sortIconHoverColor,
     Color? headerHoverColor,
     Color? headerColor,
     double? frozenPaneElevation,
@@ -181,6 +183,7 @@ class SfDataGridThemeData with Diagnosticable {
         frozenPaneLineWidth: frozenPaneLineWidth,
         headerHoverColor: headerHoverColor,
         sortIconColor: sortIconColor,
+        sortIconHoverColor: sortIconHoverColor,
         headerColor: headerColor,
         frozenPaneElevation: frozenPaneElevation,
         rowHoverColor: rowHoverColor,
@@ -302,6 +305,8 @@ class SfDataGridThemeData with Diagnosticable {
   /// The color of the sort icon which indicates the ascending or descending
   /// order.
   final Color? sortIconColor;
+
+  final Color? sortIconHoverColor;
 
   /// The background color of header cells when a pointer is hovering over it
   /// in [SfDataGrid].
@@ -515,6 +520,7 @@ class SfDataGridThemeData with Diagnosticable {
     double? frozenPaneLineWidth,
     Color? frozenPaneLineColor,
     Color? sortIconColor,
+    Color? sortIconHoverColor,
     Color? headerHoverColor,
     Color? headerColor,
     double? frozenPaneElevation,
@@ -547,6 +553,7 @@ class SfDataGridThemeData with Diagnosticable {
         frozenPaneLineColor: frozenPaneLineColor ?? this.frozenPaneLineColor,
         frozenPaneLineWidth: frozenPaneLineWidth ?? this.frozenPaneLineWidth,
         sortIconColor: sortIconColor ?? this.sortIconColor,
+        sortIconHoverColor: sortIconHoverColor ?? this.sortIconHoverColor,
         headerColor: headerColor ?? this.headerColor,
         headerHoverColor: headerHoverColor ?? this.headerHoverColor,
         frozenPaneElevation: frozenPaneElevation ?? this.frozenPaneElevation,
@@ -595,6 +602,7 @@ class SfDataGridThemeData with Diagnosticable {
       frozenPaneLineWidth:
           lerpDouble(a.frozenPaneLineWidth, b.frozenPaneLineWidth, t),
       sortIconColor: Color.lerp(a.sortIconColor, b.sortIconColor, t),
+      sortIconHoverColor: Color.lerp(a.sortIconHoverColor, b.sortIconHoverColor, t),
       headerHoverColor: Color.lerp(a.headerHoverColor, b.headerHoverColor, t),
       headerColor: Color.lerp(a.headerColor, b.headerColor, t),
       frozenPaneElevation:

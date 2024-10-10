@@ -549,6 +549,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
                 );
               }
             } else {
+              //ez mikor fut le???
               if (sortDirection == DataGridSortDirection.ascending) {
                 children['sortIcon'] =
                     _BuilderSortIconAscending(sortIcon: _sortIcon);
@@ -561,34 +562,21 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
             if (_sortNumber != 0 && _sortNumber != -1 && _sortNumber != -2) {
               children['sortNumber'] = _getSortNumber();
             }
-          } else if (gridColumn.allowSorting &&
-              dataGridConfiguration.allowSorting) {
-            children['sortIcon'] = _SortIconCore(
-              sortDirection: DataGridSortDirection.unsorted,
-              color: _sortIconColor,
-              hoveredColor: Colors.red,
-              onTapDown: _handleOnTapDown,
-              onTapUp: _handleOnTapUp,
-            );
-            /*const IconData unsortIconData = IconData(
-              0xe700,
-              fontFamily: 'UnsortIcon',
-              fontPackage: 'syncfusion_flutter_datagrid',
-            );
-
-            children['sortIcon'] = _sortIcon ?? Icon(unsortIconData, color: _sortIconColor, size: 16);
-            */
+          } else if (gridColumn.allowSorting && dataGridConfiguration.allowSorting) {
+              //Ez fut le első alkalommal utána a _SortIcon fut le
+              children['sortIcon'] = _SortIconCore(
+                sortDirection: DataGridSortDirection.unsorted,
+                sortIcon: _sortIcon,
+                color: _sortIconColor,
+                hoveredColor: Colors.red,
+                onTapDown: _handleOnTapDown,
+                onTapUp: _handleOnTapUp,
+              );
           }
 
           // ha van az oszlop alatt subOrderezes, akkor kiteszunk egy plusz ikont IS!
           if (hasSubOrder2) {
-            children['subFilterIcon'] =
-                Icon(Icons.swap_vert, color: Colors.green);
-            // children.add(Container(
-            //   decoration: BoxDecoration(color: Colors.yellow, border: Border.all(color: Colors.pink, width: 1, style: BorderStyle.solid)),
-            //   height: 10,
-            //   width: 10,
-            // ));
+            children['subFilterIcon'] = Icon(Icons.swap_vert, color: Colors.green);
           }
         }
 
@@ -997,9 +985,10 @@ class _SortIconState extends State<_SortIcon>
         builder: (BuildContext context, Widget? child) {
           return Transform.rotate(
               angle: _sortingAnimation.value,
-              child: widget.sortIcon ??
+              child:
                   _SortIconCore(
                     sortDirection: widget.sortDirection,
+                    sortIcon: widget.sortIcon,
                     color: widget.sortIconColor,
                     hoveredColor: Colors.red,
                     size: 16,
@@ -1022,11 +1011,13 @@ class _SortIconCore extends StatefulWidget {
     required this.sortDirection,
     required this.color,
     required this.hoveredColor,
+    required this.sortIcon,
     this.size = 16,
     required this.onTapDown,
     required this.onTapUp,
   });
 
+  final Widget? sortIcon;
   final Color color;
   final Color hoveredColor;
   final double? size;
@@ -1041,13 +1032,13 @@ class _SortIconCore extends StatefulWidget {
 class _SortIconCoreState extends State<_SortIconCore> {
   Widget _getSortIcon(bool isHoveredSortIconCore) {
     if (widget.sortDirection == DataGridSortDirection.ascending) {
-      return Icon(Icons.arrow_upward,
+      return widget.sortIcon ?? Icon(Icons.arrow_upward,
           color: isHoveredSortIconCore
               ? widget.hoveredColor
               : widget.color /* widget.sortIconColor*/,
           size: 16);
     } else if (widget.sortDirection == DataGridSortDirection.descending) {
-      return Icon(Icons.arrow_upward,
+      return widget.sortIcon ?? Icon(Icons.arrow_upward,
           color: isHoveredSortIconCore
               ? widget.hoveredColor
               : widget.color /* widget.sortIconColor*/,

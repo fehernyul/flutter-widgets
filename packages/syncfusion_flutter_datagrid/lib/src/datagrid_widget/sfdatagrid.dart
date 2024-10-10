@@ -5123,8 +5123,9 @@ class DataGridThemeHelper {
 
     headerHoverColor =
         defaults.headerHoverColor ?? sfDataGridThemeData.headerHoverColor;
+
     rowHoverColor = defaults.rowHoverColor ?? sfDataGridThemeData.rowHoverColor;
-    sortIconColor = defaults.sortIconColor ?? sfDataGridThemeData.sortIconColor;
+
     frozenPaneLineColor =
         defaults.frozenPaneLineColor ?? sfDataGridThemeData.frozenPaneLineColor;
     columnResizeIndicatorColor = defaults.columnResizeIndicatorColor ??
@@ -5138,6 +5139,10 @@ class DataGridThemeHelper {
     rowHoverTextStyle =
         defaults.rowHoverTextStyle ?? sfDataGridThemeData.rowHoverTextStyle;
     sortIcon = defaults.sortIcon ?? sfDataGridThemeData.sortIcon;
+
+    sortIconColor = defaults.sortIconColor ?? sfDataGridThemeData.sortIconColor;
+    sortIconHoverColor = defaults.sortIconHoverColor ?? sfDataGridThemeData.sortIconHoverColor;
+
     filterIcon = defaults.filterIcon ?? sfDataGridThemeData.filterIcon;
     filterIconColor =
         defaults.filterIconColor ?? sfDataGridThemeData.filterIconColor;
@@ -5214,6 +5219,10 @@ class DataGridThemeHelper {
   /// To do
 
   late final Color? sortIconColor;
+
+  /// To do
+
+  late final Color? sortIconHoverColor;
 
   /// To do
 
