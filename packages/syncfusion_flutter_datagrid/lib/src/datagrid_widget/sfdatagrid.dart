@@ -5155,6 +5155,8 @@ class DataGridThemeHelper {
         sfDataGridThemeData.filterIconHoverColor;
     sortOrderNumberColor = defaults.sortOrderNumberColor ??
         sfDataGridThemeData.sortOrderNumberColor;
+    getSortOrderNumberWidget = defaults.getSortOrderNumberWidget ??
+        sfDataGridThemeData.getSortOrderNumberWidget;
     sortOrderNumberBackgroundColor = defaults.sortOrderNumberBackgroundColor ??
         sfDataGridThemeData.sortOrderNumberBackgroundColor;
     _filterPopupTextStyle = sfDataGridThemeData.filterPopupTextStyle;
@@ -5338,6 +5340,8 @@ class DataGridThemeHelper {
   /// The color of the number displayed when the order of the sorting is shown.
   late final Color? sortOrderNumberColor;
 
+  late final Function? getSortOrderNumberWidget;
+
   /// Creates a copy of this theme but with the given fields replaced with the new values.
   late final Color? sortOrderNumberBackgroundColor;
 
@@ -5499,6 +5503,9 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
 
   @override
   Color? get sortOrderNumberColor => dataGridThemeData.sortOrderNumberColor;
+
+  @override
+  Function? get getSortOrderNumberWidget => dataGridThemeData.getSortOrderNumberWidget;
 
   @override
   Color? get sortOrderNumberBackgroundColor =>

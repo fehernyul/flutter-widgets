@@ -731,15 +731,32 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
   }
 
   Widget _getSortNumber() {
-    return Container(
-      width: 18,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: _sortNumberBackgroundColor,
-      ),
-      child: Center(
-        child: Text(_sortNumber.toString(),
-            style: TextStyle(fontSize: 12, color: _sortNumberTextColor)),
+    final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
+
+    if (dataGridConfiguration.dataGridThemeHelper!.getSortOrderNumberWidget!=null){
+      return dataGridConfiguration.dataGridThemeHelper!.getSortOrderNumberWidget!(_sortNumber.toString());
+    };
+
+    return Center(
+      child: Container(
+        //alignment: Alignment.center,
+        width: 20,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: _sortNumberTextColor,
+            width: 2.0,
+            style: BorderStyle.solid,
+          ),
+        ),
+        child: Center(
+              child:Text(
+                _sortNumber.toString(),
+                style: TextStyle(fontSize: 12, color: _sortNumberTextColor),
+              ),
+          )
       ),
     );
   }

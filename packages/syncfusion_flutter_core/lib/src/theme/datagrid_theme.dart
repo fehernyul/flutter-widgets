@@ -135,6 +135,7 @@ class SfDataGridThemeData with Diagnosticable {
       this.filterIconHoverColor,
       this.sortOrderNumberColor,
       this.sortOrderNumberBackgroundColor,
+      this.getSortOrderNumberWidget,
       this.filterPopupTextStyle,
       this.filterPopupDisabledTextStyle,
       this.columnDragIndicatorColor,
@@ -173,6 +174,7 @@ class SfDataGridThemeData with Diagnosticable {
     Color? filterIconColor,
     Color? filterIconHoverColor,
     Color? sortOrderNumberColor,
+    Function? getSortOrderNumberWidget,
     Color? sortOrderNumberBackgroundColor,
     TextStyle? filterPopupTextStyle,
     TextStyle? filterPopupDisabledTextStyle,
@@ -210,6 +212,7 @@ class SfDataGridThemeData with Diagnosticable {
         filterIconColor: filterIconColor,
         filterIconHoverColor: filterIconHoverColor,
         sortOrderNumberColor: sortOrderNumberColor,
+        getSortOrderNumberWidget: getSortOrderNumberWidget,
         sortOrderNumberBackgroundColor: sortOrderNumberBackgroundColor,
         filterPopupTextStyle: filterPopupTextStyle,
         filterPopupDisabledTextStyle: filterPopupDisabledTextStyle,
@@ -497,6 +500,8 @@ class SfDataGridThemeData with Diagnosticable {
   /// The color of the number displayed when the order of the sorting is shown.
   final Color? sortOrderNumberColor;
 
+  final Function? getSortOrderNumberWidget;
+
   /// The color of the rounded background displayed
   /// when the order of the sorting is shown.
   final Color? sortOrderNumberBackgroundColor;
@@ -559,6 +564,7 @@ class SfDataGridThemeData with Diagnosticable {
     Color? filterIconHoverColor,
     Color? sortOrderNumberColor,
     Color? sortOrderNumberBackgroundColor,
+    Function? getSortOrderNumberWidget,
     TextStyle? filterPopupTextStyle,
     TextStyle? filterPopupDisabledTextStyle,
     double? columnDragIndicatorStrokeWidth,
@@ -598,6 +604,7 @@ class SfDataGridThemeData with Diagnosticable {
         filterIconColor: filterIconColor ?? this.filterIconColor,
         filterIconHoverColor: filterIconHoverColor ?? this.filterIconHoverColor,
         sortOrderNumberColor: sortOrderNumberColor ?? this.sortOrderNumberColor,
+        getSortOrderNumberWidget: getSortOrderNumberWidget ?? this.getSortOrderNumberWidget,
         sortOrderNumberBackgroundColor: sortOrderNumberBackgroundColor ??
             this.sortOrderNumberBackgroundColor,
         filterPopupTextStyle: filterPopupTextStyle ?? this.filterPopupTextStyle,
@@ -736,6 +743,7 @@ class SfDataGridThemeData with Diagnosticable {
       filterIconColor,
       filterIconHoverColor,
       sortOrderNumberColor,
+      getSortOrderNumberWidget,
       sortOrderNumberBackgroundColor,
       filterPopupTextStyle,
       filterPopupDisabledTextStyle,
