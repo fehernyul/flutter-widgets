@@ -8,8 +8,7 @@ import '../../theme.dart';
 /// Applies a theme to descendant [SfDataPager] widgets.
 class SfDataPagerTheme extends InheritedTheme {
   /// Applies the given theme [data] to [child].
-  const SfDataPagerTheme({Key? key, required this.data, required this.child})
-      : super(key: key, child: child);
+  const SfDataPagerTheme({Key? key, required this.data, required this.child}) : super(key: key, child: child);
 
   /// Specifies the color and typography values for descendant [SfDataPager]
   /// widgets.
@@ -25,8 +24,7 @@ class SfDataPagerTheme extends InheritedTheme {
   /// Defaults to [SfThemeData.dataPagerThemeData] if there
   /// is no [SfDataPagerTheme] in the given build context.
   static SfDataPagerThemeData? of(BuildContext context) {
-    final SfDataPagerTheme? sfDataPagerTheme =
-        context.dependOnInheritedWidgetOfExactType<SfDataPagerTheme>();
+    final SfDataPagerTheme? sfDataPagerTheme = context.dependOnInheritedWidgetOfExactType<SfDataPagerTheme>();
     return sfDataPagerTheme?.data ?? SfTheme.of(context).dataPagerThemeData;
   }
 
@@ -35,11 +33,8 @@ class SfDataPagerTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfDataPagerTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfDataPagerTheme>();
-    return identical(this, ancestorTheme)
-        ? child
-        : SfDataPagerTheme(data: data, child: child);
+    final SfDataPagerTheme? ancestorTheme = context.findAncestorWidgetOfExactType<SfDataPagerTheme>();
+    return identical(this, ancestorTheme) ? child : SfDataPagerTheme(data: data, child: child);
   }
 }
 
@@ -58,6 +53,7 @@ class SfDataPagerThemeData with Diagnosticable {
       this.itemSplashColor,
       this.itemHighlightColor,
       this.itemTextStyle,
+      this.getItemTextStyle,
       this.selectedItemColor,
       this.selectedItemTextStyle,
       this.disabledItemColor,
@@ -77,6 +73,7 @@ class SfDataPagerThemeData with Diagnosticable {
       Color? itemSplashColor,
       Color? itemHighlightColor,
       TextStyle? itemTextStyle,
+      Function? getItemTextStyle,
       Color? selectedItemColor,
       TextStyle? selectedItemTextStyle,
       Color? disabledItemColor,
@@ -93,6 +90,7 @@ class SfDataPagerThemeData with Diagnosticable {
         itemSplashColor: itemSplashColor, // TVG
         itemHighlightColor: itemHighlightColor, // TVG
         itemTextStyle: itemTextStyle,
+        getItemTextStyle: getItemTextStyle,
         selectedItemColor: selectedItemColor,
         selectedItemTextStyle: selectedItemTextStyle,
         disabledItemColor: disabledItemColor,
@@ -120,6 +118,8 @@ class SfDataPagerThemeData with Diagnosticable {
 
   /// The style of the text of page Items
   final TextStyle? itemTextStyle;
+
+  final Function? getItemTextStyle;
 
   /// The color of the page Items which are disabled.
   final Color? disabledItemColor;
@@ -172,21 +172,17 @@ class SfDataPagerThemeData with Diagnosticable {
         itemColor: itemColor ?? this.itemColor,
         itemTextStyle: itemTextStyle ?? this.itemTextStyle,
         selectedItemColor: selectedItemColor ?? this.selectedItemColor,
-        selectedItemTextStyle:
-            selectedItemTextStyle ?? this.selectedItemTextStyle,
+        selectedItemTextStyle: selectedItemTextStyle ?? this.selectedItemTextStyle,
         disabledItemColor: disabledItemColor ?? this.disabledItemColor,
-        disabledItemTextStyle:
-            disabledItemTextStyle ?? this.disabledItemTextStyle,
+        disabledItemTextStyle: disabledItemTextStyle ?? this.disabledItemTextStyle,
         itemBorderColor: itemBorderColor ?? this.itemBorderColor,
         itemBorderWidth: itemBorderWidth ?? this.itemBorderWidth,
         itemBorderRadius: itemBorderRadius ?? this.itemBorderRadius,
-        dropdownButtonBorderColor:
-            dropdownButtonBorderColor ?? this.dropdownButtonBorderColor);
+        dropdownButtonBorderColor: dropdownButtonBorderColor ?? this.dropdownButtonBorderColor);
   }
 
   /// Linearly interpolate between two themes.
-  static SfDataPagerThemeData? lerp(
-      SfDataPagerThemeData? a, SfDataPagerThemeData? b, double t) {
+  static SfDataPagerThemeData? lerp(SfDataPagerThemeData? a, SfDataPagerThemeData? b, double t) {
     if (a == null && b == null) {
       return null;
     }
@@ -194,20 +190,14 @@ class SfDataPagerThemeData with Diagnosticable {
         backgroundColor: Color.lerp(a!.backgroundColor, b!.backgroundColor, t),
         itemColor: Color.lerp(a.itemColor, b.itemColor, t),
         itemTextStyle: TextStyle.lerp(a.itemTextStyle, b.itemTextStyle, t),
-        selectedItemColor:
-            Color.lerp(a.selectedItemColor, b.selectedItemColor, t),
-        selectedItemTextStyle:
-            TextStyle.lerp(a.selectedItemTextStyle, b.selectedItemTextStyle, t),
-        disabledItemColor:
-            Color.lerp(a.disabledItemColor, b.disabledItemColor, t),
-        disabledItemTextStyle:
-            TextStyle.lerp(a.disabledItemTextStyle, b.disabledItemTextStyle, t),
+        selectedItemColor: Color.lerp(a.selectedItemColor, b.selectedItemColor, t),
+        selectedItemTextStyle: TextStyle.lerp(a.selectedItemTextStyle, b.selectedItemTextStyle, t),
+        disabledItemColor: Color.lerp(a.disabledItemColor, b.disabledItemColor, t),
+        disabledItemTextStyle: TextStyle.lerp(a.disabledItemTextStyle, b.disabledItemTextStyle, t),
         itemBorderColor: Color.lerp(a.itemBorderColor, b.itemBorderColor, t),
         itemBorderWidth: lerpDouble(a.itemBorderWidth, b.itemBorderWidth, t),
-        itemBorderRadius: BorderRadiusGeometry.lerp(
-            a.itemBorderRadius, b.itemBorderRadius, t),
-        dropdownButtonBorderColor: Color.lerp(
-            a.dropdownButtonBorderColor, b.dropdownButtonBorderColor, t));
+        itemBorderRadius: BorderRadiusGeometry.lerp(a.itemBorderRadius, b.itemBorderRadius, t),
+        dropdownButtonBorderColor: Color.lerp(a.dropdownButtonBorderColor, b.dropdownButtonBorderColor, t));
   }
 
   @override
@@ -258,40 +248,21 @@ class SfDataPagerThemeData with Diagnosticable {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     const SfDataPagerThemeData defaultData = SfDataPagerThemeData();
-    properties.add(ColorProperty('backgroundColor', backgroundColor,
-        defaultValue: defaultData.backgroundColor));
-    properties.add(ColorProperty('itemColor', itemColor,
-        defaultValue: defaultData.itemColor));
+    properties.add(ColorProperty('backgroundColor', backgroundColor, defaultValue: defaultData.backgroundColor));
+    properties.add(ColorProperty('itemColor', itemColor, defaultValue: defaultData.itemColor));
     // TVG - begin
-    properties.add(ColorProperty('itemHoverColor', itemHoverColor,
-        defaultValue: defaultData.itemHoverColor));
-    properties.add(ColorProperty('itemSplashColor', itemSplashColor,
-        defaultValue: defaultData.itemSplashColor));
-    properties.add(ColorProperty('itemHighlightColor', itemHighlightColor,
-        defaultValue: defaultData.itemHighlightColor));
+    properties.add(ColorProperty('itemHoverColor', itemHoverColor, defaultValue: defaultData.itemHoverColor));
+    properties.add(ColorProperty('itemSplashColor', itemSplashColor, defaultValue: defaultData.itemSplashColor));
+    properties.add(ColorProperty('itemHighlightColor', itemHighlightColor, defaultValue: defaultData.itemHighlightColor));
     // TVG - end
-    properties.add(ColorProperty('selectedItemColor', selectedItemColor,
-        defaultValue: defaultData.selectedItemColor));
-    properties.add(ColorProperty('disabledItemColor', disabledItemColor,
-        defaultValue: defaultData.disabledItemColor));
-    properties.add(ColorProperty('itemBorderColor', itemBorderColor,
-        defaultValue: defaultData.itemBorderColor));
-    properties.add(DiagnosticsProperty<TextStyle>(
-        'itemTextStyle', itemTextStyle,
-        defaultValue: defaultData.itemTextStyle));
-    properties.add(DiagnosticsProperty<TextStyle>(
-        'selectedItemTextStyle', selectedItemTextStyle,
-        defaultValue: defaultData.selectedItemTextStyle));
-    properties.add(DiagnosticsProperty<TextStyle>(
-        'disabledItemTextStyle', disabledItemTextStyle,
-        defaultValue: defaultData.disabledItemTextStyle));
-    properties.add(DoubleProperty('itemBorderWidth', itemBorderWidth,
-        defaultValue: defaultData.itemBorderWidth));
-    properties.add(DiagnosticsProperty<BorderRadiusGeometry>(
-        'itemBorderRadius', itemBorderRadius,
-        defaultValue: defaultData.itemBorderRadius));
-    properties.add(ColorProperty(
-        'dropdownButtonBorderColor', dropdownButtonBorderColor,
-        defaultValue: defaultData.dropdownButtonBorderColor));
+    properties.add(ColorProperty('selectedItemColor', selectedItemColor, defaultValue: defaultData.selectedItemColor));
+    properties.add(ColorProperty('disabledItemColor', disabledItemColor, defaultValue: defaultData.disabledItemColor));
+    properties.add(ColorProperty('itemBorderColor', itemBorderColor, defaultValue: defaultData.itemBorderColor));
+    properties.add(DiagnosticsProperty<TextStyle>('itemTextStyle', itemTextStyle, defaultValue: defaultData.itemTextStyle));
+    properties.add(DiagnosticsProperty<TextStyle>('selectedItemTextStyle', selectedItemTextStyle, defaultValue: defaultData.selectedItemTextStyle));
+    properties.add(DiagnosticsProperty<TextStyle>('disabledItemTextStyle', disabledItemTextStyle, defaultValue: defaultData.disabledItemTextStyle));
+    properties.add(DoubleProperty('itemBorderWidth', itemBorderWidth, defaultValue: defaultData.itemBorderWidth));
+    properties.add(DiagnosticsProperty<BorderRadiusGeometry>('itemBorderRadius', itemBorderRadius, defaultValue: defaultData.itemBorderRadius));
+    properties.add(ColorProperty('dropdownButtonBorderColor', dropdownButtonBorderColor, defaultValue: defaultData.dropdownButtonBorderColor));
   }
 }
