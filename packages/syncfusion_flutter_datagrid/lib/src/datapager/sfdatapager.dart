@@ -8,6 +8,7 @@ import 'package:syncfusion_flutter_core/localizations.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
 import '../datagrid_widget/sfdatagrid.dart';
+import 'onHoverDropDawnItem.dart';
 
 /// Signature for the [SfDataPager.pageItemBuilder] callback.
 // typedef DataPagerItemBuilderCallback<Widget> = Widget? Function(String text); // original code
@@ -455,6 +456,9 @@ class SfDataPagerState extends State<SfDataPager> {
 
   int? _rowsPerPage;
 
+  final FocusNode focusNodeDropdownButton = FocusNode();
+  bool isDropDownOpened = false;
+
   bool get _isRTL => _textDirection == TextDirection.rtl;
 
   int get _lastPageIndex => _pageCount - 1;
@@ -496,6 +500,12 @@ class SfDataPagerState extends State<SfDataPager> {
     }
   }
 
+  void functionCheckFocus() {
+    isDropDownOpened = !focusNodeDropdownButton.hasFocus;
+    print("isDropDownOpened: $isDropDownOpened");
+    return;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -508,6 +518,7 @@ class SfDataPagerState extends State<SfDataPager> {
     // from the SfDataGrid's rowsPerPage property. If it contains,
     // then we have to set the rows per page value from the SfDataGrid's rowsPerPage property.
     // Otherwise, we have to set the first value from the `availableRowsPerPage` list.
+    focusNodeDropdownButton.addListener(functionCheckFocus);
     _rowsPerPage = _getAvailableRowsPerPage(getRowsPerPage(widget.delegate));
 
     _setRowsPerPageLabelSize();
@@ -883,6 +894,7 @@ class SfDataPagerState extends State<SfDataPager> {
         : _dataPagerThemeHelper!.disabledItemTextStyle!.color;
 
     Icon buildIcon() {
+      //TODO _dataPagerThemeHelper!.getIcon(type, visible, isHovered)
       return Icon(iconData, key: ValueKey<String>(type), size: 20, color: color);
     }
 
@@ -1254,23 +1266,41 @@ class SfDataPagerState extends State<SfDataPager> {
 
   // dropdown
   Widget? _buildDropDownWidget() {
-    TextStyle? textStyle;
-    if (_dataPagerThemeHelper!.getItemTextStyle != null) {
-      textStyle = _dataPagerThemeHelper!.getItemTextStyle!(false, false, false);
-    } else {
-      textStyle = _dataPagerThemeHelper!.itemTextStyle;
-    }
-
     if (widget.onRowsPerPageChanged != null) {
       final List<Widget> availableRowsPerPage = widget.availableRowsPerPage.map<DropdownMenuItem<int>>((int? value) {
         return DropdownMenuItem<int>(
             value: value,
-            child: Text(
-              '$value',
-              style: textStyle,
-              textAlign: _isRTL ? TextAlign.right : TextAlign.left,
-            ));
+            child:
+                OnHoverDropDownItem(
+                  builder: (isHovered){
+                      //final color = isHovered ? Colors.blue:Colors.black;
+                      TextStyle? textStyle;
+                      if (_dataPagerThemeHelper!.getItemTextStyle != null) {
+                        if ((value==_rowsPerPage) && isDropDownOpened==false) {
+                          textStyle = _dataPagerThemeHelper!.getItemTextStyle!(false, false, false);
+                        } else {
+                          textStyle = _dataPagerThemeHelper!.getItemTextStyle!(false, isHovered, false);
+                        }
+                      } else {
+                        textStyle = _dataPagerThemeHelper!.itemTextStyle;
+                      }
+                      return
+                        //azért kellett Column-ba tenni mert csak a Text-re futott meg az onHover és nem az egész sorra
+                        Column(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment  : CrossAxisAlignment.stretch,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [Text(
+                            '$value',
+                            style: textStyle,
+                            textAlign: _isRTL ? TextAlign.right : TextAlign.left,
+                          )]
+                        );
+                  })
+            );
+
       }).toList();
+
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: Container(
@@ -1281,22 +1311,31 @@ class SfDataPagerState extends State<SfDataPager> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3.0),
             border: Border.all(color: _dataPagerThemeHelper!.dropdownButtonBorderColor!),
-            color: Colors.red, // ez a combobox háttér színe / kiválasztott elem színe
+            color: Colors.yellow, // TODO ez a combobox háttér színe / kiválasztott elem színe
           ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<int>(
-              focusColor: Colors.yellow,
-              dropdownColor: Colors.black,
-              itemHeight: 48,
-              items: availableRowsPerPage.cast<DropdownMenuItem<int>>(),
-              value: _rowsPerPage,
-              iconSize: 28.0,
-              onChanged: (int? value) {
-                _isRowsPerPageChanged = true;
-                _rowsPerPage = value;
-                widget.onRowsPerPageChanged!(_rowsPerPage);
-              },
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              hoverColor: Colors.black, //TODO hovercolor
             ),
+            child:
+              DropdownButtonHideUnderline(
+                child: DropdownButton<int>(
+                  focusNode: focusNodeDropdownButton, //ez azért kellett mert tudnom kell hogy épp kinyitott állapotban van-e a lenyíló lista
+                  isExpanded: true, //ezt egypandra kell tenni különben nem lehet a DropdownMenuItem -et stretch
+                  dropdownColor: Colors.yellow, //TODO ez lenyíló lista háttérszín
+                  itemHeight: 48,
+                  items: availableRowsPerPage.cast<DropdownMenuItem<int>>(),
+                  value: _rowsPerPage,
+                  iconSize: 30.0,
+                  onChanged: (int? value) {
+                    _isRowsPerPageChanged = true;
+                    _rowsPerPage = value;
+                    widget.onRowsPerPageChanged!(_rowsPerPage);
+                  },
+                ),
+              ),
           ),
         ),
       );
@@ -1463,7 +1502,8 @@ class SfDataPagerState extends State<SfDataPager> {
     children.add(Container(
       width: _rowsPerPageLabelWidth,
       padding: __rowsPerPageLabelPadding,
-      child: Text('asdf', textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left),
+      //child: Text('??????? EZ MI ', textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left),
+      child: Text('??????? EZ MI ', textDirection: _textDirection, style: TextStyle(color: Colors.indigo), textAlign: _isRTL ? TextAlign.right : TextAlign.left),
       // child: Text(_localization.rowsPerPageDataPagerLabel, textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left),
     ));
     children.add(dropDown);
@@ -1674,6 +1714,7 @@ class SfDataPagerState extends State<SfDataPager> {
         ..removeListener(_handleDataPagerControlPropertyChanged)
         ..dispose();
     }
+    focusNodeDropdownButton.removeListener(functionCheckFocus);
 
     /// Helps to remove the pageCount in DataGridSource.
     _setPageCountInDataGridSource(0.0);
