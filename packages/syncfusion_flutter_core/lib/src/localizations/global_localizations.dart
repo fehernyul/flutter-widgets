@@ -465,6 +465,7 @@ abstract class SfLocalizations {
   /// ```
   ///
   static SfLocalizations of(BuildContext context) {
+
     return Localizations.of<SfLocalizations>(context, SfLocalizations) ??
         const _DefaultLocalizations();
   }
@@ -474,7 +475,13 @@ class _SfLocalizationDelegates extends LocalizationsDelegate<SfLocalizations> {
   const _SfLocalizationDelegates();
 
   @override
-  bool isSupported(Locale locale) => locale.languageCode == 'en';
+  bool isSupported(Locale locale) =>
+      locale.languageCode == 'XXX'; //sajnos ezt XXX-re kell állítanom hogy a másik jusson érvényre!
+      /*
+       if (!unsupportedTypes.contains(delegate.type)) {
+          continue;
+        }
+       */
 
   @override
   Future<SfLocalizations> load(Locale locale) =>

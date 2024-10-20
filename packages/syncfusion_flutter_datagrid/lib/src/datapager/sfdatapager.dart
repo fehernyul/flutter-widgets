@@ -1184,7 +1184,6 @@ class SfDataPagerState extends State<SfDataPager> {
                     isHoveredPrevious = true;
                   }
                 });
-                print('onEnter pager item');
               },
               onExit: (event) {
                 setState(() {
@@ -1194,8 +1193,6 @@ class SfDataPagerState extends State<SfDataPager> {
                   isHoveredNext = false;
                   isHoveredPrevious = false;
                 });
-
-                print('onExit pager item');
               },
               child: InkWell(
                 key: pagerItemKey,
@@ -1301,30 +1298,33 @@ class SfDataPagerState extends State<SfDataPager> {
 
       }).toList();
 
+      Color? dropdownButtonBackGroundColor =  _dataPagerThemeHelper!.dropdownButtonBackGroundColor;
+      Color? dropdownButtonSelectedItemColor = _dataPagerThemeHelper!.dropdownButtonSelectedItemColor;
+      Color? dropdownButtonHoverColor = _dataPagerThemeHelper!.dropdownButtonHoverColor;
+
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: Container(
           width: _dropdownSize.width,
           height: _dropdownSize.height,
-          // padding: !_isRTL ? const EdgeInsets.fromLTRB(16, 8, 7, 8) : const EdgeInsets.fromLTRB(7, 8, 16, 8),
           padding: !_isRTL ? const EdgeInsets.fromLTRB(8, 2, 8, 2) : const EdgeInsets.fromLTRB(7, 8, 16, 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3.0),
             border: Border.all(color: _dataPagerThemeHelper!.dropdownButtonBorderColor!),
-            color: Colors.yellow, // TODO ez a combobox háttér színe / kiválasztott elem színe
+            color: dropdownButtonSelectedItemColor,
           ),
           child: Theme(
             data: Theme.of(context).copyWith(
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
-              hoverColor: Colors.black, //TODO hovercolor
+              hoverColor: dropdownButtonHoverColor
             ),
             child:
               DropdownButtonHideUnderline(
                 child: DropdownButton<int>(
                   focusNode: focusNodeDropdownButton, //ez azért kellett mert tudnom kell hogy épp kinyitott állapotban van-e a lenyíló lista
                   isExpanded: true, //ezt egypandra kell tenni különben nem lehet a DropdownMenuItem -et stretch
-                  dropdownColor: Colors.yellow, //TODO ez lenyíló lista háttérszín
+                  dropdownColor: dropdownButtonBackGroundColor,
                   itemHeight: 48,
                   items: availableRowsPerPage.cast<DropdownMenuItem<int>>(),
                   value: _rowsPerPage,
@@ -1502,9 +1502,9 @@ class SfDataPagerState extends State<SfDataPager> {
     children.add(Container(
       width: _rowsPerPageLabelWidth,
       padding: __rowsPerPageLabelPadding,
-      //child: Text('??????? EZ MI ', textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left),
-      child: Text('??????? EZ MI ', textDirection: _textDirection, style: TextStyle(color: Colors.indigo), textAlign: _isRTL ? TextAlign.right : TextAlign.left),
-      // child: Text(_localization.rowsPerPageDataPagerLabel, textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left),
+       /**child: Text('??????? EZ MI ', textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left),
+       child: Text('??????? EZ MI ', textDirection: _textDirection, style: TextStyle(color: Colors.indigo), textAlign: _isRTL ? TextAlign.right : TextAlign.left),*/
+       child: Text(_localization.rowsPerPageDataPagerLabel, textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left),
     ));
     children.add(dropDown);
 
@@ -2033,6 +2033,9 @@ class DataPagerThemeHelper {
     itemBorderWidth = defaults.itemBorderWidth ?? effectiveDataPagerThemeData.itemBorderWidth;
     itemBorderRadius = defaults.itemBorderRadius ?? effectiveDataPagerThemeData.itemBorderRadius;
     dropdownButtonBorderColor = defaults.dropdownButtonBorderColor ?? effectiveDataPagerThemeData.dropdownButtonBorderColor;
+    dropdownButtonBackGroundColor  = defaults.dropdownButtonBackGroundColor ?? effectiveDataPagerThemeData.dropdownButtonBackGroundColor;;
+    dropdownButtonSelectedItemColor = defaults.dropdownButtonSelectedItemColor ?? effectiveDataPagerThemeData.dropdownButtonSelectedItemColor;;
+    dropdownButtonHoverColor = defaults.dropdownButtonHoverColor ?? effectiveDataPagerThemeData.dropdownButtonHoverColor;
   }
 
   /// The color of the page Items
@@ -2085,6 +2088,10 @@ class DataPagerThemeHelper {
 
   ///The border color of the rowsPerPage dropdown button.
   late final Color? dropdownButtonBorderColor;
+
+  late final Color? dropdownButtonBackGroundColor;
+  late final Color? dropdownButtonSelectedItemColor;
+  late final Color? dropdownButtonHoverColor;
 }
 
 ///

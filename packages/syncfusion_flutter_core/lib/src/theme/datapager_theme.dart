@@ -61,7 +61,12 @@ class SfDataPagerThemeData with Diagnosticable {
       this.itemBorderColor,
       this.itemBorderWidth,
       this.itemBorderRadius,
-      this.dropdownButtonBorderColor});
+      this.dropdownButtonBorderColor,
+      this.dropdownButtonBackGroundColor,
+      this.dropdownButtonSelectedItemColor,
+      this.dropdownButtonHoverColor
+
+      });
 
   /// Create a [SfDataPagerThemeData] that's used to configure a
   /// [SfDataPagerTheme].
@@ -81,7 +86,12 @@ class SfDataPagerThemeData with Diagnosticable {
       Color? itemBorderColor,
       double? itemBorderWidth,
       BorderRadiusGeometry? itemBorderRadius,
-      Color? dropdownButtonBorderColor}) {
+      Color? dropdownButtonBorderColor,
+      Color? dropdownButtonBackGroundColor,
+      Color? dropdownButtonSelectedItemColor,
+      Color? dropdownButtonHoverColor
+
+      }) {
     brightness = brightness ?? Brightness.light;
     return SfDataPagerThemeData(
         backgroundColor: backgroundColor,
@@ -98,7 +108,12 @@ class SfDataPagerThemeData with Diagnosticable {
         itemBorderColor: itemBorderColor,
         itemBorderWidth: itemBorderWidth,
         itemBorderRadius: itemBorderRadius,
-        dropdownButtonBorderColor: dropdownButtonBorderColor);
+        dropdownButtonBorderColor: dropdownButtonBorderColor,
+        dropdownButtonBackGroundColor: dropdownButtonBackGroundColor,
+        dropdownButtonSelectedItemColor:dropdownButtonSelectedItemColor,
+        dropdownButtonHoverColor: dropdownButtonHoverColor,
+
+    );
   }
 
   /// The color of the page Items
@@ -151,6 +166,10 @@ class SfDataPagerThemeData with Diagnosticable {
   ///The border color of the rowsPerPage dropdown button.
   final Color? dropdownButtonBorderColor;
 
+  final Color? dropdownButtonBackGroundColor;
+  final Color? dropdownButtonSelectedItemColor;
+  final Color? dropdownButtonHoverColor;
+
   /// Creates a copy of this theme but with the given
   /// fields replaced with the new values.
   SfDataPagerThemeData copyWith(
@@ -165,7 +184,12 @@ class SfDataPagerThemeData with Diagnosticable {
       Color? itemBorderColor,
       double? itemBorderWidth,
       BorderRadiusGeometry? itemBorderRadius,
-      Color? dropdownButtonBorderColor}) {
+      Color? dropdownButtonBorderColor,
+      Color? dropdownButtonBackGroundColor,
+      Color? dropdownButtonSelectedItemColor,
+      Color? dropdownButtonHoverColor
+
+      }) {
     return SfDataPagerThemeData.raw(
         brightness: brightness,
         backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -178,7 +202,11 @@ class SfDataPagerThemeData with Diagnosticable {
         itemBorderColor: itemBorderColor ?? this.itemBorderColor,
         itemBorderWidth: itemBorderWidth ?? this.itemBorderWidth,
         itemBorderRadius: itemBorderRadius ?? this.itemBorderRadius,
-        dropdownButtonBorderColor: dropdownButtonBorderColor ?? this.dropdownButtonBorderColor);
+        dropdownButtonBorderColor: dropdownButtonBorderColor ?? this.dropdownButtonBorderColor,
+        dropdownButtonBackGroundColor: dropdownButtonBackGroundColor ?? this.dropdownButtonBackGroundColor,
+        dropdownButtonSelectedItemColor: dropdownButtonSelectedItemColor ?? this.dropdownButtonSelectedItemColor,
+        dropdownButtonHoverColor: dropdownButtonHoverColor ?? this.dropdownButtonHoverColor
+    );
   }
 
   /// Linearly interpolate between two themes.
@@ -197,7 +225,11 @@ class SfDataPagerThemeData with Diagnosticable {
         itemBorderColor: Color.lerp(a.itemBorderColor, b.itemBorderColor, t),
         itemBorderWidth: lerpDouble(a.itemBorderWidth, b.itemBorderWidth, t),
         itemBorderRadius: BorderRadiusGeometry.lerp(a.itemBorderRadius, b.itemBorderRadius, t),
-        dropdownButtonBorderColor: Color.lerp(a.dropdownButtonBorderColor, b.dropdownButtonBorderColor, t));
+        dropdownButtonBorderColor: Color.lerp(a.dropdownButtonBorderColor, b.dropdownButtonBorderColor, t),
+        dropdownButtonBackGroundColor: Color.lerp(a.dropdownButtonBackGroundColor, b.dropdownButtonBackGroundColor, t),
+        dropdownButtonSelectedItemColor: Color.lerp(a.dropdownButtonSelectedItemColor, b.dropdownButtonSelectedItemColor, t),
+        dropdownButtonHoverColor: Color.lerp(a.dropdownButtonHoverColor, b.dropdownButtonHoverColor, t)
+    );
   }
 
   @override
@@ -220,7 +252,10 @@ class SfDataPagerThemeData with Diagnosticable {
         other.itemBorderColor == itemBorderColor &&
         other.itemBorderWidth == itemBorderWidth &&
         other.itemBorderRadius == itemBorderRadius &&
-        other.dropdownButtonBorderColor == dropdownButtonBorderColor;
+        other.dropdownButtonBorderColor == dropdownButtonBorderColor  &&
+        other.dropdownButtonBackGroundColor == dropdownButtonBackGroundColor  &&
+        other.dropdownButtonSelectedItemColor == dropdownButtonSelectedItemColor &&
+        other.dropdownButtonHoverColor == dropdownButtonHoverColor;
   }
 
   @override
@@ -240,6 +275,9 @@ class SfDataPagerThemeData with Diagnosticable {
       itemBorderWidth,
       itemBorderRadius,
       dropdownButtonBorderColor,
+      dropdownButtonBackGroundColor, // TVG
+      dropdownButtonSelectedItemColor, // TVG
+      dropdownButtonHoverColor, // TVG
     ];
     return Object.hashAll(values);
   }
