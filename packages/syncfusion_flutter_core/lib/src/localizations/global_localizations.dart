@@ -428,6 +428,9 @@ abstract class SfLocalizations {
   /// series count is displayed as a legend.
   String get series;
 
+  //TVG
+  String get recordCount;
+
   /// A [LocalizationsDelegate] that uses [_DefaultLocalizations.load]
   /// to create an instance of this class.
   ///
@@ -831,6 +834,9 @@ class _DefaultLocalizations implements SfLocalizations {
   @override
   String get series => 'Series';
 
+  @override
+  String get recordCount => 'Record count';
+
   static Future<SfLocalizations> load(Locale locale) {
     return SynchronousFuture<SfLocalizations>(const _DefaultLocalizations());
   }
@@ -838,4 +844,6 @@ class _DefaultLocalizations implements SfLocalizations {
   //ignore: unused_field
   static const LocalizationsDelegate<SfLocalizations> delegate =
       _SfLocalizationDelegates();
+
+
 }

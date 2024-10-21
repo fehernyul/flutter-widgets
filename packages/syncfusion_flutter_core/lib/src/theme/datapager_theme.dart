@@ -64,8 +64,8 @@ class SfDataPagerThemeData with Diagnosticable {
       this.dropdownButtonBorderColor,
       this.dropdownButtonBackGroundColor,
       this.dropdownButtonSelectedItemColor,
-      this.dropdownButtonHoverColor
-
+      this.dropdownButtonHoverColor,
+      this.recordCount
       });
 
   /// Create a [SfDataPagerThemeData] that's used to configure a
@@ -89,8 +89,8 @@ class SfDataPagerThemeData with Diagnosticable {
       Color? dropdownButtonBorderColor,
       Color? dropdownButtonBackGroundColor,
       Color? dropdownButtonSelectedItemColor,
-      Color? dropdownButtonHoverColor
-
+      Color? dropdownButtonHoverColor,
+      int recordCount = 0
       }) {
     brightness = brightness ?? Brightness.light;
     return SfDataPagerThemeData(
@@ -112,7 +112,7 @@ class SfDataPagerThemeData with Diagnosticable {
         dropdownButtonBackGroundColor: dropdownButtonBackGroundColor,
         dropdownButtonSelectedItemColor:dropdownButtonSelectedItemColor,
         dropdownButtonHoverColor: dropdownButtonHoverColor,
-
+        recordCount: recordCount
     );
   }
 
@@ -170,6 +170,8 @@ class SfDataPagerThemeData with Diagnosticable {
   final Color? dropdownButtonSelectedItemColor;
   final Color? dropdownButtonHoverColor;
 
+  final int? recordCount;
+
   /// Creates a copy of this theme but with the given
   /// fields replaced with the new values.
   SfDataPagerThemeData copyWith(
@@ -187,8 +189,8 @@ class SfDataPagerThemeData with Diagnosticable {
       Color? dropdownButtonBorderColor,
       Color? dropdownButtonBackGroundColor,
       Color? dropdownButtonSelectedItemColor,
-      Color? dropdownButtonHoverColor
-
+      Color? dropdownButtonHoverColor,
+      int recordCount = 0
       }) {
     return SfDataPagerThemeData.raw(
         brightness: brightness,
@@ -205,7 +207,8 @@ class SfDataPagerThemeData with Diagnosticable {
         dropdownButtonBorderColor: dropdownButtonBorderColor ?? this.dropdownButtonBorderColor,
         dropdownButtonBackGroundColor: dropdownButtonBackGroundColor ?? this.dropdownButtonBackGroundColor,
         dropdownButtonSelectedItemColor: dropdownButtonSelectedItemColor ?? this.dropdownButtonSelectedItemColor,
-        dropdownButtonHoverColor: dropdownButtonHoverColor ?? this.dropdownButtonHoverColor
+        dropdownButtonHoverColor: dropdownButtonHoverColor ?? this.dropdownButtonHoverColor,
+        recordCount: recordCount,
     );
   }
 
@@ -228,7 +231,7 @@ class SfDataPagerThemeData with Diagnosticable {
         dropdownButtonBorderColor: Color.lerp(a.dropdownButtonBorderColor, b.dropdownButtonBorderColor, t),
         dropdownButtonBackGroundColor: Color.lerp(a.dropdownButtonBackGroundColor, b.dropdownButtonBackGroundColor, t),
         dropdownButtonSelectedItemColor: Color.lerp(a.dropdownButtonSelectedItemColor, b.dropdownButtonSelectedItemColor, t),
-        dropdownButtonHoverColor: Color.lerp(a.dropdownButtonHoverColor, b.dropdownButtonHoverColor, t)
+        dropdownButtonHoverColor: Color.lerp(a.dropdownButtonHoverColor, b.dropdownButtonHoverColor, t),
     );
   }
 
@@ -278,6 +281,7 @@ class SfDataPagerThemeData with Diagnosticable {
       dropdownButtonBackGroundColor, // TVG
       dropdownButtonSelectedItemColor, // TVG
       dropdownButtonHoverColor, // TVG
+      recordCount //TVG
     ];
     return Object.hashAll(values);
   }
