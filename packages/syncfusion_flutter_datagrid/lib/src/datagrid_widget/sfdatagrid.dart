@@ -5149,6 +5149,7 @@ class DataGridThemeHelper {
 
     filterIcon = defaults.filterIcon ?? sfDataGridThemeData.filterIcon;
     getFilterIcon = defaults.getFilterIcon ?? sfDataGridThemeData.getFilterIcon;
+    getCheckboxTheme = defaults.getCheckboxTheme ?? sfDataGridThemeData.getCheckboxTheme;
     filterIconColor =
         defaults.filterIconColor ?? sfDataGridThemeData.filterIconColor;
     filterIconHoverColor = defaults.filterIconHoverColor ??
@@ -5324,6 +5325,7 @@ class DataGridThemeHelper {
   /// ```
   late final Widget? filterIcon;
   late final Function? getFilterIcon;
+  late final Function? getCheckboxTheme;
 
   /// The color of the filter icon which indicates whether the column is filtered or not.
   ///
