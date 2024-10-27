@@ -1205,7 +1205,7 @@ class ColumnSizer {
       required DataGridConfiguration dataGridConfiguration,
       required GridColumn column}) {
 
-    bool isSelected = isSelectedRow(dataGridConfiguration, dataGridConfiguration.source.rows[rowIndex]);
+    bool isSelected = (rowIndex > 0) && isSelectedRow(dataGridConfiguration, dataGridConfiguration.source.rows[rowIndex-1]);
 
     final double strokeWidth = isSelected ?
         dataGridConfiguration.dataGridThemeHelper!.gridSelectedRowLineStrokeWidth!:
