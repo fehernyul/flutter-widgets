@@ -110,6 +110,8 @@ class SfDataGridThemeData with Diagnosticable {
   const SfDataGridThemeData(
       {this.gridLineColor,
       this.gridLineStrokeWidth,
+      this.gridSelectedRowLineColor,
+      this.gridSelectedRowLineStrokeWidth,
       this.selectionColor,
       this.currentRowBackgoundColor,
       this.currentCellStyle,
@@ -151,6 +153,8 @@ class SfDataGridThemeData with Diagnosticable {
     Brightness? brightness,
     Color? gridLineColor,
     double? gridLineStrokeWidth,
+    Color? gridSelectedRowLineColor,
+    double? gridSelectedRowLineStrokeWidth,
     Color? selectionColor,
     Color? currentRowBackgoundColor,
     DataGridCurrentCellStyle? currentCellStyle,
@@ -190,6 +194,8 @@ class SfDataGridThemeData with Diagnosticable {
     return SfDataGridThemeData(
         gridLineColor: gridLineColor,
         gridLineStrokeWidth: gridLineStrokeWidth,
+        gridSelectedRowLineColor: gridSelectedRowLineColor,
+        gridSelectedRowLineStrokeWidth: gridSelectedRowLineStrokeWidth,
         selectionColor: selectionColor,
         currentRowBackgoundColor: currentRowBackgoundColor,
         currentCellStyle: currentCellStyle,
@@ -265,6 +271,8 @@ class SfDataGridThemeData with Diagnosticable {
   /// }
   /// ```
   final double? gridLineStrokeWidth;
+  final Color? gridSelectedRowLineColor;
+  final double? gridSelectedRowLineStrokeWidth;
 
   /// Defines the default configuration of selection in [SfDataGrid].
   ///
@@ -544,6 +552,8 @@ class SfDataGridThemeData with Diagnosticable {
     Brightness? brightness,
     Color? gridLineColor,
     double? gridLineStrokeWidth,
+    Color? gridSelectedRowLineColor,
+    double? gridSelectedRowLineStrokeWidth,
     Color? selectionColor,
     Color? currentRowBackgoundColor,
     DataGridCurrentCellStyle? currentCellStyle,
@@ -581,6 +591,8 @@ class SfDataGridThemeData with Diagnosticable {
         brightness: brightness,
         gridLineColor: gridLineColor ?? this.gridLineColor,
         gridLineStrokeWidth: gridLineStrokeWidth ?? this.gridLineStrokeWidth,
+        gridSelectedRowLineColor: gridSelectedRowLineColor ?? this.gridSelectedRowLineColor,
+        gridSelectedRowLineStrokeWidth: gridSelectedRowLineStrokeWidth ?? this.gridSelectedRowLineStrokeWidth,
         selectionColor: selectionColor ?? this.selectionColor,
         currentRowBackgoundColor:
             currentRowBackgoundColor ?? this.currentRowBackgoundColor,
@@ -634,6 +646,8 @@ class SfDataGridThemeData with Diagnosticable {
       gridLineColor: Color.lerp(a!.gridLineColor, b!.gridLineColor, t),
       gridLineStrokeWidth:
           lerpDouble(a.gridLineStrokeWidth, b.gridLineStrokeWidth, t),
+      gridSelectedRowLineColor: Color.lerp(a!.gridSelectedRowLineColor, b!.gridSelectedRowLineColor, t),
+      gridSelectedRowLineStrokeWidth: lerpDouble(a!.gridSelectedRowLineStrokeWidth, b.gridSelectedRowLineStrokeWidth, t),
       selectionColor: Color.lerp(a.selectionColor, b.selectionColor, t),
       currentRowBackgoundColor:
           Color.lerp(a.currentRowBackgoundColor, b.currentRowBackgoundColor, t),
@@ -694,6 +708,8 @@ class SfDataGridThemeData with Diagnosticable {
     return other is SfDataGridThemeData &&
         other.gridLineColor == gridLineColor &&
         other.gridLineStrokeWidth == gridLineStrokeWidth &&
+        other.gridSelectedRowLineColor == gridSelectedRowLineColor &&
+        other.gridSelectedRowLineStrokeWidth == gridSelectedRowLineStrokeWidth &&
         other.selectionColor == selectionColor &&
         other.currentRowBackgoundColor == currentRowBackgoundColor &&
         other.currentCellStyle == currentCellStyle &&
@@ -730,6 +746,8 @@ class SfDataGridThemeData with Diagnosticable {
     final List<Object?> values = <Object?>[
       gridLineColor,
       gridLineStrokeWidth,
+      gridSelectedRowLineColor,
+      gridSelectedRowLineStrokeWidth,
       selectionColor,
       currentRowBackgoundColor,
       currentCellStyle,

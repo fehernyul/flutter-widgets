@@ -2757,14 +2757,20 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
 
 BorderDirectional _getCellBorder(
     DataGridConfiguration dataGridConfiguration, DataCellBase dataCell) {
-  final Color borderColor =
-      dataGridConfiguration.dataGridThemeHelper!.gridLineColor!;
-  final double borderWidth =
-      dataGridConfiguration.dataGridThemeHelper!.gridLineStrokeWidth!;
-
   final int rowIndex = (dataCell.rowSpan > 0)
       ? dataCell.rowIndex - dataCell.rowSpan
       : dataCell.rowIndex;
+  final bool isSelected = (rowIndex > 0) && isSelectedRow(dataGridConfiguration, dataGridConfiguration.source.rows[rowIndex-1]);
+
+  final double borderWidth =
+    isSelected ?
+    (dataGridConfiguration.dataGridThemeHelper!.gridSelectedRowLineStrokeWidth ?? dataGridConfiguration.dataGridThemeHelper!.gridLineStrokeWidth!) :
+    dataGridConfiguration.dataGridThemeHelper!.gridLineStrokeWidth!;
+  final Color borderColor =
+    isSelected ?
+    (dataGridConfiguration.dataGridThemeHelper!.gridSelectedRowLineColor ?? dataGridConfiguration.dataGridThemeHelper!.gridLineColor!) :
+    dataGridConfiguration.dataGridThemeHelper!.gridLineColor!;
+
   final int columnIndex = dataCell.columnIndex;
   final bool isStackedHeaderCell =
       dataCell.cellType == CellType.stackedHeaderCell;
@@ -3031,8 +3037,12 @@ BorderDirectional _getCellBorder(
   }
 
   BorderSide getTopBorder() {
-    if ((rowIndex == 0 &&
-            (canDrawHorizontalBorder || canDrawHeaderHorizontalBorder)) ||
+    if (isSelected &&
+        (dataGridConfiguration.dataGridThemeHelper!.gridSelectedRowLineStrokeWidth!=null || dataGridConfiguration.dataGridThemeHelper!.gridSelectedRowLineColor!=null)
+    ) {
+      return BorderSide(width: borderWidth, color: borderColor);
+    }
+    if ((rowIndex == 0 && (canDrawHorizontalBorder || canDrawHeaderHorizontalBorder)) ||
         canDrawTopFrozenBorder ||
         canDrawStartBottomSummaryRowTopBorder ||
         canDrawGridTopOuterBorder) {

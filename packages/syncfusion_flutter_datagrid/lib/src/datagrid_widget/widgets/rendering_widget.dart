@@ -783,12 +783,16 @@ class RenderVirtualizingCellsWidget extends RenderBox
             : dataRow.dataGridRowAdapter!.color;
       }
 
+
       // tvg - begin
-      if (dataGridConfiguration.dataGridThemeHelper!.currentRowBackgoundColor !=
-          null) {
+      if (dataGridConfiguration.dataGridThemeHelper!.currentRowBackgoundColor != null) {
         if (dataRow.isCurrentRow) {
-          backgroundColor = dataGridConfiguration
-              .dataGridThemeHelper!.currentRowBackgoundColor;
+          if ((backgroundColor!=null) && (dataGridConfiguration.dataGridThemeHelper!.currentRowBackgoundColor!=null)) {
+            backgroundColor = Color.alphaBlend(dataGridConfiguration.dataGridThemeHelper!.currentRowBackgoundColor!, backgroundColor);
+          }
+          else {
+            backgroundColor = dataGridConfiguration.dataGridThemeHelper!.currentRowBackgoundColor;
+          }
         }
       }
       // tvg - end

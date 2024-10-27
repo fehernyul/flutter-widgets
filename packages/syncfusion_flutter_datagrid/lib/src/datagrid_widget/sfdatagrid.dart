@@ -5117,8 +5117,10 @@ class DataGridThemeHelper {
         defaults.selectionColor ?? sfDataGridThemeData.selectionColor;
 
     // TVG - begin
-    currentRowBackgoundColor = defaults.currentRowBackgoundColor ??
-        sfDataGridThemeData.currentRowBackgoundColor;
+    currentRowBackgoundColor = defaults.currentRowBackgoundColor ?? sfDataGridThemeData.currentRowBackgoundColor;
+    gridSelectedRowLineColor = defaults.gridSelectedRowLineColor ?? sfDataGridThemeData.gridSelectedRowLineColor;
+    gridSelectedRowLineStrokeWidth = defaults.gridSelectedRowLineStrokeWidth ?? sfDataGridThemeData.gridSelectedRowLineStrokeWidth;
+
     // TVG - end
 
     headerHoverColor =
@@ -5203,6 +5205,9 @@ class DataGridThemeHelper {
   /// To do
 
   late final double? gridLineStrokeWidth;
+
+  late final Color? gridSelectedRowLineColor;
+  late final double? gridSelectedRowLineStrokeWidth;
 
   /// To do
 

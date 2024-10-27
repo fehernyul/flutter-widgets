@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_core/localizations.dart';
 
+import '../../../datagrid.dart';
 import '../../grid_common/enums.dart';
 import '../../grid_common/line_size_host.dart';
 import '../../grid_common/visible_line_info.dart';
@@ -1203,7 +1204,11 @@ class ColumnSizer {
       {required int rowIndex,
       required DataGridConfiguration dataGridConfiguration,
       required GridColumn column}) {
-    final double strokeWidth =
+
+    bool isSelected = isSelectedRow(dataGridConfiguration, dataGridConfiguration.source.rows[rowIndex]);
+
+    final double strokeWidth = isSelected ?
+        dataGridConfiguration.dataGridThemeHelper!.gridSelectedRowLineStrokeWidth!:
         dataGridConfiguration.dataGridThemeHelper!.gridLineStrokeWidth!;
 
     final GridLinesVisibility gridLinesVisibility =
