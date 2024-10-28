@@ -1678,6 +1678,8 @@ class SfDataPagerState extends State<SfDataPager> {
           _buildDataPagerWithLabel(constraint, children);
 
           _isDirty = false;
+          return SingleChildScrollView(scrollDirection: widget.direction, child: _getChildrenBasedOnDirection(children));
+          /*
           return constraint.maxWidth >= _kMobileViewWidthOnWeb
               ? SizedBox(
                   width: _getTotalDataPagerWidth(constraint),
@@ -1686,7 +1688,7 @@ class SfDataPagerState extends State<SfDataPager> {
                 )
               : SizedBox(
                   child: SingleChildScrollView(scrollDirection: widget.direction, child: _getChildrenBasedOnDirection(children)),
-                );
+                );*/
         } else {
           final Widget dataPager = _buildDataPager(constraint);
           _isDirty = false;
