@@ -3540,6 +3540,13 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
 
   DataGridStateDetails? _dataGridStateDetails;
 
+  DataGridConfiguration? getDataGridDataGridConfiguration() {
+    if (_dataGridStateDetails!=null) {
+      return  _dataGridStateDetails!();
+    }
+    return null;
+  }
+
   final Map<String, List<FilterCondition>> _filterConditions =
       <String, List<FilterCondition>>{};
 
