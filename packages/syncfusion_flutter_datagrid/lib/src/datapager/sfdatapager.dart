@@ -1543,6 +1543,7 @@ class SfDataPagerState extends State<SfDataPager> {
         // width: 100,
         padding: __rowsPerPageLabelPadding,
         child: Center(widthFactor: 1, child: Text(_dataPagerThemeHelper!.recordCountCaption + ": " + _dataPagerThemeHelper!.recordCount.toString(), textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left)),
+        // child: Text(_dataPagerThemeHelper!.recordCountCaption + ": " + _dataPagerThemeHelper!.recordCount.toString(), textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left),
       ),
     );
 
@@ -1637,7 +1638,7 @@ class SfDataPagerState extends State<SfDataPager> {
 
     if (isDropDown) {
       children.add(Container(
-        height: widget.itemHeight + widget.itemPadding.vertical, // widget.itemPadding.vertical => .top+ .bottom
+        // height: widget.itemHeight + widget.itemPadding.vertical, // widget.itemPadding.vertical => .top+ .bottom
         padding: widget.itemPadding,
         // decoration: BoxDecoration(border: Border.all(color: Colors.pink, width: 1, style: BorderStyle.solid)),
         child: Wrap(
