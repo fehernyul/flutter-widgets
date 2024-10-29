@@ -3853,9 +3853,6 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   }
 
   Future<void> _updateDataSource() async {
-    if (dataSourceFromDB) {
-      print('_updateDataSource!!! - lófasz');
-    }
     if (sortedColumns.isNotEmpty) {
       _unSortedRows = rows.toList();
       _effectiveRows = _unSortedRows;
