@@ -46,73 +46,76 @@ class SfDataPagerTheme extends InheritedTheme {
 class SfDataPagerThemeData with Diagnosticable {
   /// Create a [SfDataPagerThemeData] that's used to configure a
   /// [SfDataPagerTheme].
-  const SfDataPagerThemeData(
-      {this.backgroundColor,
-      this.itemColor,
-      this.itemHoverColor,
-      this.itemSplashColor,
-      this.itemHighlightColor,
-      this.itemTextStyle,
-      this.getItemTextStyle,
-      this.selectedItemColor,
-      this.selectedItemTextStyle,
-      this.disabledItemColor,
-      this.disabledItemTextStyle,
-      this.itemBorderColor,
-      this.itemBorderWidth,
-      this.itemBorderRadius,
-      this.dropdownButtonBorderColor,
-      this.dropdownButtonBackGroundColor,
-      this.dropdownButtonSelectedItemColor,
-      this.dropdownButtonHoverColor,
-      this.recordCount
-      });
+  const SfDataPagerThemeData({
+    this.backgroundColor,
+    this.itemColor,
+    this.itemHoverColor,
+    this.itemSplashColor,
+    this.itemHighlightColor,
+    this.itemTextStyle,
+    this.getItemTextStyle,
+    this.selectedItemColor,
+    this.selectedItemTextStyle,
+    this.disabledItemColor,
+    this.disabledItemTextStyle,
+    this.itemBorderColor,
+    this.itemBorderWidth,
+    this.itemBorderRadius,
+    this.dropdownButtonBorderColor,
+    this.dropdownButtonBackGroundColor,
+    this.dropdownButtonSelectedItemColor,
+    this.dropdownButtonHoverColor,
+    this.recordCount,
+    this.recordCountCaption,
+  });
 
   /// Create a [SfDataPagerThemeData] that's used to configure a
   /// [SfDataPagerTheme].
-  factory SfDataPagerThemeData.raw(
-      {Brightness? brightness,
-      Color? backgroundColor,
-      Color? itemColor,
-      Color? itemHoverColor,
-      Color? itemSplashColor,
-      Color? itemHighlightColor,
-      TextStyle? itemTextStyle,
-      Function? getItemTextStyle,
-      Color? selectedItemColor,
-      TextStyle? selectedItemTextStyle,
-      Color? disabledItemColor,
-      TextStyle? disabledItemTextStyle,
-      Color? itemBorderColor,
-      double? itemBorderWidth,
-      BorderRadiusGeometry? itemBorderRadius,
-      Color? dropdownButtonBorderColor,
-      Color? dropdownButtonBackGroundColor,
-      Color? dropdownButtonSelectedItemColor,
-      Color? dropdownButtonHoverColor,
-      int recordCount = 0
-      }) {
+  factory SfDataPagerThemeData.raw({
+    Brightness? brightness,
+    Color? backgroundColor,
+    Color? itemColor,
+    Color? itemHoverColor,
+    Color? itemSplashColor,
+    Color? itemHighlightColor,
+    TextStyle? itemTextStyle,
+    Function? getItemTextStyle,
+    Color? selectedItemColor,
+    TextStyle? selectedItemTextStyle,
+    Color? disabledItemColor,
+    TextStyle? disabledItemTextStyle,
+    Color? itemBorderColor,
+    double? itemBorderWidth,
+    BorderRadiusGeometry? itemBorderRadius,
+    Color? dropdownButtonBorderColor,
+    Color? dropdownButtonBackGroundColor,
+    Color? dropdownButtonSelectedItemColor,
+    Color? dropdownButtonHoverColor,
+    int recordCount = 0,
+    String? recordCountCaption,
+  }) {
     brightness = brightness ?? Brightness.light;
     return SfDataPagerThemeData(
-        backgroundColor: backgroundColor,
-        itemColor: itemColor,
-        itemHoverColor: itemHoverColor, // TVG
-        itemSplashColor: itemSplashColor, // TVG
-        itemHighlightColor: itemHighlightColor, // TVG
-        itemTextStyle: itemTextStyle,
-        getItemTextStyle: getItemTextStyle,
-        selectedItemColor: selectedItemColor,
-        selectedItemTextStyle: selectedItemTextStyle,
-        disabledItemColor: disabledItemColor,
-        disabledItemTextStyle: disabledItemTextStyle,
-        itemBorderColor: itemBorderColor,
-        itemBorderWidth: itemBorderWidth,
-        itemBorderRadius: itemBorderRadius,
-        dropdownButtonBorderColor: dropdownButtonBorderColor,
-        dropdownButtonBackGroundColor: dropdownButtonBackGroundColor,
-        dropdownButtonSelectedItemColor:dropdownButtonSelectedItemColor,
-        dropdownButtonHoverColor: dropdownButtonHoverColor,
-        recordCount: recordCount
+      backgroundColor: backgroundColor,
+      itemColor: itemColor,
+      itemHoverColor: itemHoverColor, // TVG
+      itemSplashColor: itemSplashColor, // TVG
+      itemHighlightColor: itemHighlightColor, // TVG
+      itemTextStyle: itemTextStyle,
+      getItemTextStyle: getItemTextStyle,
+      selectedItemColor: selectedItemColor,
+      selectedItemTextStyle: selectedItemTextStyle,
+      disabledItemColor: disabledItemColor,
+      disabledItemTextStyle: disabledItemTextStyle,
+      itemBorderColor: itemBorderColor,
+      itemBorderWidth: itemBorderWidth,
+      itemBorderRadius: itemBorderRadius,
+      dropdownButtonBorderColor: dropdownButtonBorderColor,
+      dropdownButtonBackGroundColor: dropdownButtonBackGroundColor,
+      dropdownButtonSelectedItemColor: dropdownButtonSelectedItemColor,
+      dropdownButtonHoverColor: dropdownButtonHoverColor,
+      recordCount: recordCount,
+      recordCountCaption: recordCountCaption,
     );
   }
 
@@ -171,6 +174,7 @@ class SfDataPagerThemeData with Diagnosticable {
   final Color? dropdownButtonHoverColor;
 
   final int? recordCount;
+  final String? recordCountCaption;
 
   /// Creates a copy of this theme but with the given
   /// fields replaced with the new values.
@@ -190,25 +194,24 @@ class SfDataPagerThemeData with Diagnosticable {
       Color? dropdownButtonBackGroundColor,
       Color? dropdownButtonSelectedItemColor,
       Color? dropdownButtonHoverColor,
-      int recordCount = 0
-      }) {
+      int recordCount = 0}) {
     return SfDataPagerThemeData.raw(
-        brightness: brightness,
-        backgroundColor: backgroundColor ?? this.backgroundColor,
-        itemColor: itemColor ?? this.itemColor,
-        itemTextStyle: itemTextStyle ?? this.itemTextStyle,
-        selectedItemColor: selectedItemColor ?? this.selectedItemColor,
-        selectedItemTextStyle: selectedItemTextStyle ?? this.selectedItemTextStyle,
-        disabledItemColor: disabledItemColor ?? this.disabledItemColor,
-        disabledItemTextStyle: disabledItemTextStyle ?? this.disabledItemTextStyle,
-        itemBorderColor: itemBorderColor ?? this.itemBorderColor,
-        itemBorderWidth: itemBorderWidth ?? this.itemBorderWidth,
-        itemBorderRadius: itemBorderRadius ?? this.itemBorderRadius,
-        dropdownButtonBorderColor: dropdownButtonBorderColor ?? this.dropdownButtonBorderColor,
-        dropdownButtonBackGroundColor: dropdownButtonBackGroundColor ?? this.dropdownButtonBackGroundColor,
-        dropdownButtonSelectedItemColor: dropdownButtonSelectedItemColor ?? this.dropdownButtonSelectedItemColor,
-        dropdownButtonHoverColor: dropdownButtonHoverColor ?? this.dropdownButtonHoverColor,
-        recordCount: recordCount,
+      brightness: brightness,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      itemColor: itemColor ?? this.itemColor,
+      itemTextStyle: itemTextStyle ?? this.itemTextStyle,
+      selectedItemColor: selectedItemColor ?? this.selectedItemColor,
+      selectedItemTextStyle: selectedItemTextStyle ?? this.selectedItemTextStyle,
+      disabledItemColor: disabledItemColor ?? this.disabledItemColor,
+      disabledItemTextStyle: disabledItemTextStyle ?? this.disabledItemTextStyle,
+      itemBorderColor: itemBorderColor ?? this.itemBorderColor,
+      itemBorderWidth: itemBorderWidth ?? this.itemBorderWidth,
+      itemBorderRadius: itemBorderRadius ?? this.itemBorderRadius,
+      dropdownButtonBorderColor: dropdownButtonBorderColor ?? this.dropdownButtonBorderColor,
+      dropdownButtonBackGroundColor: dropdownButtonBackGroundColor ?? this.dropdownButtonBackGroundColor,
+      dropdownButtonSelectedItemColor: dropdownButtonSelectedItemColor ?? this.dropdownButtonSelectedItemColor,
+      dropdownButtonHoverColor: dropdownButtonHoverColor ?? this.dropdownButtonHoverColor,
+      recordCount: recordCount,
     );
   }
 
@@ -218,20 +221,20 @@ class SfDataPagerThemeData with Diagnosticable {
       return null;
     }
     return SfDataPagerThemeData(
-        backgroundColor: Color.lerp(a!.backgroundColor, b!.backgroundColor, t),
-        itemColor: Color.lerp(a.itemColor, b.itemColor, t),
-        itemTextStyle: TextStyle.lerp(a.itemTextStyle, b.itemTextStyle, t),
-        selectedItemColor: Color.lerp(a.selectedItemColor, b.selectedItemColor, t),
-        selectedItemTextStyle: TextStyle.lerp(a.selectedItemTextStyle, b.selectedItemTextStyle, t),
-        disabledItemColor: Color.lerp(a.disabledItemColor, b.disabledItemColor, t),
-        disabledItemTextStyle: TextStyle.lerp(a.disabledItemTextStyle, b.disabledItemTextStyle, t),
-        itemBorderColor: Color.lerp(a.itemBorderColor, b.itemBorderColor, t),
-        itemBorderWidth: lerpDouble(a.itemBorderWidth, b.itemBorderWidth, t),
-        itemBorderRadius: BorderRadiusGeometry.lerp(a.itemBorderRadius, b.itemBorderRadius, t),
-        dropdownButtonBorderColor: Color.lerp(a.dropdownButtonBorderColor, b.dropdownButtonBorderColor, t),
-        dropdownButtonBackGroundColor: Color.lerp(a.dropdownButtonBackGroundColor, b.dropdownButtonBackGroundColor, t),
-        dropdownButtonSelectedItemColor: Color.lerp(a.dropdownButtonSelectedItemColor, b.dropdownButtonSelectedItemColor, t),
-        dropdownButtonHoverColor: Color.lerp(a.dropdownButtonHoverColor, b.dropdownButtonHoverColor, t),
+      backgroundColor: Color.lerp(a!.backgroundColor, b!.backgroundColor, t),
+      itemColor: Color.lerp(a.itemColor, b.itemColor, t),
+      itemTextStyle: TextStyle.lerp(a.itemTextStyle, b.itemTextStyle, t),
+      selectedItemColor: Color.lerp(a.selectedItemColor, b.selectedItemColor, t),
+      selectedItemTextStyle: TextStyle.lerp(a.selectedItemTextStyle, b.selectedItemTextStyle, t),
+      disabledItemColor: Color.lerp(a.disabledItemColor, b.disabledItemColor, t),
+      disabledItemTextStyle: TextStyle.lerp(a.disabledItemTextStyle, b.disabledItemTextStyle, t),
+      itemBorderColor: Color.lerp(a.itemBorderColor, b.itemBorderColor, t),
+      itemBorderWidth: lerpDouble(a.itemBorderWidth, b.itemBorderWidth, t),
+      itemBorderRadius: BorderRadiusGeometry.lerp(a.itemBorderRadius, b.itemBorderRadius, t),
+      dropdownButtonBorderColor: Color.lerp(a.dropdownButtonBorderColor, b.dropdownButtonBorderColor, t),
+      dropdownButtonBackGroundColor: Color.lerp(a.dropdownButtonBackGroundColor, b.dropdownButtonBackGroundColor, t),
+      dropdownButtonSelectedItemColor: Color.lerp(a.dropdownButtonSelectedItemColor, b.dropdownButtonSelectedItemColor, t),
+      dropdownButtonHoverColor: Color.lerp(a.dropdownButtonHoverColor, b.dropdownButtonHoverColor, t),
     );
   }
 
@@ -255,8 +258,8 @@ class SfDataPagerThemeData with Diagnosticable {
         other.itemBorderColor == itemBorderColor &&
         other.itemBorderWidth == itemBorderWidth &&
         other.itemBorderRadius == itemBorderRadius &&
-        other.dropdownButtonBorderColor == dropdownButtonBorderColor  &&
-        other.dropdownButtonBackGroundColor == dropdownButtonBackGroundColor  &&
+        other.dropdownButtonBorderColor == dropdownButtonBorderColor &&
+        other.dropdownButtonBackGroundColor == dropdownButtonBackGroundColor &&
         other.dropdownButtonSelectedItemColor == dropdownButtonSelectedItemColor &&
         other.dropdownButtonHoverColor == dropdownButtonHoverColor;
   }
@@ -281,7 +284,8 @@ class SfDataPagerThemeData with Diagnosticable {
       dropdownButtonBackGroundColor, // TVG
       dropdownButtonSelectedItemColor, // TVG
       dropdownButtonHoverColor, // TVG
-      recordCount //TVG
+      recordCount, //TVG
+      recordCountCaption, //TVG
     ];
     return Object.hashAll(values);
   }

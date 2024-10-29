@@ -1507,10 +1507,8 @@ class SfDataPagerState extends State<SfDataPager> {
     ));
     children.add(dropDown);
 
-    children.add(Container(
-       padding: __rowsPerPageLabelPadding,
-       child:Text(_localization.recordCount + ": " + _dataPagerThemeHelper!.recordCount.toString(), textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left))
-    );
+    children.add(
+        Container(padding: __rowsPerPageLabelPadding, child: Text(_dataPagerThemeHelper!.recordCountCaption + ": " + _dataPagerThemeHelper!.recordCount.toString(), textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left)));
 
     return children;
   }
@@ -2041,6 +2039,7 @@ class DataPagerThemeHelper {
     dropdownButtonSelectedItemColor = defaults.dropdownButtonSelectedItemColor ?? effectiveDataPagerThemeData.dropdownButtonSelectedItemColor;;
     dropdownButtonHoverColor = defaults.dropdownButtonHoverColor ?? effectiveDataPagerThemeData.dropdownButtonHoverColor;
     recordCount = defaults.recordCount ?? 0;
+    recordCountCaption = defaults.recordCountCaption ?? 'Record count';
   }
 
   /// The color of the page Items
@@ -2099,6 +2098,7 @@ class DataPagerThemeHelper {
   late final Color? dropdownButtonHoverColor;
 
   late final int recordCount;
+  late final String recordCountCaption;
 }
 
 ///

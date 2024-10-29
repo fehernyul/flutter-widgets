@@ -428,8 +428,8 @@ abstract class SfLocalizations {
   /// series count is displayed as a legend.
   String get series;
 
-  //TVG
-  String get recordCount;
+  // TVG
+  // String get recordCount;
 
   /// A [LocalizationsDelegate] that uses [_DefaultLocalizations.load]
   /// to create an instance of this class.
@@ -451,8 +451,7 @@ abstract class SfLocalizations {
   ///   );
   /// }
   ///```
-  static const LocalizationsDelegate<SfLocalizations> delegate =
-      _SfLocalizationDelegates();
+  static const LocalizationsDelegate<SfLocalizations> delegate = _SfLocalizationDelegates();
 
   /// The `SfLocalizations` from the closest [Localizations] instance
   /// that encloses the given context.
@@ -468,9 +467,7 @@ abstract class SfLocalizations {
   /// ```
   ///
   static SfLocalizations of(BuildContext context) {
-
-    return Localizations.of<SfLocalizations>(context, SfLocalizations) ??
-        const _DefaultLocalizations();
+    return Localizations.of<SfLocalizations>(context, SfLocalizations) ?? const _DefaultLocalizations();
   }
 }
 
@@ -478,17 +475,15 @@ class _SfLocalizationDelegates extends LocalizationsDelegate<SfLocalizations> {
   const _SfLocalizationDelegates();
 
   @override
-  bool isSupported(Locale locale) =>
-      locale.languageCode == 'XXX'; //sajnos ezt XXX-re kell állítanom hogy a másik jusson érvényre!
-      /*
+  bool isSupported(Locale locale) => locale.languageCode == 'XXX'; //sajnos ezt XXX-re kell állítanom hogy a másik jusson érvényre!
+  /*
        if (!unsupportedTypes.contains(delegate.type)) {
           continue;
         }
        */
 
   @override
-  Future<SfLocalizations> load(Locale locale) =>
-      _DefaultLocalizations.load(locale);
+  Future<SfLocalizations> load(Locale locale) => _DefaultLocalizations.load(locale);
 
   @override
   bool shouldReload(LocalizationsDelegate<SfLocalizations> old) => false;
@@ -667,8 +662,7 @@ class _DefaultLocalizations implements SfLocalizations {
   String get greaterThanDataGridFilteringLabel => 'Greater Than';
 
   @override
-  String get greaterThanOrEqualDataGridFilteringLabel =>
-      'Greater Than Or Equal';
+  String get greaterThanOrEqualDataGridFilteringLabel => 'Greater Than Or Equal';
 
   @override
   String get lessThanDataGridFilteringLabel => 'Less Than';
@@ -686,12 +680,10 @@ class _DefaultLocalizations implements SfLocalizations {
   String get nullDataGridFilteringLabel => 'Null';
 
   @override
-  String get sortSmallestToLargestDataGridFilteringLabel =>
-      'Sort Smallest to Largest';
+  String get sortSmallestToLargestDataGridFilteringLabel => 'Sort Smallest to Largest';
 
   @override
-  String get sortLargestToSmallestDataGridFilteringLabel =>
-      'Sort Largest to Smallest';
+  String get sortLargestToSmallestDataGridFilteringLabel => 'Sort Largest to Smallest';
 
   @override
   String get sortAToZDataGridFilteringLabel => 'Sort A to Z';
@@ -700,12 +692,10 @@ class _DefaultLocalizations implements SfLocalizations {
   String get sortZToADataGridFilteringLabel => 'Sort Z to A';
 
   @override
-  String get sortOldestToNewestDataGridFilteringLabel =>
-      'Sort Oldest to Newest';
+  String get sortOldestToNewestDataGridFilteringLabel => 'Sort Oldest to Newest';
 
   @override
-  String get sortNewestToOldestDataGridFilteringLabel =>
-      'Sort Newest to Oldest';
+  String get sortNewestToOldestDataGridFilteringLabel => 'Sort Newest to Oldest';
 
   @override
   String get clearFilterDataGridFilteringLabel => 'Clear Filter';
@@ -789,8 +779,7 @@ class _DefaultLocalizations implements SfLocalizations {
   String get passwordDialogHeaderTextLabel => 'Password Protected';
 
   @override
-  String get passwordDialogContentLabel =>
-      'Enter the password to open this PDF file';
+  String get passwordDialogContentLabel => 'Enter the password to open this PDF file';
 
   @override
   String get passwordDialogHintTextLabel => 'Enter Password';
@@ -842,8 +831,5 @@ class _DefaultLocalizations implements SfLocalizations {
   }
 
   //ignore: unused_field
-  static const LocalizationsDelegate<SfLocalizations> delegate =
-      _SfLocalizationDelegates();
-
-
+  static const LocalizationsDelegate<SfLocalizations> delegate = _SfLocalizationDelegates();
 }
