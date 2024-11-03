@@ -459,7 +459,27 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
       await handleLoadMoreRows(dataGridConfiguration.source);
     }
 
-    if (_verticalController!.hasClients &&
+    //addig töltse amíg meg csak meg nem jelenik a scrollbar és van még elem
+    //TODO még nem teljesen jó
+    if ((dataGridConfiguration.isLastPage ==false) && ((_verticalController!.hasClients==false) || (_verticalController!.position.maxScrollExtent == 0))) {
+      final Widget? loadMoreView = dataGridConfiguration.loadMoreViewBuilder!(context, loadMoreRows);
+      if (loadMoreView != null) {
+        final Alignment loadMoreAlignment =
+        dataGridConfiguration.textDirection == TextDirection.ltr
+            ? Alignment.bottomLeft
+            : Alignment.bottomRight;
+
+        children.add(Positioned(
+            top: 0.0,
+            width: _width,
+            height: _height,
+            child: Align(
+              alignment: loadMoreAlignment,
+              child: loadMoreView,
+            )));
+      }
+
+    } else if (_verticalController!.hasClients &&
         dataGridConfiguration.loadMoreViewBuilder != null) {
       // FLUT-3038 Need to restrict load more view when rows exist within the
       // view height.

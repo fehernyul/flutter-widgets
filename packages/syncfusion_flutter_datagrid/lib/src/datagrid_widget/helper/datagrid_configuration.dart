@@ -88,6 +88,8 @@ class DataGridConfiguration {
   // gabor - 2024.06.10
   /// a TVG hasznalja-e (ahhoz kellett, hogy a gridHeaderCell-ről leszedjük az onTapUp hivatkozást)
   bool isTvgGrid = false;
+  // utolsó lap, többet ne akarjon betölteni
+  bool isLastPage = false;
 
   /// Regebben sajat syncfusion property volt, de eltuntettek. En meg visszatettem.
   bool allowSelectingWhenClickOnTheRow = false;
