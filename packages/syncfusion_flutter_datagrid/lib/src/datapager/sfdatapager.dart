@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:syncfusion_flutter_core/localizations.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
+import '../../datagrid.dart';
 import '../datagrid_widget/sfdatagrid.dart';
 import 'onHoverDropDawnItem.dart';
 
@@ -417,8 +418,9 @@ class SfDataPagerState extends State<SfDataPager> {
   double _rowsPerPageLabelWidth = 0;
   static const Size _dropdownSize = Size(82, 36);
   static const EdgeInsets __rowsPerPageLabelPadding = EdgeInsets.all(5);
-  static const Size _defaultPagerLabelDimension = Size(200.0, 50.0);
-  static const double _kMobileViewWidthOnWeb = 767.0 + 110; // + record count width
+  static const Size _defaultPagerLabelDimension = Size(160.0, 50.0);
+  //static const double _kMobileViewWidthOnWeb = 767.0 + 110; // + record count width
+  static const double _kMobileViewWidthOnWeb = 10; //
 
   late _DataPagerItemGenerator _itemGenerator;
   ScrollController? _scrollController;
@@ -525,7 +527,7 @@ class SfDataPagerState extends State<SfDataPager> {
 
     /// Set page count in DataGridSource.
     _setPageCountInDataGridSource(widget.pageCount);
-    _defaultPagerDimension = Size(300.0, _getDefaultDimensionHeight());
+    _defaultPagerDimension = Size(999.0, _getDefaultDimensionHeight());
     _scrollController = ScrollController()..addListener(_handleScrollPositionChanged);
     _itemGenerator = _DataPagerItemGenerator();
     _controller = widget.controller ?? DataPagerController()
@@ -611,6 +613,22 @@ class SfDataPagerState extends State<SfDataPager> {
       setPageCount(widget.delegate, pageCount);
     }
   }
+
+  // TVG - begin
+  double _getDatagridConfigurationWidth() {
+    double resultWidth = 300;
+    if (widget.delegate != null) {
+      if (widget.delegate is DataGridSource) {
+        final DataGridConfiguration? dataGridConfiguration = (widget.delegate as DataGridSource).getDataGridDataGridConfiguration();
+        if (dataGridConfiguration != null) {
+          resultWidth = dataGridConfiguration.viewWidth;
+        }
+      }
+    }
+
+    return resultWidth;
+  }
+  // TVG - end
 
   Future<void> _handlePageItemTapped(int index) async {
     // Issue:
@@ -883,14 +901,13 @@ class SfDataPagerState extends State<SfDataPager> {
       if (textStyle != null) {
         color = textStyle.color;
       }
-    }
-    else {
+    } else {
       color ??= visible
           ? flutterTheme.brightness == Brightness.light
-          ? _dataPagerThemeHelper!.itemTextStyle!.color?.withOpacity(0.54)
-          : _dataPagerThemeHelper!.itemTextStyle!.color?.withOpacity(0.65)
-      //bool isSelected, bool isHovered, bool isDisabled)
-      //bool isSelected, bool isHovered, bool isDisabled)
+              ? _dataPagerThemeHelper!.itemTextStyle!.color?.withOpacity(0.54)
+              : _dataPagerThemeHelper!.itemTextStyle!.color?.withOpacity(0.65)
+          //bool isSelected, bool isHovered, bool isDisabled)
+          //bool isSelected, bool isHovered, bool isDisabled)
           : _dataPagerThemeHelper!.disabledItemTextStyle!.color;
     }
     Icon buildIcon() {
@@ -905,7 +922,7 @@ class SfDataPagerState extends State<SfDataPager> {
     }
   }
 
-  double _getTotalDataPagerWidth(BoxConstraints constraint) {
+  double _getTotalDataPagerWidth_notused(BoxConstraints constraint) {
     if (widget.direction == Axis.horizontal) {
       return _getSizeConstraint(constraint);
     } else {
@@ -929,7 +946,7 @@ class SfDataPagerState extends State<SfDataPager> {
     }
   }
 
-  double _getDataPagerWidth({bool canEnableDataPagerLabel = false, bool isDropDown = false}) {
+  double _getDataPagerWidthOnMobile({bool canEnableDataPagerLabel = false, bool isDropDown = false}) {
     if (widget.direction == Axis.horizontal) {
       if (canEnableDataPagerLabel && isDropDown) {
         return _headerExtent + _scrollViewPortSize + _footerExtent + _defaultPagerLabelDimension.width;
@@ -942,11 +959,12 @@ class SfDataPagerState extends State<SfDataPager> {
   }
 
   bool _canEnableDataPagerLabel(BoxConstraints constraint) {
-    return _getTotalDataPagerWidth(constraint) > _kMobileViewWidthOnWeb;
+    return false;
+    // return _getTotalDataPagerWidth(constraint) > _kMobileViewWidthOnWeb;
   }
 
   void _updateConstraintChanged(BoxConstraints constraint) {
-    final double currentWidth = _getTotalDataPagerWidth(constraint);
+    final double currentWidth = _getDatagridConfigurationWidth(); //_getTotalDataPagerWidth(constraint);
     final double currentHeight = _getTotalDataPagerHeight(constraint);
 
     if (currentWidth != _width || currentHeight != _height) {
@@ -1267,42 +1285,40 @@ class SfDataPagerState extends State<SfDataPager> {
       final List<Widget> availableRowsPerPage = widget.availableRowsPerPage.map<DropdownMenuItem<int>>((int? value) {
         return DropdownMenuItem<int>(
             value: value,
-            child:
-                OnHoverDropDownItem(
-                  builder: (isHovered){
-                      //final color = isHovered ? Colors.blue:Colors.black;
-                      TextStyle? textStyle;
-                      if (_dataPagerThemeHelper!.getItemTextStyle != null) {
-                        if ((value==_rowsPerPage) && isDropDownOpened==false) {
-                          textStyle = _dataPagerThemeHelper!.getItemTextStyle!(false, false, false);
-                        } else {
-                          textStyle = _dataPagerThemeHelper!.getItemTextStyle!(false, isHovered, false);
-                        }
-                      } else {
-                        textStyle = _dataPagerThemeHelper!.itemTextStyle;
-                      }
-                      return
-                        //azért kellett Column-ba tenni mert csak a Text-re futott meg az onHover és nem az egész sorra
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment  : CrossAxisAlignment.stretch,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [Text(
-                            '$value',
-                            style: textStyle,
-                            textAlign: _isRTL ? TextAlign.right : TextAlign.left,
-                          )]
-                        );
-                  })
-            );
-
+            child: OnHoverDropDownItem(builder: (isHovered) {
+              //final color = isHovered ? Colors.blue:Colors.black;
+              TextStyle? textStyle;
+              if (_dataPagerThemeHelper!.getItemTextStyle != null) {
+                if ((value == _rowsPerPage) && isDropDownOpened == false) {
+                  textStyle = _dataPagerThemeHelper!.getItemTextStyle!(false, false, false);
+                } else {
+                  textStyle = _dataPagerThemeHelper!.getItemTextStyle!(false, isHovered, false);
+                }
+              } else {
+                textStyle = _dataPagerThemeHelper!.itemTextStyle;
+              }
+              //azért kellett Column-ba tenni mert csak a Text-re futott meg az onHover és nem az egész sorra
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '$value',
+                    style: textStyle,
+                    textAlign: _isRTL ? TextAlign.right : TextAlign.left,
+                  )
+                ],
+              );
+            }));
       }).toList();
 
-      Color? dropdownButtonBackGroundColor =  _dataPagerThemeHelper!.dropdownButtonBackGroundColor;
-      Color? dropdownButtonSelectedItemColor = _dataPagerThemeHelper!.dropdownButtonSelectedItemColor;
-      Color? dropdownButtonHoverColor = _dataPagerThemeHelper!.dropdownButtonHoverColor;
+      final Color? dropdownButtonBackGroundColor = _dataPagerThemeHelper!.dropdownButtonBackGroundColor;
+      final Color? dropdownButtonSelectedItemColor = _dataPagerThemeHelper!.dropdownButtonSelectedItemColor;
+      final Color? dropdownButtonHoverColor = _dataPagerThemeHelper!.dropdownButtonHoverColor;
 
       return Padding(
+        // ignore: use_named_constants
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: Container(
           width: _dropdownSize.width,
@@ -1317,25 +1333,24 @@ class SfDataPagerState extends State<SfDataPager> {
             data: Theme.of(context).copyWith(
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
-              hoverColor: dropdownButtonHoverColor
+              hoverColor: dropdownButtonHoverColor,
             ),
-            child:
-              DropdownButtonHideUnderline(
-                child: DropdownButton<int>(
-                  focusNode: focusNodeDropdownButton, //ez azért kellett mert tudnom kell hogy épp kinyitott állapotban van-e a lenyíló lista
-                  isExpanded: true, //ezt egypandra kell tenni különben nem lehet a DropdownMenuItem -et stretch
-                  dropdownColor: dropdownButtonBackGroundColor,
-                  itemHeight: 48,
-                  items: availableRowsPerPage.cast<DropdownMenuItem<int>>(),
-                  value: _rowsPerPage,
-                  iconSize: 30.0,
-                  onChanged: (int? value) {
-                    _isRowsPerPageChanged = true;
-                    _rowsPerPage = value;
-                    widget.onRowsPerPageChanged!(_rowsPerPage);
-                  },
-                ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<int>(
+                focusNode: focusNodeDropdownButton, //ez azért kellett mert tudnom kell hogy épp kinyitott állapotban van-e a lenyíló lista
+                isExpanded: true, //ezt expandra kell tenni kulonben nem lehet a DropdownMenuItem -et stretch
+                dropdownColor: dropdownButtonBackGroundColor,
+                itemHeight: 48,
+                items: availableRowsPerPage.cast<DropdownMenuItem<int>>(),
+                value: _rowsPerPage,
+                iconSize: 30.0,
+                onChanged: (int? value) {
+                  _isRowsPerPageChanged = true;
+                  _rowsPerPage = value;
+                  widget.onRowsPerPageChanged!(_rowsPerPage);
+                },
               ),
+            ),
           ),
         ),
       );
@@ -1468,7 +1483,7 @@ class SfDataPagerState extends State<SfDataPager> {
     }
   }
 
-  Widget _buildDataPager(BoxConstraints constraint) {
+  Widget _buildDataPagerPagesAndControls(BoxConstraints constraint) {
     final List<Widget> children = <Widget>[];
 
     final Widget? header = _buildHeader(); // First + Previuos button
@@ -1481,6 +1496,7 @@ class SfDataPagerState extends State<SfDataPager> {
       children.add(footer);
     }
 
+    // számozott lapozó-gombok hozzáadása
     final Widget body = _buildBody(constraint);
     if (header == null) {
       children.insert(0, body);
@@ -1488,10 +1504,14 @@ class SfDataPagerState extends State<SfDataPager> {
       children.insert(1, body);
     }
 
-    if ((!_isDesktop && widget.direction != Axis.vertical) && widget.onRowsPerPageChanged != null) {
-      children.add(Row(children: _buildRowsPerPageLabel()!));
-    }
-    return _getChildrenBasedOnDirection(children);
+    // if ((!_isDesktop && widget.direction != Axis.vertical) && widget.onRowsPerPageChanged != null) {
+    //   children.add(Row(children: _buildRowsPerPageLabel()!));
+    // }
+    // return _getChildrenBasedOnDirection(children);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: children,
+    );
   }
 
   // DataPager with rows per page label
@@ -1501,15 +1521,30 @@ class SfDataPagerState extends State<SfDataPager> {
     final Widget dropDown = _buildDropDownWidget()!;
 
     children.add(Container(
-      width: _rowsPerPageLabelWidth,
+      // decoration: BoxDecoration(border: Border.all(color: Colors.pink, width: 1, style: BorderStyle.solid)),
+      // width: _rowsPerPageLabelWidth,
+      height: widget.itemHeight,
       padding: __rowsPerPageLabelPadding,
-       child: Text(_localization.rowsPerPageDataPagerLabel, textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left),
-    ));
-    children.add(dropDown);
 
-    children.add(Container(
-       padding: __rowsPerPageLabelPadding,
-       child:Text(_localization.recordCount + ": " + _dataPagerThemeHelper!.recordCount.toString(), textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left))
+      child: Center(widthFactor: 1, child: Text(_localization.rowsPerPageDataPagerLabel, textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left)),
+    ));
+
+    children.add(
+      SizedBox(
+        height: widget.itemHeight,
+        child: dropDown,
+      ),
+    );
+
+    children.add(
+      Container(
+        // alignment: Alignment.topLeft,
+        height: widget.itemHeight,
+        // width: 100,
+        padding: __rowsPerPageLabelPadding,
+        child: Center(widthFactor: 1, child: Text(_dataPagerThemeHelper!.recordCountCaption + ": " + _dataPagerThemeHelper!.recordCount.toString(), textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left)),
+        // child: Text(_dataPagerThemeHelper!.recordCountCaption + ": " + _dataPagerThemeHelper!.recordCount.toString(), textDirection: _textDirection, style: _dataPagerThemeHelper!.itemTextStyle, textAlign: _isRTL ? TextAlign.right : TextAlign.left),
+      ),
     );
 
     return children;
@@ -1533,10 +1568,10 @@ class SfDataPagerState extends State<SfDataPager> {
   }
 
   void _buildDataPagerWithLabel(BoxConstraints constraint, List<Widget> children) {
-    Widget? dataPagerLabel;
-
     final bool canEnablePagerLabel = _canEnableDataPagerLabel(constraint);
     final Widget? dropDown = _buildDropDownWidget();
+
+    List<Widget> tmpWidgets = <Widget>[];
 
     double getRowsPerPageLabelWidth() {
       if (dropDown != null) {
@@ -1548,26 +1583,39 @@ class SfDataPagerState extends State<SfDataPager> {
 
     // DataPager
     final BoxConstraints dataPagerConstraint = BoxConstraints(
-      maxWidth: canEnablePagerLabel
-          ? _getTotalDataPagerWidth(constraint) - getRowsPerPageLabelWidth()
-          : _getTotalDataPagerWidth(constraint),
+      maxWidth: _getDatagridConfigurationWidth(), //canEnablePagerLabel ? _getTotalDataPagerWidth(constraint) - getRowsPerPageLabelWidth() : _getTotalDataPagerWidth(constraint),
       maxHeight: _getTotalDataPagerHeight(constraint),
     );
 
-    final Widget pager = _buildDataPager(dataPagerConstraint);
+    final Widget pager = _buildDataPagerPagesAndControls(dataPagerConstraint);
+    tmpWidgets.add(pager);
 
     //DataPagerLabel
-    if (canEnablePagerLabel && dataPagerConstraint.maxWidth >= _kMobileViewWidthOnWeb) {
+    Widget? dataPagerLabel;
+    // if (canEnablePagerLabel && dataPagerConstraint.maxWidth >= _kMobileViewWidthOnWeb) {
+    if (canEnablePagerLabel) {
       dataPagerLabel = _buildDataPagerLabel();
     }
+    if (dataPagerLabel != null) {
+      tmpWidgets.add(dataPagerLabel);
+    }
+
+    // }
     bool isDropDown = false;
     if (dropDown != null) {
       isDropDown = true;
     }
-    final Widget dataPager = SizedBox(
+    final Widget dataPager = Wrap(
+      // crossAxisAlignment: CrossAxisAlignment.center,
+      // mainAxisSize: MainAxisSize.min,
+      children: tmpWidgets, // <Widget>[pager, dataPagerLabel],
+    );
+/*    Container(
+        decoration: BoxDecoration(border: Border.all(color: Colors.pink, width: 1, style: BorderStyle.solid)),
         // width: dataPagerConstraint.maxWidth,
         height: dataPagerConstraint.maxHeight,
         child: Align(
+            widthFactor: 1,
             alignment: _isRTL
                 ? canEnablePagerLabel
                     ? Alignment.centerRight
@@ -1576,19 +1624,26 @@ class SfDataPagerState extends State<SfDataPager> {
                     ? Alignment.centerLeft
                     : Alignment.center,
             child: SizedBox(
-                width: _getDataPagerWidth(canEnableDataPagerLabel: canEnablePagerLabel, isDropDown: isDropDown),
-                height: _getDataPagerHeight(),
+                // width: _getDataPagerWidth(canEnableDataPagerLabel: canEnablePagerLabel, isDropDown: isDropDown),
+                // height: -_getDataPagerHeight(),
                 child: dataPagerLabel != null && isDropDown
-                    ? Row(
+                    ? Wrap(
+                        // crossAxisAlignment: CrossAxisAlignment.center,
+                        // mainAxisSize: MainAxisSize.min,
                         children: <Widget>[pager, dataPagerLabel],
                       )
                     : pager)));
-
+*/
     children.add(dataPager);
 
     if (isDropDown) {
-      children.add(Row(
-        children: _buildRowsPerPageLabel()!,
+      children.add(Container(
+        // height: widget.itemHeight + widget.itemPadding.vertical, // widget.itemPadding.vertical => .top+ .bottom
+        padding: widget.itemPadding,
+        // decoration: BoxDecoration(border: Border.all(color: Colors.pink, width: 1, style: BorderStyle.solid)),
+        child: Wrap(
+          children: _buildRowsPerPageLabel()!,
+        ),
       ));
     }
     if ((canEnablePagerLabel && dataPagerLabel != null) && !isDropDown) {
@@ -1632,7 +1687,7 @@ class SfDataPagerState extends State<SfDataPager> {
       /// Set page count in DataGridSource.
       _setPageCountInDataGridSource(widget.pageCount);
 
-      _defaultPagerDimension = Size(300.0, _getDefaultDimensionHeight());
+      _defaultPagerDimension = Size(999.0, _getDefaultDimensionHeight());
       if (isDelegateChanged) {
         _removeDelegateListener(oldWidget);
         _addDelegateListener();
@@ -1657,11 +1712,29 @@ class SfDataPagerState extends State<SfDataPager> {
 
   @override
   Widget build(BuildContext context) {
+    // final List<Widget> children = <Widget>[];
+    // double? gridWidth = _getDatagridConfigurationWidth();
+    // children.clear();
+    // for (int i = 0; i < 25; i++) {
+    //   children.add(ElevatedButton(onPressed: () {}, child: Text('${i + 1}')));
+    // }
+
+    // return Container(
+    //   decoration: BoxDecoration(border: Border.all(color: Colors.pink, width: 1, style: BorderStyle.solid)),
+    //   width: gridWidth,
+    //   // height: 100,
+    //   child: Wrap(children: children),
+    // );
+
     return Card(
       elevation: 0.0,
-      color: _dataPagerThemeHelper!.backgroundColor,
+      // color: _dataPagerThemeHelper!.backgroundColor,
+
+      color: Colors.orange, // TODO(gabor): visszacserélni
       child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraint) {
         _updateConstraintChanged(constraint);
+        double? gridWidth = _getDatagridConfigurationWidth();
+        print('gridWidth: $gridWidth');
         // Issue:
         //
         // FLUT-868631-The DataPager did not function correctly when updating the rows per page at runtime
@@ -1678,7 +1751,19 @@ class SfDataPagerState extends State<SfDataPager> {
           _buildDataPagerWithLabel(constraint, children);
 
           _isDirty = false;
-          return SingleChildScrollView(scrollDirection: widget.direction, child: _getChildrenBasedOnDirection(children));
+          // return SingleChildScrollView(scrollDirection: widget.direction, child: _getChildrenBasedOnDirection(children));
+          // return Row(children: children);
+          // return Text('1111111');
+          // children.clear();
+          // for (int i = 0; i < 17; i++) {
+          //   children.add(ElevatedButton(onPressed: () {}, child: Text('$i')));
+          // }
+
+          return SizedBox(
+            width: gridWidth,
+            // height: 500,
+            child: Wrap(children: children),
+          );
           /*
           return constraint.maxWidth >= _kMobileViewWidthOnWeb
               ? SizedBox(
@@ -1690,7 +1775,7 @@ class SfDataPagerState extends State<SfDataPager> {
                   child: SingleChildScrollView(scrollDirection: widget.direction, child: _getChildrenBasedOnDirection(children)),
                 );*/
         } else {
-          final Widget dataPager = _buildDataPager(constraint);
+          final Widget dataPager = _buildDataPagerPagesAndControls(constraint);
           _isDirty = false;
           if (widget.onRowsPerPageChanged != null && widget.direction == Axis.horizontal) {
             return SingleChildScrollView(
@@ -1698,7 +1783,7 @@ class SfDataPagerState extends State<SfDataPager> {
               child: dataPager,
             );
           } else {
-            return SizedBox(width: _getDataPagerWidth(), height: _getDataPagerHeight(), child: dataPager);
+            return SizedBox(width: _getDataPagerWidthOnMobile(), height: _getDataPagerHeight(), child: dataPager);
           }
         }
       }),
@@ -2037,10 +2122,11 @@ class DataPagerThemeHelper {
     itemBorderWidth = defaults.itemBorderWidth ?? effectiveDataPagerThemeData.itemBorderWidth;
     itemBorderRadius = defaults.itemBorderRadius ?? effectiveDataPagerThemeData.itemBorderRadius;
     dropdownButtonBorderColor = defaults.dropdownButtonBorderColor ?? effectiveDataPagerThemeData.dropdownButtonBorderColor;
-    dropdownButtonBackGroundColor  = defaults.dropdownButtonBackGroundColor ?? effectiveDataPagerThemeData.dropdownButtonBackGroundColor;;
-    dropdownButtonSelectedItemColor = defaults.dropdownButtonSelectedItemColor ?? effectiveDataPagerThemeData.dropdownButtonSelectedItemColor;;
+    dropdownButtonBackGroundColor = defaults.dropdownButtonBackGroundColor ?? effectiveDataPagerThemeData.dropdownButtonBackGroundColor;
+    dropdownButtonSelectedItemColor = defaults.dropdownButtonSelectedItemColor ?? effectiveDataPagerThemeData.dropdownButtonSelectedItemColor;
     dropdownButtonHoverColor = defaults.dropdownButtonHoverColor ?? effectiveDataPagerThemeData.dropdownButtonHoverColor;
     recordCount = defaults.recordCount ?? 0;
+    recordCountCaption = defaults.recordCountCaption ?? 'Record count';
   }
 
   /// The color of the page Items
@@ -2099,6 +2185,7 @@ class DataPagerThemeHelper {
   late final Color? dropdownButtonHoverColor;
 
   late final int recordCount;
+  late final String recordCountCaption;
 }
 
 ///
