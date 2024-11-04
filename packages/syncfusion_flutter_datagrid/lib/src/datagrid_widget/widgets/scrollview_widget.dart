@@ -460,8 +460,9 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     }
 
     //addig töltse amíg meg csak meg nem jelenik a scrollbar és van még elem
-    //TODO még nem teljesen jó
-    if ((dataGridConfiguration.isLastPage ==false) && ((_verticalController!.hasClients==false) || (_verticalController!.position.maxScrollExtent == 0))) {
+    if ((dataGridConfiguration.isLastPage ==false) && (
+        _verticalController!.hasClients &&  dataGridConfiguration.loadMoreViewBuilder != null && (_verticalController!.position.maxScrollExtent == 0))) {
+
       final Widget? loadMoreView = dataGridConfiguration.loadMoreViewBuilder!(context, loadMoreRows);
       if (loadMoreView != null) {
         final Alignment loadMoreAlignment =
