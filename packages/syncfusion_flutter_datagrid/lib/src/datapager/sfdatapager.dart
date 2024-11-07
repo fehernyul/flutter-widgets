@@ -1734,7 +1734,6 @@ class SfDataPagerState extends State<SfDataPager> {
       child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraint) {
         _updateConstraintChanged(constraint);
         double? gridWidth = _getDatagridConfigurationWidth();
-        print('gridWidth: $gridWidth');
         // Issue:
         //
         // FLUT-868631-The DataPager did not function correctly when updating the rows per page at runtime
