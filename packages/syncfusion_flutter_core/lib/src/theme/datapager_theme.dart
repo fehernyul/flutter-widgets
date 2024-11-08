@@ -67,6 +67,7 @@ class SfDataPagerThemeData with Diagnosticable {
     this.dropdownButtonHoverColor,
     this.recordCount,
     this.recordCountCaption,
+    this.pagerContainerBoxDecoration,
   });
 
   /// Create a [SfDataPagerThemeData] that's used to configure a
@@ -93,6 +94,7 @@ class SfDataPagerThemeData with Diagnosticable {
     Color? dropdownButtonHoverColor,
     int recordCount = 0,
     String? recordCountCaption,
+    BoxDecoration? pagerContainerBoxDecoration,
   }) {
     brightness = brightness ?? Brightness.light;
     return SfDataPagerThemeData(
@@ -116,6 +118,7 @@ class SfDataPagerThemeData with Diagnosticable {
       dropdownButtonHoverColor: dropdownButtonHoverColor,
       recordCount: recordCount,
       recordCountCaption: recordCountCaption,
+      pagerContainerBoxDecoration: pagerContainerBoxDecoration,
     );
   }
 
@@ -169,17 +172,24 @@ class SfDataPagerThemeData with Diagnosticable {
   ///The border color of the rowsPerPage dropdown button.
   final Color? dropdownButtonBorderColor;
 
-  final Color? dropdownButtonBackGroundColor;
-  final Color? dropdownButtonSelectedItemColor;
-  final Color? dropdownButtonHoverColor;
+  ///
+  final Color? dropdownButtonBackGroundColor; // TVG
+  ///
+  final Color? dropdownButtonSelectedItemColor; // TVG
+  ///
+  final Color? dropdownButtonHoverColor; // TVG
 
-  final int? recordCount;
-  final String? recordCountCaption;
+  ///
+  final int? recordCount; // TVG
+  ///
+  final String? recordCountCaption; // TVG
+  ///
+  final BoxDecoration? pagerContainerBoxDecoration; // TVG
 
   /// Creates a copy of this theme but with the given
   /// fields replaced with the new values.
-  SfDataPagerThemeData copyWith(
-      {Brightness? brightness,
+  SfDataPagerThemeData copyWith({
+    Brightness? brightness,
       Color? backgroundColor,
       Color? itemColor,
       TextStyle? itemTextStyle,
@@ -194,7 +204,9 @@ class SfDataPagerThemeData with Diagnosticable {
       Color? dropdownButtonBackGroundColor,
       Color? dropdownButtonSelectedItemColor,
       Color? dropdownButtonHoverColor,
-      int recordCount = 0}) {
+    int recordCount = 0,
+    BoxDecoration? pagerContainerBoxDecortation,
+  }) {
     return SfDataPagerThemeData.raw(
       brightness: brightness,
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -212,6 +224,7 @@ class SfDataPagerThemeData with Diagnosticable {
       dropdownButtonSelectedItemColor: dropdownButtonSelectedItemColor ?? this.dropdownButtonSelectedItemColor,
       dropdownButtonHoverColor: dropdownButtonHoverColor ?? this.dropdownButtonHoverColor,
       recordCount: recordCount,
+      pagerContainerBoxDecoration: pagerContainerBoxDecortation,
     );
   }
 
@@ -286,6 +299,7 @@ class SfDataPagerThemeData with Diagnosticable {
       dropdownButtonHoverColor, // TVG
       recordCount, //TVG
       recordCountCaption, //TVG
+      pagerContainerBoxDecoration, //TVG
     ];
     return Object.hashAll(values);
   }

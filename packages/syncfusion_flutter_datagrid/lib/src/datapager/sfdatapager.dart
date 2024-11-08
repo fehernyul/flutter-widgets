@@ -621,6 +621,7 @@ class SfDataPagerState extends State<SfDataPager> {
       if (widget.delegate is DataGridSource) {
         final DataGridConfiguration? dataGridConfiguration = (widget.delegate as DataGridSource).getDataGridDataGridConfiguration();
         if (dataGridConfiguration != null) {
+          // debugPrint(dataGridConfiguration.container.extentWidth.toString());
           resultWidth = dataGridConfiguration.viewWidth;
         }
       }
@@ -1726,14 +1727,11 @@ class SfDataPagerState extends State<SfDataPager> {
     //   child: Wrap(children: children),
     // );
 
-    return Card(
-      elevation: 0.0,
-      // color: _dataPagerThemeHelper!.backgroundColor,
-
-      color: Colors.orange, // TODO(gabor): visszacserélni
+    return Container(
+      decoration: _dataPagerThemeHelper!.pagerContainerBoxDecoration,
       child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraint) {
         _updateConstraintChanged(constraint);
-        double? gridWidth = _getDatagridConfigurationWidth();
+        final double gridWidth = _getDatagridConfigurationWidth();
         // Issue:
         //
         // FLUT-868631-The DataPager did not function correctly when updating the rows per page at runtime
@@ -1750,13 +1748,6 @@ class SfDataPagerState extends State<SfDataPager> {
           _buildDataPagerWithLabel(constraint, children);
 
           _isDirty = false;
-          // return SingleChildScrollView(scrollDirection: widget.direction, child: _getChildrenBasedOnDirection(children));
-          // return Row(children: children);
-          // return Text('1111111');
-          // children.clear();
-          // for (int i = 0; i < 17; i++) {
-          //   children.add(ElevatedButton(onPressed: () {}, child: Text('$i')));
-          // }
 
           return SizedBox(
             width: gridWidth,
@@ -2126,6 +2117,7 @@ class DataPagerThemeHelper {
     dropdownButtonHoverColor = defaults.dropdownButtonHoverColor ?? effectiveDataPagerThemeData.dropdownButtonHoverColor;
     recordCount = defaults.recordCount ?? 0;
     recordCountCaption = defaults.recordCountCaption ?? 'Record count';
+    pagerContainerBoxDecoration = defaults.pagerContainerBoxDecoration ?? effectiveDataPagerThemeData.pagerContainerBoxDecoration;
   }
 
   /// The color of the page Items
@@ -2179,12 +2171,19 @@ class DataPagerThemeHelper {
   ///The border color of the rowsPerPage dropdown button.
   late final Color? dropdownButtonBorderColor;
 
-  late final Color? dropdownButtonBackGroundColor;
-  late final Color? dropdownButtonSelectedItemColor;
-  late final Color? dropdownButtonHoverColor;
+  ///
+  late final Color? dropdownButtonBackGroundColor; // TVG
+  ///
+  late final Color? dropdownButtonSelectedItemColor; // TVG
+  ///
+  late final Color? dropdownButtonHoverColor; // TVG
 
-  late final int recordCount;
-  late final String recordCountCaption;
+  ///
+  late final int recordCount; // TVG
+  ///
+  late final String recordCountCaption; // TVG
+  ///
+  late final BoxDecoration? pagerContainerBoxDecoration; // TVG
 }
 
 ///
