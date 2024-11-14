@@ -627,6 +627,7 @@ class SfDataPagerState extends State<SfDataPager> {
       }
     }
 
+    debugPrint('Width: $resultWidth');
     return resultWidth;
   }
   // TVG - end
@@ -855,6 +856,7 @@ class SfDataPagerState extends State<SfDataPager> {
       );
     } else {
       return Row(
+        mainAxisSize: MainAxisSize.min,
         children: List<Widget>.from(children),
       );
     }
@@ -1498,19 +1500,27 @@ class SfDataPagerState extends State<SfDataPager> {
     }
 
     // számozott lapozó-gombok hozzáadása
-    final Widget body = _buildBody(constraint);
-    if (header == null) {
-      children.insert(0, body);
-    } else {
-      children.insert(1, body);
+    Widget? body;
+    // azért 4, mert az előre, első, utolsó, következő gomb az 4 db
+    if (constraint.maxWidth > widget.itemWidth * 4) {
+      body = _buildBody(constraint);
+    }
+
+    if (body != null) {
+      if (header == null) {
+        children.insert(0, body);
+      } else {
+        children.insert(1, body);
+      }
     }
 
     // if ((!_isDesktop && widget.direction != Axis.vertical) && widget.onRowsPerPageChanged != null) {
     //   children.add(Row(children: _buildRowsPerPageLabel()!));
     // }
     // return _getChildrenBasedOnDirection(children);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Wrap(
+      direction: Axis.horizontal,
+      // mainAxisSize: MainAxisSize.min,
       children: children,
     );
   }
