@@ -35,9 +35,5 @@ class RowColumnIndex {
   ///
   /// Returns the type name with state of this object.
   @override
-  String toString() => '''
-              RowColumnPosition { 
-              RowIndex =
-              $rowIndex,
-              ColumnIndex =  $columnIndex }''';
+  String toString() => 'RowColumnIndex{RowIndex = $rowIndex, ColumnIndex =  $columnIndex}';
 }

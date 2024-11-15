@@ -847,11 +847,13 @@ class RowGenerator {
               dataGridConfiguration, dr.dataGridRow!);
 
         dr.key = dr.dataGridRowAdapter?.key;
-        assert(grid_helper.debugCheckTheLength(
-            dataGridConfiguration,
-            dataGridConfiguration.columns.length,
-            dr.dataGridRowAdapter!.cells.length,
-            'SfDataGrid.columns.length == DataGridRowAdapter.cells.length'));
+        assert(
+          grid_helper.debugCheckTheLength(
+              dataGridConfiguration,
+              dataGridConfiguration.columns.length,
+              dr.dataGridRowAdapter!.cells.length,
+              'SfDataGrid.columns.length (${dataGridConfiguration.columns.length}) == DataGridRowAdapter.cells.length (${dr.dataGridRowAdapter!.cells.length})'),
+        );
 
         _checkForCurrentRow(dr);
         _checkForSelection(dr);
