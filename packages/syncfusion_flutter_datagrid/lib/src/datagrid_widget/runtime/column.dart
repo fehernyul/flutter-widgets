@@ -31,28 +31,27 @@ typedef TextStyleFunction = TextStyle Function(TextStyle orignalTextStyle);
 /// Provides the base functionalities for all the column types in [SfDataGrid].
 class GridColumn {
   /// Creates the [GridColumn] for [SfDataGrid] widget.
-  GridColumn({
-    required this.columnName,
-    required this.label,
-    this.columnWidthMode = ColumnWidthMode.none,
-    this.visible = true,
-    this.allowSorting = true,
-    this.sortIconPosition = ColumnHeaderIconPosition.end,
-    this.filterIconPosition = ColumnHeaderIconPosition.end,
-    this.autoFitPadding = const EdgeInsets.all(16.0),
-    this.minimumWidth = double.nan,
-    this.maximumWidth = double.nan,
-    this.width = double.nan,
-    this.allowEditing = true,
-    this.allowFiltering = true,
-    this.filterPopupMenuOptions,
-    this.filterIconPadding = const EdgeInsets.symmetric(horizontal: 8.0),
-    this.getHasSubOrderingFunc,
-    this.getHasSubFilteringFunc,
-    this.getColumnHeaderBackgroundColor,
-    this.getColumnHeaderHoveredBackgroundColor,
-    this.getHeaderTextStyle
-  }) {
+  GridColumn(
+      {required this.columnName,
+      required this.label,
+      this.columnWidthMode = ColumnWidthMode.none,
+      this.visible = true,
+      this.allowSorting = true,
+      this.sortIconPosition = ColumnHeaderIconPosition.end,
+      this.filterIconPosition = ColumnHeaderIconPosition.end,
+      this.autoFitPadding = const EdgeInsets.all(16.0),
+      this.minimumWidth = double.nan,
+      this.maximumWidth = double.nan,
+      this.width = double.nan,
+      this.allowEditing = true,
+      this.allowFiltering = true,
+      this.filterPopupMenuOptions,
+      this.filterIconPadding = const EdgeInsets.symmetric(horizontal: 8.0),
+      this.getHasSubOrderingFunc,
+      this.getHasSubFilteringFunc,
+      this.getColumnHeaderBackgroundColor,
+      this.getColumnHeaderHoveredBackgroundColor,
+      this.getHeaderTextStyle}) {
     _actualWidth = double.nan;
     _autoWidth = double.nan;
   }
@@ -1204,12 +1203,14 @@ class ColumnSizer {
       {required int rowIndex,
       required DataGridConfiguration dataGridConfiguration,
       required GridColumn column}) {
+    bool isSelected = (rowIndex > 0) &&
+        isSelectedRow(dataGridConfiguration,
+            dataGridConfiguration.source.rows[rowIndex - 1]);
 
-    bool isSelected = (rowIndex > 0) && isSelectedRow(dataGridConfiguration, dataGridConfiguration.source.rows[rowIndex-1]);
-
-    final double strokeWidth = isSelected ?
-        dataGridConfiguration.dataGridThemeHelper!.gridSelectedRowLineStrokeWidth!:
-        dataGridConfiguration.dataGridThemeHelper!.gridLineStrokeWidth!;
+    final double strokeWidth = isSelected
+        ? dataGridConfiguration
+            .dataGridThemeHelper!.gridSelectedRowLineStrokeWidth!
+        : dataGridConfiguration.dataGridThemeHelper!.gridLineStrokeWidth!;
 
     final GridLinesVisibility gridLinesVisibility =
         rowIndex <= grid_helper.getHeaderIndex(dataGridConfiguration)
@@ -2238,8 +2239,8 @@ class DataGridFilterHelper {
             .firstWhereOrNull(
                 (GridColumn column) => column.columnName == columnName);
         if (column == null) {
-          throwAssertFailure(
-              "The $columnName doesn't exist in the SfDataGrid.columns collection");
+          throwAssertFailure('The column: "$columnName" doesn'
+              't exist in the SfDataGrid.columns collection');
           continue;
         }
         // TVG - begin
@@ -3095,7 +3096,6 @@ class DataGridAdvancedFilterHelper {
   /// Sets the advanced filter values.
   void setAdvancedFilterValues(DataGridConfiguration dataGridConfiguration,
       List<FilterCondition> filterConditions, DataGridFilterHelper helper) {
-
     Object? getValue(Object? value, String? filterType) {
       //--andras 2023.8.18
       if (neverUseDropDownFilterValues == true) {
