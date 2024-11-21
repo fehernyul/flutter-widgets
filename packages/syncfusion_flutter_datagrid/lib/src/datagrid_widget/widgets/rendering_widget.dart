@@ -1135,7 +1135,11 @@ class RenderVirtualizingCellsWidget extends RenderBox with ContainerRenderObject
           return cellLeft == resizingLine!.lineIndex || cellRight == resizingLine.lineIndex || (resizingLine.lineIndex > cellLeft && resizingLine.lineIndex < cellRight);
         });
       } else {
-        dataCell = dataRow.visibleColumns.firstWhereOrNull((DataCellBase element) => element.columnIndex == resizingLine!.lineIndex);
+        // TVG - ez bug volt az eredetiben? (néha elszállt) - begin
+        if (resizingLine != null) {
+          // TVG - ez bug volt az eredetiben? (néha elszállt) - end
+          dataCell = dataRow.visibleColumns.firstWhereOrNull((DataCellBase element) => element.columnIndex == resizingLine!.lineIndex);
+        }
       }
     }
     return dataCell;

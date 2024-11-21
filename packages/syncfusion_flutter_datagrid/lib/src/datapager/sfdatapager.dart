@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_setters_without_getters, avoid_redundant_argument_values
 
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -261,29 +263,30 @@ class SfDataPager extends StatefulWidget {
   ///
   /// The [pageCount] and [delegate] argument must be defined and must not
   /// be null.
-  const SfDataPager(
-      {required this.pageCount,
-      required this.delegate,
-      Key? key,
-      this.direction = Axis.horizontal,
-      this.itemWidth = 50.0,
-      this.itemHeight = 50.0,
-      this.itemPadding = const EdgeInsets.all(5),
-      this.navigationItemHeight = 50.0,
-      this.navigationItemWidth = 50.0,
-      this.firstPageItemVisible = true,
-      this.lastPageItemVisible = true,
-      this.nextPageItemVisible = true,
-      this.previousPageItemVisible = true,
-      this.visibleItemsCount = 5,
-      this.initialPageIndex = 0,
-      this.pageItemBuilder,
-      this.onPageNavigationStart,
-      this.onPageNavigationEnd,
-      this.onRowsPerPageChanged,
-      this.availableRowsPerPage = const <int>[10, 15, 20],
-      this.controller})
-      : assert(pageCount > 0),
+  const SfDataPager({
+    required this.pageCount,
+    required this.delegate,
+    Key? key,
+    this.direction = Axis.horizontal,
+    this.itemWidth = 50.0,
+    this.itemHeight = 50.0,
+    this.itemPadding = const EdgeInsets.all(5),
+    this.navigationItemHeight = 50.0,
+    this.navigationItemWidth = 50.0,
+    this.firstPageItemVisible = true,
+    this.lastPageItemVisible = true,
+    this.nextPageItemVisible = true,
+    this.previousPageItemVisible = true,
+    this.visibleItemsCount = 5,
+    this.initialPageIndex = 0,
+    this.pageItemBuilder,
+    this.onPageNavigationStart,
+    this.onPageNavigationEnd,
+    this.onRowsPerPageChanged,
+    this.availableRowsPerPage = const <int>[10, 15, 20],
+    this.controller,
+    this.onWidthChanged,
+  })  : assert(pageCount > 0),
         assert(itemHeight > 0 && itemWidth > 0),
         assert(availableRowsPerPage.length != 0),
         assert((firstPageItemVisible || lastPageItemVisible || nextPageItemVisible || previousPageItemVisible) && (navigationItemHeight > 0 && navigationItemWidth > 0)),
@@ -393,6 +396,9 @@ class SfDataPager extends StatefulWidget {
   ///
   /// The given list will be shown in [DropdownButton] widget.
   final List<int> availableRowsPerPage;
+
+  /// call this method, if the pager's width changes
+  final VoidCallback? onWidthChanged; // TVG
 
   @override
   SfDataPagerState createState() => SfDataPagerState();
@@ -508,6 +514,7 @@ class SfDataPagerState extends State<SfDataPager> {
     return;
   }
 
+  bool tvgMountedPager = false;
   @override
   void initState() {
     super.initState();
@@ -533,6 +540,10 @@ class SfDataPagerState extends State<SfDataPager> {
     _controller = widget.controller ?? DataPagerController()
       ..addListener(_handleDataPagerControlPropertyChanged);
     _addDelegateListener();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      tvgMountedPager = true;
+    });
   }
 
   int? _getAvailableRowsPerPage(int? count) {
@@ -621,13 +632,21 @@ class SfDataPagerState extends State<SfDataPager> {
       if (widget.delegate is DataGridSource) {
         final DataGridConfiguration? dataGridConfiguration = (widget.delegate as DataGridSource).getDataGridDataGridConfiguration();
         if (dataGridConfiguration != null) {
-          // debugPrint(dataGridConfiguration.container.extentWidth.toString());
           resultWidth = dataGridConfiguration.viewWidth;
+          // debugPrint('sfdatapager -> _getDatagridConfigurationWidth = $resultWidth');
+          if (tvgMountedPager) {
+            widget.onWidthChanged?.call();
+          }
+
+          // (widget.delegate as DataGridSource).notifyDataSourceListeners();
+          // source.notifyDataSourceListeners();
+          // notifyDataGridPropertyChangeListeners(source)
+          // notifyDataGridPropertyChangeListeners(source)
         }
       }
     }
 
-    debugPrint('Width: $resultWidth');
+    // debugPrint('Width: $resultWidth');
     return resultWidth;
   }
   // TVG - end
@@ -1742,6 +1761,7 @@ class SfDataPagerState extends State<SfDataPager> {
       child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraint) {
         _updateConstraintChanged(constraint);
         final double gridWidth = _getDatagridConfigurationWidth();
+        // debugPrint('sfDataPager->gridWidth: $gridWidth');
         // Issue:
         //
         // FLUT-868631-The DataPager did not function correctly when updating the rows per page at runtime

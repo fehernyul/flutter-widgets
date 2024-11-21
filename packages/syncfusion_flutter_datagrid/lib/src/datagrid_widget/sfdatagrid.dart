@@ -3052,6 +3052,7 @@ class SfDataGridState extends State<SfDataGrid> with SingleTickerProviderStateMi
       if (_dataGridConfiguration.shrinkWrapColumns) {
         measuredWidth = _dataGridConfiguration.viewWidth = _dataGridConfiguration.container.extentWidth;
       }
+      // debugPrint('sfdatagrid build() -> ${_dataGridConfiguration.viewWidth}/$measuredWidth, constraints.maxWidth.isInfinite: ${constraints.maxWidth.isInfinite}, _minWidth: $_minWidth, constraints.maxWidth: ${constraints.maxWidth}');
       if (!_container.isGridLoaded) {
         _gridLoaded();
         if (_textDirection == TextDirection.rtl) {
