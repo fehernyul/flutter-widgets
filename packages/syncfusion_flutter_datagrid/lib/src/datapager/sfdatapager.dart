@@ -285,7 +285,6 @@ class SfDataPager extends StatefulWidget {
     this.onRowsPerPageChanged,
     this.availableRowsPerPage = const <int>[10, 15, 20],
     this.controller,
-    this.onWidthChanged,
   })  : assert(pageCount > 0),
         assert(itemHeight > 0 && itemWidth > 0),
         assert(availableRowsPerPage.length != 0),
@@ -396,9 +395,6 @@ class SfDataPager extends StatefulWidget {
   ///
   /// The given list will be shown in [DropdownButton] widget.
   final List<int> availableRowsPerPage;
-
-  /// call this method, if the pager's width changes
-  final VoidCallback? onWidthChanged; // TVG
 
   @override
   SfDataPagerState createState() => SfDataPagerState();
@@ -633,23 +629,12 @@ class SfDataPagerState extends State<SfDataPager> {
         final DataGridConfiguration? dataGridConfiguration = (widget.delegate as DataGridSource).getDataGridDataGridConfiguration();
         if (dataGridConfiguration != null) {
           resultWidth = dataGridConfiguration.viewWidth;
-          // debugPrint('sfdatapager -> _getDatagridConfigurationWidth = $resultWidth');
-          if (tvgMountedPager) {
-            widget.onWidthChanged?.call();
-          }
-
-          // (widget.delegate as DataGridSource).notifyDataSourceListeners();
-          // source.notifyDataSourceListeners();
-          // notifyDataGridPropertyChangeListeners(source)
-          // notifyDataGridPropertyChangeListeners(source)
         }
       }
     }
-
-    // debugPrint('Width: $resultWidth');
     return resultWidth;
   }
-  // TVG - end
+
 
   Future<void> _handlePageItemTapped(int index) async {
     // Issue:
