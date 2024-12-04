@@ -228,7 +228,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     // So, We have fixed the issue by moving both scrollbars to the parent of
     // both scroll views.
     // For more info: https://github.com/flutter/flutter/issues/70380#issuecomment-841502797
-    Widget scrollView = Scrollbar(
+    Widget scrollView =
+    Scrollbar(
       thickness: dataGridConfiguration.showVerticalScrollbar ? null : 0,
       controller: _verticalController,
       thumbVisibility: dataGridConfiguration.isScrollbarAlwaysShown,
@@ -250,29 +251,31 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
             // we need to set height as 0 if it's negative value
             constraints: BoxConstraints(
                 minHeight: max(0, min(scrollViewHeight, extentHeight))),
-            child: SingleChildScrollView(
-              controller: _horizontalController,
-              scrollDirection: Axis.horizontal,
-              physics: dataGridConfiguration.isSwipingApplied
-                  ? const NeverScrollableScrollPhysics()
-                  : dataGridConfiguration.horizontalScrollPhysics,
-              child: ConstrainedBox(
-                // FLUT-6553-BoxConstraints has a negative minimum width exception has been thrown.
-                // we need to set width as 0 if it's negative value
-                constraints:
-                    BoxConstraints(minWidth: max(0, min(_width, extentWidth))),
-                child: _VisualContainer(
-                  key: const ValueKey<String>('SfDataGrid-VisualContainer'),
-                  isDirty: _container.isDirty,
-                  rowGenerator: rowGenerator,
-                  containerSize: containerSize,
-                  dataGridStateDetails: widget.dataGridStateDetails,
-                ),
-              ),
-            ),
+            child:
+                  SingleChildScrollView(
+                    controller: _horizontalController,
+                    scrollDirection: Axis.horizontal,
+                    physics: dataGridConfiguration.isSwipingApplied
+                        ? const NeverScrollableScrollPhysics()
+                        : dataGridConfiguration.horizontalScrollPhysics,
+                    child:
+                    ConstrainedBox(
+                      // FLUT-6553-BoxConstraints has a negative minimum width exception has been thrown.
+                      // we need to set width as 0 if it's negative value
+                      constraints:
+                          BoxConstraints(minWidth: max(0, min(_width, extentWidth))),
+                      child: _VisualContainer(
+                        key: const ValueKey<String>('SfDataGrid-VisualContainer'),
+                        isDirty: _container.isDirty,
+                        rowGenerator: rowGenerator,
+                        containerSize: containerSize,
+                        dataGridStateDetails: widget.dataGridStateDetails,
+                      ),
+                    ),
+                  ),
+              )
           ),
         ),
-      ),
     );
 
     if (_dataGridConfiguration.allowPullToRefresh) {
@@ -1182,11 +1185,32 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     // So, we have used the focus widget. Need to remove [Focus] widget when
     // below mentioned issue is resolved on framework end.
     // [https://github.com/flutter/flutter/issues/83023]
-    return Focus(
-        key: _dataGridConfiguration.dataGridKey,
-        focusNode: _dataGridFocusNode,
-        onKeyEvent: _handleKeyOperation,
-        child: addContainer());
+
+   return
+     NotificationListener<ScrollMetricsNotification>(
+        onNotification: (ScrollMetricsNotification notification) {
+            if (notification.metrics.axis==Axis.horizontal) {
+            setState(() {
+                bool hasScrollbar = (notification.metrics.maxScrollExtent > 0);
+                if (hasScrollbar) {
+                  _dataGridConfiguration.shrinkWrapColumns = false;
+                }
+                else {
+                  _dataGridConfiguration.shrinkWrapColumns = true;
+                }
+              }
+            );
+          }
+          return false;
+        },
+        child:
+          Focus(
+            key: _dataGridConfiguration.dataGridKey,
+            focusNode: _dataGridFocusNode,
+            onKeyEvent: _handleKeyOperation,
+            child: addContainer()
+          )
+    );
   }
 
   @override
