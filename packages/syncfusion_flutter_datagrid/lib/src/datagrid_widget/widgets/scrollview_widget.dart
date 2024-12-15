@@ -83,15 +83,13 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     super.initState();
   }
 
-  DataGridConfiguration get _dataGridConfiguration =>
-      widget.dataGridStateDetails();
+  DataGridConfiguration get _dataGridConfiguration =>  widget.dataGridStateDetails();
 
   VisualContainerHelper get _container => _dataGridConfiguration.container;
 
   RowGenerator get rowGenerator => _dataGridConfiguration.rowGenerator;
 
-  SelectionManagerBase get _rowSelectionManager =>
-      _dataGridConfiguration.rowSelectionManager;
+  SelectionManagerBase get _rowSelectionManager => _dataGridConfiguration.rowSelectionManager;
 
   void _verticalListener() {
     if (mounted) {
@@ -456,47 +454,34 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
   }
 
   void _addLoadMoreView(List<Widget> children) {
-    final DataGridConfiguration dataGridConfiguration = _dataGridConfiguration;
     Future<void> loadMoreRows() async {
       _isLoadMoreViewLoaded = true;
-      await handleLoadMoreRows(dataGridConfiguration.source);
+      await handleLoadMoreRows(_dataGridConfiguration.source).whenComplete((){
+          _isLoadMoreViewLoaded = false;
+      });
     }
 
-    //addig töltse amíg meg csak meg nem jelenik a scrollbar és van még elem
-    if ((dataGridConfiguration.isLastPage ==false) && (
-        _verticalController!.hasClients &&  dataGridConfiguration.loadMoreViewBuilder != null && (_verticalController!.position.maxScrollExtent == 0))) {
-
-      final Widget? loadMoreView = dataGridConfiguration.loadMoreViewBuilder!(context, loadMoreRows);
-      if (loadMoreView != null) {
-        final Alignment loadMoreAlignment =
-        dataGridConfiguration.textDirection == TextDirection.ltr
-            ? Alignment.bottomLeft
-            : Alignment.bottomRight;
-
-        children.add(Positioned(
-            top: 0.0,
-            width: _width,
-            height: _height,
-            child: Align(
-              alignment: loadMoreAlignment,
-              child: loadMoreView,
-            )));
-      }
-
-    } else if (_verticalController!.hasClients &&
-        dataGridConfiguration.loadMoreViewBuilder != null) {
+    if ((_dataGridConfiguration.loadMoreViewBuilder != null) && (!_isLoadMoreViewLoaded)) {
       // FLUT-3038 Need to restrict load more view when rows exist within the
-      // view height.
-      if ((_verticalController!.position.maxScrollExtent > 0.0) &&
-          (_verticalController!.offset >=
-              _verticalController!.position.maxScrollExtent) &&
-          !_isLoadMoreViewLoaded) {
-        final Widget? loadMoreView =
-            dataGridConfiguration.loadMoreViewBuilder!(context, loadMoreRows);
+      // view height. --> javítva de sajnos 3 oldalt tölt be
+      if (
+           ( //ha nincs scroll bar és van még tölteni való adat
+            (_dataGridConfiguration.isVerticalScroolBar == false) && (_dataGridConfiguration.isLastPage == false)
+           )
+          || ////ha van  scroll bar ha már megjelent a scroll és a lap alján vagyunk és görgetünk lefelé
+          (
+            (_verticalController!.hasClients) &&
+            (_verticalController!.position.maxScrollExtent > 0.0) &&
+            (_verticalController!.offset >=_verticalController!.position.maxScrollExtent) &&
+            (_dataGridConfiguration.isVerticalScroolBar)
+           )
+        )
+      {
 
+        final Widget? loadMoreView = _dataGridConfiguration.loadMoreViewBuilder!(context, loadMoreRows);
         if (loadMoreView != null) {
           final Alignment loadMoreAlignment =
-              dataGridConfiguration.textDirection == TextDirection.ltr
+              _dataGridConfiguration.textDirection == TextDirection.ltr
                   ? Alignment.bottomLeft
                   : Alignment.bottomRight;
 
@@ -1189,18 +1174,35 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
    return
      NotificationListener<ScrollMetricsNotification>(
         onNotification: (ScrollMetricsNotification notification) {
-            if (notification.metrics.axis==Axis.horizontal) {
-            setState(() {
-                bool hasScrollbar = (notification.metrics.maxScrollExtent > 0);
-                if (hasScrollbar) {
-                  _dataGridConfiguration.shrinkWrapColumns = false;
-                }
-                else {
-                  _dataGridConfiguration.shrinkWrapColumns = true;
+            if (notification.metrics.axis == Axis.horizontal) {
+              bool hasScrollbar = (notification.metrics.maxScrollExtent > 0);
+
+              if (hasScrollbar) {
+                if (_dataGridConfiguration.shrinkWrapColumns == true) {
+                  setState(() {
+                    _dataGridConfiguration.shrinkWrapColumns = false;
+                    }
+                  );
                 }
               }
-            );
-          }
+              else {
+                if (_dataGridConfiguration.shrinkWrapColumns == false) {
+                  setState(() {
+                    _dataGridConfiguration.shrinkWrapColumns = true;
+                    }
+                  );
+                }
+              }
+            }
+
+            if (notification.metrics.axis == Axis.vertical) {
+              bool hasScrollbar = (notification.metrics.maxScrollExtent > 0);
+              if (hasScrollbar) {
+                _dataGridConfiguration.isVerticalScroolBar = true;
+              } else {
+                _dataGridConfiguration.isVerticalScroolBar = false;
+              }
+            }
           return false;
         },
         child:

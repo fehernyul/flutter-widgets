@@ -462,4 +462,6 @@ class DataGridConfiguration {
 
   /// Holds the expand and collapse row index.
   late int groupExpandCollapseRowIndex = -1;
+
+  late bool isVerticalScroolBar = false;
 }
