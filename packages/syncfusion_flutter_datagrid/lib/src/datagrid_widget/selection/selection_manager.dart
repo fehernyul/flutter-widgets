@@ -559,7 +559,7 @@ class RowSelectionManager extends SelectionManagerBase {
 
     // TVG - begin - Regebben ez "allowSelectingWhenClickOnTheRow" sajat syncfusion property volt, de eltuntettek. En meg visszatettem. - 2024.06.20
     // fix cell selection when allowSelectingWhenClickOnTheRow is false
-    if ((rowColumnIndex.columnIndex > 0) &&
+    if ((rowColumnIndex.rowIndex > 0) &&
         (!dataGridConfiguration.allowSelectingWhenClickOnTheRow)) {
       final RowColumnIndex recordRowColIndex = grid_helper
           .resolveToRowColumnIndex(dataGridConfiguration, rowColumnIndex);
