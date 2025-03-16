@@ -1,7 +1,29 @@
-## Unreleased
+## [28.1.36] - 12/24/2024
 
+**General**
+
+* The compatible version of our Flutter calendar widget has been updated to Flutter SDK 3.27.0.
+
+## [28.1.33] - 12/12/2024
+
+**General**
+
+* All of our Syncfusion<sup>&reg;</sup> Flutter widgets have been updated to support [`WebAssembly`](https://docs.flutter.dev/platform-integration/web/wasm) (WASM) as a compilation target for building web applications.
+* The minimum Dart version of our Flutter widgets has been updated to 3.3 from 2.17.
+
+## [27.1.48] - 09/18/2024
+
+**General**
+
+* The compatible version of our Flutter calendar widget has been updated to Flutter SDK 3.24.0.
+
+**Bug fixes**
+* Now, the horizontal scroll bar is draggable in the timeline view on both web and desktop platforms.
+
+## [25.2.7] - 06/04/2024
 **Bugs**
-* \#FB57253 - Now, the appointment details are passed correctly to the [monthCellBuilder](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/monthCellBuilder.html) callback when navigating to the months using the navigation buttons.
+* \#FB57253 -
+Now, the appointment details are passed correctly to the [monthCellBuilder](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/monthCellBuilder.html) callback when navigating to the months using the navigation buttons.
 
 ## [25.2.3] - 05/13/2024
 **General**

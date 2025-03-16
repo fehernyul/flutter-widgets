@@ -23,7 +23,8 @@ class ResourceViewWidget extends StatefulWidget {
       this.imagePainterCollection,
       this.width,
       this.panelHeight,
-      this.resourceViewHeaderBuilder);
+      this.resourceViewHeaderBuilder,
+      {super.key});
 
   /// Holds the resources of the calendar.
   final List<CalendarResource>? resources;
@@ -448,7 +449,7 @@ class _ResourceViewRenderObject extends CustomCalendarRenderObject {
               (themeData.brightness == Brightness.dark
                       ? Colors.white
                       : Colors.black87)
-                  .withOpacity(0.04);
+                  .withValues(alpha: 0.04);
           _addHovering(context.canvas, size, yPosition, resourceHoveringColor);
         }
 
@@ -479,7 +480,7 @@ class _ResourceViewRenderObject extends CustomCalendarRenderObject {
     final Color resourceHoveringColor = (themeData.brightness == Brightness.dark
             ? Colors.white
             : Colors.black87)
-        .withOpacity(0.04);
+        .withValues(alpha: 0.04);
     final TextStyle displayNameTextStyle = calendarTheme.displayNameTextStyle!;
     _circlePainter.color = resourceCellBorderColor;
     _circlePainter.strokeWidth = 0.5;

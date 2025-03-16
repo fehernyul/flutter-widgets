@@ -31,7 +31,8 @@ class AllDayAppointmentLayout extends StatefulWidget {
       this.width,
       this.height,
       this.localizations,
-      this.updateCalendarState);
+      this.updateCalendarState,
+      {super.key});
 
   /// Holds the calendar instance used the get the properties of calendar.
   final SfCalendar calendar;
@@ -47,7 +48,7 @@ class AllDayAppointmentLayout extends StatefulWidget {
 
   /// Holds the selection details and user to trigger repaint to draw the
   /// selection.
-  final ValueNotifier<SelectionDetails?> repaintNotifier;
+  final ValueNotifier<AllDayPanelSelectionDetails?> repaintNotifier;
 
   /// Used to get the calendar state details.
   final UpdateCalendarState updateCalendarState;
@@ -448,7 +449,7 @@ class _AllDayAppointmentRenderWidget extends MultiChildRenderObjectWidget {
   final CalendarView view;
   final List<DateTime> visibleDates;
   final List<CalendarAppointment>? visibleAppointments;
-  final ValueNotifier<SelectionDetails?> repaintNotifier;
+  final ValueNotifier<AllDayPanelSelectionDetails?> repaintNotifier;
   final double timeLabelWidth;
   final double allDayPainterHeight;
   final bool isRTL;
@@ -765,11 +766,12 @@ class _AllDayAppointmentRenderObject extends CustomCalendarRenderObject {
     _allDayHoverPosition.addListener(markNeedsPaint);
   }
 
-  ValueNotifier<SelectionDetails?> _selectionNotifier;
+  ValueNotifier<AllDayPanelSelectionDetails?> _selectionNotifier;
 
-  ValueNotifier<SelectionDetails?> get selectionNotifier => _selectionNotifier;
+  ValueNotifier<AllDayPanelSelectionDetails?> get selectionNotifier =>
+      _selectionNotifier;
 
-  set selectionNotifier(ValueNotifier<SelectionDetails?> value) {
+  set selectionNotifier(ValueNotifier<AllDayPanelSelectionDetails?> value) {
     if (_selectionNotifier == value) {
       return;
     }
@@ -1372,7 +1374,7 @@ class _AllDayAppointmentRenderObject extends CustomCalendarRenderObject {
             _cellWidth;
     final double leftPosition =
         (rowIndex * _cellWidth) + (isRTL ? 0 : timeLabelWidth);
-    _rectPainter.color = Colors.grey.withOpacity(0.1);
+    _rectPainter.color = Colors.grey.withValues(alpha: 0.1);
     canvas.drawRect(
         Rect.fromLTWH(leftPosition, 0, _cellWidth, size.height), _rectPainter);
   }
@@ -1394,8 +1396,8 @@ class _AllDayAppointmentRenderObject extends CustomCalendarRenderObject {
           appointmentView.endIndex > index) {
         selectionDecoration ??= BoxDecoration(
           color: themeData.brightness == Brightness.light
-              ? Colors.white.withOpacity(0.3)
-              : Colors.black.withOpacity(0.4),
+              ? Colors.white.withValues(alpha: 0.3)
+              : Colors.black.withValues(alpha: 0.4),
           border:
               Border.all(color: calendarTheme.selectionBorderColor!, width: 2),
           borderRadius: const BorderRadius.all(Radius.circular(2)),
@@ -1435,7 +1437,7 @@ class _AllDayAppointmentRenderObject extends CustomCalendarRenderObject {
   /// Used to pass the argument of create box painter and it is called when
   /// decoration have asynchronous data like image.
   void _updateSelectionDecorationPainter() {
-    selectionNotifier.value = SelectionDetails(
+    selectionNotifier.value = AllDayPanelSelectionDetails(
         selectionNotifier.value!.appointmentView,
         selectionNotifier.value!.selectedDate);
   }
@@ -1466,7 +1468,8 @@ class _AllDayAppointmentRenderObject extends CustomCalendarRenderObject {
         rect.right > allDayHoverPosition.value!.dx &&
         rect.top < allDayHoverPosition.value!.dy &&
         rect.bottom > allDayHoverPosition.value!.dy) {
-      _rectPainter.color = calendarTheme.selectionBorderColor!.withOpacity(0.4);
+      _rectPainter.color =
+          calendarTheme.selectionBorderColor!.withValues(alpha: 0.4);
       _rectPainter.strokeWidth = 2;
       _rectPainter.style = PaintingStyle.stroke;
       canvas.drawRRect(rect, _rectPainter);
